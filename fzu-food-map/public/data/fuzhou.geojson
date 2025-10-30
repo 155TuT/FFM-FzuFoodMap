@@ -1,0 +1,125 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-001",
+        "name": "盛茂源东北饺子馆",
+        "tags": ["东北菜","炒菜","平价","日常","可外卖","适合聚餐"],
+        "rating": 3.9,
+        "price": "34¥",
+        "notes": "锅包肉，酸辣鸡杂，地三鲜，东北大拉皮"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18738475, 26.06303435]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-002",
+        "name": "夜贰两东北串吧",
+        "tags": ["东北菜","烧烤","平价","日常","可外卖","适合聚餐"],
+        "rating": 4.3,
+        "price": "58¥",
+        "notes": "羊肉串，牛肋条，油边，蚕蛹"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18690437, 26.06287977]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-003",
+        "name": "文博家锅盔",
+        "tags": ["小吃","平价","日常"],
+        "rating": 4.7,
+        "price": "6¥",
+        "notes": "梅菜，鲜肉，瘦肉"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18834108, 26.06021073]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-004",
+        "name": "猪师弟空气年糕",
+        "tags": ["小吃","平价","日常"],
+        "rating": 4.0,
+        "price": "10¥",
+        "notes": "炸蘑菇（六合一），年糕，鸡柳"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18706511, 26.06253387]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-005",
+        "name": "陈记片皮鸭",
+        "tags": ["小吃","平价","日常"],
+        "rating": 3.3,
+        "price": "10¥",
+        "notes": "片皮鸭卷，烤冷面，香酥鸭"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18723538, 26.06248596]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-006",
+        "name": "壹品豆花",
+        "tags": ["甜品","平价","日常"],
+        "rating": 3.9,
+        "price": "12¥",
+        "notes": "豆花，椰奶冰，清补凉"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18717616, 26.06262096]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-007",
+        "name": "便宜坊（原光阴的故事）",
+        "tags": ["自助","烧烤","平价","日常","适合聚餐"],
+        "rating": 3.6,
+        "price": "69¥",
+        "notes": "油边，牛肉串"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18650004, 26.06248072]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-008",
+        "name": "临榆炸鸡腿（学生街店）",
+        "tags": ["连锁店","小吃","平价","日常","可外卖"],
+        "rating": 3.6,
+        "price": "18¥",
+        "notes": "鸡腿，三叉骨，鸡肉条"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [119.18657404,26.06252971]
+      }
+    }
+  ]
+}
