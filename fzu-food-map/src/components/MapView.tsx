@@ -285,7 +285,8 @@ export default function MapView({ city, query, onlyFav, theme, onShare }: Props)
 
     const fetchData = async () => {
       try {
-        const dataUrl = new URL(city.dataPath, import.meta.env.BASE_URL).toString();
+        const baseUrl = window.location.origin + import.meta.env.BASE_URL;
+        const dataUrl = new URL(city.dataPath, baseUrl).toString();
         const res = await fetch(dataUrl);
         if (!res.ok) throw new Error(`\u52a0\u8f7d ${city.dataPath} \u5931\u8d25 (${res.status})`);
         const data = (await res.json()) as GeoJson;
