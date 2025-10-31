@@ -5,6 +5,8 @@ import { buildShareUrl, parseCityFromUrl } from "./utils/share";
 import announcementText from "./assets/announcement.txt?raw";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
+import announcementIconUrl from "./assets/icons/announcement.svg";
+import faviconIconUrl from "./assets/icons/favicon.svg";
 
 type ThemeMode = "light" | "dark";
 
@@ -15,7 +17,7 @@ const TEXT = {
   toggleDark: "\u5207\u6362\u4e3a\u6df1\u8272\u6a21\u5f0f",
   toggleLight: "\u5207\u6362\u4e3a\u6d45\u8272\u6a21\u5f0f",
   infoLabel: "\u9875\u9762\u516c\u544a",
-  brandTitle: "FFM | Fzu Food Map"
+  brandTitle: "Fzu Food Map"
 } as const;
 
 export default function App() {
@@ -35,6 +37,9 @@ export default function App() {
     const html = typeof rawHtml === "string" ? rawHtml : "";
     return DOMPurify.sanitize(html);
   }, []);
+  const [brandIconError, setBrandIconError] = useState(false);
+  const [announcementIconError, setAnnouncementIconError] = useState(false);
+  const [faviconError, setFaviconError] = useState(false);
 
   const handleShare = useCallback(
     (favIds: string[]) => {
@@ -49,6 +54,11 @@ export default function App() {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
   }, []);
 
+  const faviconAssetPath = faviconIconUrl;
+  const announcementAssetPath = announcementIconUrl;
+  const fallbackFaviconData =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-size='42'%3E%F0%9F%8D%9C%3C/text%3E%3C/svg%3E";
+
   useEffect(() => {
     const u = new URL(window.location.href);
     u.searchParams.set("city", citySlug);
@@ -59,6 +69,23 @@ export default function App() {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
 
+  useEffect(() => {
+    const probe = new Image();
+    probe.onload = () => setFaviconError(false);
+    probe.onerror = () => setFaviconError(true);
+    probe.src = faviconAssetPath;
+  }, [faviconAssetPath]);
+
+  useEffect(() => {
+    let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = faviconError ? fallbackFaviconData : faviconAssetPath;
+  }, [faviconAssetPath, faviconError, fallbackFaviconData]);
+
   return (
     <>
       <div className="toolbar">
@@ -68,7 +95,18 @@ export default function App() {
           onClick={() => window.location.assign(window.location.pathname)}
           aria-label={TEXT.brandTitle}
         >
-          <span className="toolbar-favicon" aria-hidden="true">🍜</span>
+          <span className="toolbar-favicon" aria-hidden="true">
+            {brandIconError ? (
+              "🍜"
+            ) : (
+              <img
+                src={faviconAssetPath}
+                alt=""
+                onLoad={() => setBrandIconError(false)}
+                onError={() => setBrandIconError(true)}
+              />
+            )}
+          </span>
           <span className="toolbar-title">{TEXT.brandTitle}</span>
         </button>
         <input
@@ -97,7 +135,18 @@ export default function App() {
             onClick={() => setInfoOpen(prev => !prev)}
             aria-label={TEXT.infoLabel}
           >
-            <span aria-hidden="true">!</span>
+            <span className="info-button-icon" aria-hidden="true">
+              {announcementIconError ? (
+                "!"
+              ) : (
+                <img
+                  src={announcementAssetPath}
+                  alt=""
+                  onLoad={() => setAnnouncementIconError(false)}
+                  onError={() => setAnnouncementIconError(true)}
+                />
+              )}
+            </span>
           </button>
           {infoOpen && (
             <div
@@ -131,3 +180,4 @@ export default function App() {
     </>
   );
 }
+

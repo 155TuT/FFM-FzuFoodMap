@@ -1,4 +1,4 @@
-export type PoiProps = {
+﻿export type PoiProps = {
   id: string;
   name: string;
   tags?: string[];
@@ -13,3 +13,5 @@ export type GeoFeature = {
   geometry: { type: "Point"; coordinates: [number, number] };
 };
 export type GeoJson = { type: "FeatureCollection"; features: GeoFeature[]; };
+export type SearchField = "name" | "tags" | "notes";
+

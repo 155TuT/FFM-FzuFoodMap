@@ -91,6 +91,12 @@ html, body, #root {
   background: transparent;
   font-size: 20px;
 }
+.toolbar-favicon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
 
 .toolbar-title {
   font-size: 16px;
@@ -144,6 +150,19 @@ html, body, #root {
   color: var(--text-primary);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.info-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+.info-button-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 .info-button:hover {
