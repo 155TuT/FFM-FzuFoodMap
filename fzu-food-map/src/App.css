@@ -209,14 +209,14 @@ html, body, #root {
 @media (max-width: 719px) {
   .toolbar {
     padding: 12px 14px;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
     align-items: center;
-    gap: 8px;
+    column-gap: 8px;
   }
 
   .toolbar-brand {
-    order: 0;
-    flex: 0 0 auto;
+    justify-self: flex-start;
     gap: 6px;
   }
 
@@ -225,23 +225,21 @@ html, body, #root {
   }
 
   .toolbar-search {
-    order: 2;
-    flex: 0 0 auto;
-    width: 44px;
-    margin: 0 auto;
+    width: 36px;
+    justify-self: center;
   }
 
   .toolbar-search-field {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     padding: 0;
-    border-radius: 22px;
+    border-radius: 18px;
     justify-content: center;
   }
 
   .toolbar-search-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .toolbar-search-input {
@@ -249,13 +247,11 @@ html, body, #root {
   }
 
   .toolbar select {
-    order: 1;
-    flex: 0 0 auto;
+    justify-self: end;
   }
 
   .toolbar-info {
-    order: 3;
-    flex: 0 0 auto;
+    justify-self: end;
   }
 
   .search-popover {
@@ -559,4 +555,3 @@ html, body, #root {
 :root[data-theme="dark"] .theme-toggle {
   color: #fde68a;
 }
-

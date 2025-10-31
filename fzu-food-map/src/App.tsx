@@ -55,10 +55,12 @@ export default function App() {
 
   const iconPaths = useMemo(() => {
     const suffix = theme === "dark" ? "_dark" : "";
+    const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
+    const makePath = (file: string) => `${base}${file}`;
     return {
-      announcement: `/assets/icons/announcement${suffix}.svg`,
-      favicon: `/assets/icons/favicon${suffix}.svg`,
-      search: `/assets/icons/search${suffix}.svg`
+      announcement: makePath(`assets/icons/announcement${suffix}.svg`),
+      favicon: makePath(`assets/icons/favicon${suffix}.svg`),
+      search: makePath(`assets/icons/search${suffix}.svg`)
     };
   }, [theme]);
 
