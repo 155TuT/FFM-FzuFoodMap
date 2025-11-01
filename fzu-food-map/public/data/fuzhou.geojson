@@ -1,5 +1,6 @@
 {
   "type": "FeatureCollection",
+  "license":"CC BY-NC 4.0",
   "features": [
     {
       "type": "Feature",
