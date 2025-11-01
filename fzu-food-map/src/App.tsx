@@ -13,14 +13,14 @@ const TEXT = {
   shareCopied: "分享链接已复制到剪贴板",
   selectCity: "选择城市",
   searchPlaceholder: "搜索",
-  toggleDark: "切换为深色模式",
-  toggleLight: "切换为浅色模式",
-  infoLabel: "页面公告",
+  toggleDark: "深色模式",
+  toggleLight: "浅色模式",
+  infoLabel: "公告",
   searchTitle: "搜索",
   brandTitle: "FFM | Fzu Food Map",
   chipGroup: "选择搜索类型",
-  emptyPrompt: "输入关键字以搜索地点",
-  emptyState: "暂无匹配结果"
+  emptyPrompt: "选择标签并输入关键字以搜索",
+  emptyState: "暂无匹配结果，请尝试通过右侧公告反馈"
 } as const;
 
 const SEARCH_OPTIONS: { value: SearchField; label: string }[] = [
@@ -30,8 +30,7 @@ const SEARCH_OPTIONS: { value: SearchField; label: string }[] = [
 ];
 
 const SYMBOL = {
-  dot: " \u00b7 ",
-  star: "\u2605"
+  dot: " · "
 } as const;
 
 export default function App() {
@@ -128,7 +127,12 @@ export default function App() {
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (!searchWrapperRef.current?.contains(event.target as Node)) closeSearch();
+      const target = event.target as Node;
+      const mapElement = document.getElementById("map");
+      if (mapElement?.contains(target)) {
+        return;
+      }
+      if (!searchWrapperRef.current?.contains(target)) closeSearch();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -262,8 +266,18 @@ export default function App() {
                     const props = feature.properties;
                     const tagText = Array.isArray(props.tags) ? props.tags.slice(0, 3).join(SYMBOL.dot) : "";
                     const priceText = props.price ?? "";
-                    const ratingText = props.rating != null ? `${SYMBOL.star} ${props.rating}` : "";
-                    const meta = [tagText, priceText, ratingText].filter(Boolean).join(SYMBOL.dot);
+                    const addressText = props.address ? `${props.address}` : "";
+                    const contactText = props.contact ? `tel:${props.contact}` : "";
+                    const openHourText = props.openhour ? `${props.openhour}` : "";
+                    const scheduleLine = [openHourText, contactText].filter(Boolean).join(" ");
+                    const tagPriceLine = [tagText, priceText].filter(Boolean).join(SYMBOL.dot);
+                    const noteLine = props.notes ? `${props.notes}` : "";
+                    const lines = [
+                      { key: "schedule", text: scheduleLine, secondary: false },
+                      { key: "address", text: addressText, secondary: true },
+                      { key: "tagprice", text: tagPriceLine, secondary: false },
+                      { key: "note", text: noteLine, secondary: true }
+                    ].filter(item => item.text);
 
                     return (
                       <button
@@ -276,7 +290,14 @@ export default function App() {
                         <span className="search-suggestion-title" title={props.name}>
                           {props.name}
                         </span>
-                        {meta && <span className="search-suggestion-meta">{meta}</span>}
+                        {lines.map(item => (
+                          <span
+                            key={`${props.id}-popover-${item.key}`}
+                            className={`search-suggestion-meta${item.secondary ? " search-suggestion-meta--secondary" : ""}`}
+                          >
+                            {item.text}
+                          </span>
+                        ))}
                       </button>
                     );
                   })
@@ -357,7 +378,7 @@ export default function App() {
         query={searchTerm}
         searchField={searchField}
         onlyFav={onlyFav}
-        showSuggestions={!searchOpen}
+        showSuggestions={false}
         onShare={handleShare}
         onSuggestionsChange={setSuggestions}
         theme={theme}

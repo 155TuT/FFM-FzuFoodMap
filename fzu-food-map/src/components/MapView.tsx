@@ -13,7 +13,6 @@ import { getFavs, setFavs, toggleFav } from "../utils/favorites";
 import { parseFavFromUrl } from "../utils/share";
 
 const SEARCH_LIMIT = 8;
-const STAR = "\u2605";
 const DOT = " \u00b7 ";
 const TEXT = {
   details: "详情",
@@ -180,15 +179,28 @@ export default function MapView({
       const popup = popupRef.current;
       const tagText = Array.isArray(poi.tags) ? poi.tags.map(escapeHtml).join(DOT) : "";
       const priceText = poi.price ? escapeHtml(poi.price) : "";
-      const ratingText = poi.rating != null ? `${STAR} ${poi.rating}` : "";
-      const metaParts = [tagText, priceText, ratingText].filter(Boolean).join(DOT);
+      const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
+      const addressLine = poi.address ? `${escapeHtml(poi.address)}` : "";
+      const contactLine = poi.contact ? `tel:${escapeHtml(poi.contact)}` : "";
+      const openHourLine = poi.openhour ? `${escapeHtml(poi.openhour)}` : "";
+      const scheduleLine = [openHourLine, contactLine].filter(Boolean).join(" ");
+      const noteHtml = poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
+      const detailLinkHtml = poi.url
+        ? `<a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a>`
+        : "";
 
       const html = `
         <div class="poi-title">${escapeHtml(poi.name)}</div>
-        ${metaParts ? `<div class="poi-meta">${metaParts}</div>` : ""}
-        ${poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : ""}
-        ${poi.url ? `<div><a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a></div>` : ""}
-        <button class="fav-btn" data-id="${poi.id}" type="button">${favSetRef.current.has(poi.id) ? TEXT.collected : TEXT.collect}</button>
+        ${scheduleLine ? `<div class="poi-meta">${scheduleLine}</div>` : ""}
+        ${addressLine ? `<div class="poi-meta">${addressLine}</div>` : ""}
+        ${tagPriceLine ? `<div class="poi-meta">${tagPriceLine}</div>` : ""}
+        ${noteHtml}
+        <div class="poi-actions">
+          ${detailLinkHtml}
+          <button class="fav-btn" data-id="${poi.id}" type="button">${
+            favSetRef.current.has(poi.id) ? TEXT.collected : TEXT.collect
+          }</button>
+        </div>
       `;
 
       popup.setLngLat(coordinates).setHTML(html).addTo(map);
@@ -423,8 +435,18 @@ export default function MapView({
             const props = feature.properties;
             const tagText = Array.isArray(props.tags) ? props.tags.map(escapeHtml).slice(0, 3).join(DOT) : "";
             const priceText = props.price ? escapeHtml(props.price) : "";
-            const ratingText = props.rating != null ? `${STAR} ${props.rating}` : "";
-            const meta = [tagText, priceText, ratingText].filter(Boolean).join(DOT);
+            const addressText = props.address ? `${escapeHtml(props.address)}` : "";
+            const contactText = props.contact ? `tel:${escapeHtml(props.contact)}` : "";
+            const openHourText = props.openhour ? `${escapeHtml(props.openhour)}` : "";
+            const scheduleLine = [openHourText, contactText].filter(Boolean).join(" ");
+            const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
+            const noteLine = props.notes ? `${escapeHtml(props.notes)}` : "";
+            const lines = [
+              { key: "schedule", text: scheduleLine, secondary: false },
+              { key: "address", text: addressText, secondary: true },
+              { key: "tagprice", text: tagPriceLine, secondary: false },
+              { key: "note", text: noteLine, secondary: true }
+            ].filter(item => item.text);
 
             return (
               <li key={props.id}>
@@ -432,7 +454,14 @@ export default function MapView({
                   <span className="search-suggestion-title" title={props.name}>
                     {props.name}
                   </span>
-                  {meta && <span className="search-suggestion-meta">{meta}</span>}
+                  {lines.map(item => (
+                    <span
+                      key={`${props.id}-meta-${item.key}`}
+                      className={`search-suggestion-meta${item.secondary ? " search-suggestion-meta--secondary" : ""}`}
+                    >
+                      {item.text}
+                    </span>
+                  ))}
                 </button>
               </li>
             );

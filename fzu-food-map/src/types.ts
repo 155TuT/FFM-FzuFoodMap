@@ -6,6 +6,9 @@
   price?: string;
   url?: string;
   notes?: string;
+  address?: string;
+  contact?: string;
+  openhour?: string;
 };
 export type GeoFeature = {
   type: "Feature";

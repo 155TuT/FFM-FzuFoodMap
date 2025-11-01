@@ -258,11 +258,6 @@ html, body, #root {
     width: calc(100vw - 48px);
     max-width: calc(100vw - 48px);
   }
-
-  .search-popover-input-row {
-    display: flex;
-    margin-bottom: 12px;
-  }
 }
 
 .info-button {
@@ -347,10 +342,30 @@ html, body, #root {
 
 .poi-notes {
   font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.poi-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.poi-actions a {
+  font-size: 12px;
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.poi-actions a:hover,
+.poi-actions a:focus-visible {
+  text-decoration: underline;
+  outline: none;
 }
 
 .fav-btn {
-  margin-top: 6px;
   display: inline-flex;
   gap: 6px;
   align-items: center;
@@ -378,7 +393,8 @@ html, body, #root {
 }
 
 .search-popover-input-row {
-  display: none;
+  display: flex;
+  margin-bottom: 12px;
 }
 
 .search-popover-input-row input {
@@ -500,7 +516,7 @@ html, body, #root {
   font-weight: 600;
   display: inline-block;
   margin-bottom: 2px;
-  max-width: 5ch;
+  max-width: 6em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -508,7 +524,13 @@ html, body, #root {
 
 .search-suggestion-meta {
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.75;
+  display: block;
+  margin-top: 2px;
+}
+
+.search-suggestion-meta--secondary {
+  opacity: 0.6;
 }
 
 .search-field-chips button {
@@ -520,6 +542,11 @@ html, body, #root {
     top: 84px;
     left: 24px;
     width: min(360px, calc(100% - 48px));
+  }
+
+  .search-popover-input-row {
+    display: none;
+    margin-bottom: 0;
   }
 }
 

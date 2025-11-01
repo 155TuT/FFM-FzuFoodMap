@@ -1,4 +1,4 @@
-# ![favicon](fzu-food-map/public/assets/icons/favicon.svg) FFM | Fzu Food Map
+# ![favicon](./fzu-food-map/public/assets/icons/favicon.svg) FFM | Fzu Food Map
 
 Made by [155TuT](https://github.com/155TuT), all rights reserved.
 
