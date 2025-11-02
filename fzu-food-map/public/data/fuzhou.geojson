@@ -1,11 +1,12 @@
 {
   "type": "FeatureCollection",
-  "license":"CC BY-NC 4.0",
+  "license": "CC BY-NC 4.0",
   "features": [
     {
       "type": "Feature",
       "properties": {
         "id": "foc-001",
+        "category": "门店",
         "name": "盛茂源东北饺子馆",
         "tags": [
           "东北菜",
@@ -14,7 +15,7 @@
           "日常",
           "堂食",
           "外卖",
-          "适合聚餐"
+          "聚餐"
         ],
         "rating": 3.9,
         "price": "34¥",
@@ -35,6 +36,7 @@
       "type": "Feature",
       "properties": {
         "id": "foc-002",
+        "category": "门店",
         "name": "夜贰两东北串吧",
         "tags": [
           "东北菜",
@@ -43,7 +45,8 @@
           "日常",
           "堂食",
           "外卖",
-          "适合聚餐"
+          "一人食",
+          "聚餐"
         ],
         "rating": 4.3,
         "price": "58¥",
@@ -64,17 +67,18 @@
       "type": "Feature",
       "properties": {
         "id": "foc-003",
+        "category": "摊位",
         "name": "文博家锅盔",
         "tags": [
           "小吃",
           "便宜",
-          "日常"
+          "日常",
+          "一人食"
         ],
         "rating": 4.7,
         "price": "6¥",
         "notes": "梅菜，鲜肉，瘦肉",
         "address": "福州大学（旗山校区）西1门附近",
-        "contact": "暂无电话",
         "openhour": "17:30-00:00"
       },
       "geometry": {
@@ -89,17 +93,18 @@
       "type": "Feature",
       "properties": {
         "id": "foc-004",
+        "category": "摊位",
         "name": "猪师弟空气年糕",
         "tags": [
           "小吃",
           "便宜",
-          "日常"
+          "日常",
+          "一人食"
         ],
-        "rating": 4.0,
+        "rating": 4,
         "price": "10¥",
         "notes": "炸蘑菇（六合一），年糕，鸡柳",
         "address": "岐安福大学生街B1区",
-        "contact": "暂无电话",
         "openhour": "暂无营业时间，一般晚上营业"
       },
       "geometry": {
@@ -114,11 +119,13 @@
       "type": "Feature",
       "properties": {
         "id": "foc-005",
+        "category": "摊位",
         "name": "陈记片皮鸭",
         "tags": [
           "小吃",
           "便宜",
-          "日常"
+          "日常",
+          "一人食"
         ],
         "rating": 3.3,
         "price": "10¥",
@@ -139,11 +146,13 @@
       "type": "Feature",
       "properties": {
         "id": "foc-006",
+        "category": "摊位",
         "name": "壹品豆花",
         "tags": [
           "甜品",
           "便宜",
-          "日常"
+          "日常",
+          "一人食"
         ],
         "rating": 3.9,
         "price": "12¥",
@@ -164,6 +173,7 @@
       "type": "Feature",
       "properties": {
         "id": "foc-007",
+        "category": "门店",
         "name": "便宜坊（原光阴的故事）",
         "tags": [
           "自助",
@@ -191,13 +201,15 @@
       "type": "Feature",
       "properties": {
         "id": "foc-008",
+        "category": "摊位",
         "name": "临榆炸鸡腿（学生街店）",
         "tags": [
           "连锁店",
           "小吃",
           "便宜",
           "日常",
-          "可外卖"
+          "可外卖",
+          "一人食"
         ],
         "rating": 3.6,
         "price": "18¥",
@@ -218,25 +230,215 @@
       "type": "Feature",
       "properties": {
         "id": "foc-009",
-        "name": "广式养生鸡",
+        "category": "食堂",
+        "name": "玫瑰园",
         "tags": [
-          "广东菜",
-          "平价",
+          "食堂",
+          "便宜",
           "日常",
-          "适合聚餐"
+          "堂食",
+          "外卖",
+          "一人食"
         ],
-        "rating": 4.2,
-        "price": "62¥",
-        "notes": "清远鸡，走地鸡",
-        "address": "岐安福大学生街C1区学府北路10-22号",
-        "contact": "15059457577",
-        "openhour": "10:00-次日01:00"
+        "rating": 5.0,
+        "notes": "特色：食惠烧腊，咖喱饭，众沙县，老顺德干蒸菜 连锁：小街胡同，塔斯汀，杨国福，临榆炸鸡腿",
+        "address": "福州大学生活区三区（一楼）",
+        "openhour": "06:00-19:30"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.18752575,
-          26.06261035
+          119.18791993,
+          26.05566677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-010",
+        "category": "食堂",
+        "name": "芙蓉园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 4.9,
+        "notes": "特色：米婆婆，重庆小面，客家牛肉面 连锁：永兴发",
+        "address": "福州大学生活区三区（二楼）",
+        "openhour": "09:00-19:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18791993,
+          26.05606677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-010",
+        "category": "食堂",
+        "name": "紫荆园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 4.8,
+        "notes": "特色：烧腊，咖喱饭，牛杂面 连锁：麦当劳，袁小饺",
+        "address": "福州大学生活区三区（一楼）",
+        "openhour": "06:00-19:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18721993,
+          26.05569677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-011",
+        "category": "食堂",
+        "name": "牡丹园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 4.7,
+        "notes": "特色：粤福记烧腊",
+        "address": "福州大学生活区三区（二楼）",
+        "openhour": "09:00-23:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18721993,
+          26.05609677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-012",
+        "category": "食堂",
+        "name": "丁香园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 3.0,
+        "notes": "连锁：肯德基",
+        "address": "福州大学生活区一区（一楼）",
+        "openhour": "06:00-23:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18730509,
+          26.05967471
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-013",
+        "category": "食堂",
+        "name": "丹桂园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 3.4,
+        "notes": "阿肥友",
+        "address": "福州大学生活区一区（二楼）",
+        "openhour": "09:00-19:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18740324,
+          26.05949977
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-014",
+        "category": "食堂",
+        "name": "百合园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 3.2,
+        "notes": "特色酷乐普斯",
+        "address": "福州大学生活区一区（三楼）",
+        "openhour": "09:00-19:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18720674,
+          26.05949342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-015",
+        "category": "食堂",
+        "name": "茉莉园",
+        "tags": [
+          "食堂",
+          "便宜",
+          "日常",
+          "堂食",
+          "外卖",
+          "一人食"
+        ],
+        "rating": 3.7,
+        "notes": "特色：金翼瓦罐套餐，老上海馄饨铺",
+        "address": "福州大学生活区一区（二楼）",
+        "openhour": "06:00-19:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18790532,
+          26.05955123
         ]
       }
     }

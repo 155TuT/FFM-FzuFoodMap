@@ -14,6 +14,13 @@ import { parseFavFromUrl } from "../utils/share";
 
 const SEARCH_LIMIT = 8;
 const DOT = " \u00b7 ";
+const CATEGORY_COLORS: Record<string, { light: string; dark: string }> = {
+  门店: { light: "#38bdf8", dark: "#38bdf8" },
+  食堂: { light: "#34d399", dark: "#34d399" },
+  摊位: { light: "#fbbf24", dark: "#facc15" },
+  连锁: { light: "#a78bfa", dark: "#c084fc" },
+  外卖: { light: "#fb7185", dark: "#fb7185" }
+};
 const TEXT = {
   details: "详情",
   collect: "收藏",
@@ -187,12 +194,7 @@ export default function MapView({
         source: "pois",
         filter: ["!", ["has", "point_count"]],
         paint: {
-          "circle-color": [
-            "case",
-            ["in", ["get", "id"], ["literal", [...favSetRef.current]]],
-            "#f59e0b",
-            "#0ea5e9"
-          ],
+          "circle-color": createCircleColorExpression(themeRef.current, favSetRef.current),
           "circle-radius": 6,
           "circle-stroke-width": 1.2,
           "circle-stroke-color": "white"
@@ -457,13 +459,8 @@ export default function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !map.getLayer("unclustered")) return;
-    map.setPaintProperty("unclustered", "circle-color", [
-      "case",
-      ["in", ["get", "id"], ["literal", [...favSet]]],
-      "#f59e0b",
-      "#0ea5e9"
-    ]);
-  }, [favSet]);
+    map.setPaintProperty("unclustered", "circle-color", createCircleColorExpression(theme, favSet));
+  }, [favSet, theme]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -621,6 +618,23 @@ function getGeolocationErrorMessage(error: GeolocationPositionError) {
     default:
       return "定位失败，请稍后重试";
   }
+}
+
+function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): any {
+  const paletteKey = theme === "dark" ? "dark" : "light";
+  const matchExpression: any[] = ["match", ["coalesce", ["get", "category"], "门店"]];
+  for (const [key, value] of Object.entries(CATEGORY_COLORS)) {
+    matchExpression.push(key, value[paletteKey]);
+  }
+  const fallbackColor = CATEGORY_COLORS["门店"][paletteKey];
+  matchExpression.push(fallbackColor);
+
+  return [
+    "case",
+    ["in", ["get", "id"], ["literal", Array.from(favSet)]],
+    "#f59e0b",
+    matchExpression
+  ];
 }
 
 function matchesSearch(feature: GeoFeature, field: SearchField, termLower: string) {
