@@ -32,6 +32,9 @@ type Props = {
   onShare: (favIds: string[]) => void;
   onSuggestionsChange?: (suggestions: GeoFeature[]) => void;
   theme: ThemeMode;
+  trackUserLocation: boolean;
+  onUserLocationError?: (message: string) => void;
+  onUserLocationChange?: (tracking: boolean) => void;
 };
 
 export default function MapView({
@@ -42,7 +45,10 @@ export default function MapView({
   showSuggestions,
   onShare,
   onSuggestionsChange,
-  theme
+  theme,
+  trackUserLocation,
+  onUserLocationError,
+  onUserLocationChange
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -52,6 +58,37 @@ export default function MapView({
   const [favSet, setFavSet] = useState<Set<string>>(() => getFavs());
   const favSetRef = useRef(favSet);
   const [suggestions, setSuggestions] = useState<GeoFeature[]>([]);
+  const [mapReady, setMapReady] = useState(false);
+  const userLocationWatchIdRef = useRef<number | null>(null);
+  const userLocationMarkerRef = useRef<maplibregl.Marker | null>(null);
+  const userLocationCenteredRef = useRef(false);
+  const userLocationActiveRef = useRef(false);
+  const themeRef = useRef<ThemeMode>(theme);
+  themeRef.current = theme;
+
+  const stopUserLocationTracking = useCallback(
+    (options?: { notify?: boolean }) => {
+      const notify = options?.notify ?? true;
+
+      if (userLocationWatchIdRef.current != null && typeof navigator !== "undefined" && "geolocation" in navigator) {
+        navigator.geolocation.clearWatch(userLocationWatchIdRef.current);
+        userLocationWatchIdRef.current = null;
+      }
+
+      if (userLocationMarkerRef.current) {
+        userLocationMarkerRef.current.remove();
+        userLocationMarkerRef.current = null;
+      }
+
+      userLocationCenteredRef.current = false;
+      userLocationActiveRef.current = false;
+
+      if (notify) {
+        onUserLocationChange?.(false);
+      }
+    },
+    [onUserLocationChange]
+  );
 
   const styleUrl = useMemo(() => {
     const key = import.meta.env.VITE_MAPTILER_KEY || "YOUR_KEY";
@@ -180,11 +217,11 @@ export default function MapView({
       const tagText = Array.isArray(poi.tags) ? poi.tags.map(escapeHtml).join(DOT) : "";
       const priceText = poi.price ? escapeHtml(poi.price) : "";
       const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
-      const addressLine = poi.address ? `${escapeHtml(poi.address)}` : "";
-      const contactLine = poi.contact ? `tel:${escapeHtml(poi.contact)}` : "";
-      const openHourLine = poi.openhour ? `${escapeHtml(poi.openhour)}` : "";
+      const addressLine = poi.address ? `🏠 ${escapeHtml(poi.address)}` : "";
+      const contactLine = poi.contact ? `📞 ${escapeHtml(poi.contact)}` : "";
+      const openHourLine = poi.openhour ? `🕒 ${escapeHtml(poi.openhour)}` : "";
       const scheduleLine = [openHourLine, contactLine].filter(Boolean).join(" ");
-      const noteHtml = poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
+      const noteHtml = poi.notes ? `<div class="poi-notes">🍽️ ${escapeHtml(poi.notes)}</div>` : "";
       const detailLinkHtml = poi.url
         ? `<a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a>`
         : "";
@@ -226,6 +263,8 @@ export default function MapView({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    setMapReady(false);
+
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: styleUrl,
@@ -235,6 +274,9 @@ export default function MapView({
     });
 
     mapRef.current = map;
+
+    const handleLoad = () => setMapReady(true);
+    map.on("load", handleLoad);
 
     const typedMap = map as MapLibreMap & { setPrefetchZoomDelta?: (delta: number) => void };
     if (typeof typedMap.setPrefetchZoomDelta === "function") {
@@ -289,14 +331,95 @@ export default function MapView({
     });
 
     return () => {
+      map.off("load", handleLoad);
       map.off("click", "clusters", handleClusterClick);
       map.off("click", "unclustered", handlePoiClick);
+      stopUserLocationTracking({ notify: false });
       map.remove();
       popupRef.current?.remove();
       popupRef.current = null;
       mapRef.current = null;
+      setMapReady(false);
     };
-  }, [city.center, city.zoom, showPoiPopup, styleUrl]);
+  }, [city.center, city.zoom, showPoiPopup, styleUrl, stopUserLocationTracking]);
+
+  useEffect(() => {
+    if (!trackUserLocation) {
+      stopUserLocationTracking();
+      return;
+    }
+
+    if (!mapReady || !mapRef.current) {
+      return;
+    }
+
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      onUserLocationError?.("当前浏览器不支持定位功能");
+      stopUserLocationTracking();
+      return;
+    }
+
+    try {
+      const watchId = navigator.geolocation.watchPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          const coords: LngLatLike = [longitude, latitude];
+          const map = mapRef.current;
+          if (!map) return;
+
+          let marker = userLocationMarkerRef.current;
+          if (!marker) {
+            marker = new maplibregl.Marker({ element: createUserLocationMarker(themeRef.current) })
+              .setLngLat(coords)
+              .addTo(map);
+            userLocationMarkerRef.current = marker;
+          } else {
+            marker.setLngLat(coords);
+          }
+
+          if (!userLocationCenteredRef.current) {
+            const targetZoom = Math.min(Math.max(map.getZoom(), 15), map.getMaxZoom());
+            map.easeTo({ center: coords, zoom: targetZoom, duration: 600 });
+            userLocationCenteredRef.current = true;
+          }
+
+          if (!userLocationActiveRef.current) {
+            userLocationActiveRef.current = true;
+            onUserLocationChange?.(true);
+          }
+        },
+        error => {
+          const message = getGeolocationErrorMessage(error);
+          onUserLocationError?.(message);
+          stopUserLocationTracking();
+        },
+        { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+      );
+
+      userLocationWatchIdRef.current = watchId;
+    } catch (error) {
+      onUserLocationError?.("定位功能被浏览器阻止，无法显示当前位置");
+      stopUserLocationTracking();
+    }
+
+    return () => {
+      stopUserLocationTracking({ notify: false });
+    };
+  }, [
+    trackUserLocation,
+    mapReady,
+    onUserLocationChange,
+    onUserLocationError,
+    stopUserLocationTracking
+  ]);
+
+  useEffect(() => {
+    const marker = userLocationMarkerRef.current;
+    if (marker) {
+      const element = marker.getElement();
+      element.className = `user-location-marker user-location-marker--${theme}`;
+    }
+  }, [theme]);
 
   useEffect(() => {
     let cancelled = false;
@@ -444,12 +567,12 @@ export default function MapView({
             const props = feature.properties;
             const tagText = Array.isArray(props.tags) ? props.tags.map(escapeHtml).slice(0, 3).join(DOT) : "";
             const priceText = props.price ? escapeHtml(props.price) : "";
-            const addressText = props.address ? `${escapeHtml(props.address)}` : "";
-            const contactText = props.contact ? `tel:${escapeHtml(props.contact)}` : "";
-            const openHourText = props.openhour ? `${escapeHtml(props.openhour)}` : "";
+            const addressText = props.address ? `🏠 ${escapeHtml(props.address)}` : "";
+            const contactText = props.contact ? `📞 ${escapeHtml(props.contact)}` : "";
+            const openHourText = props.openhour ? `🕒 ${escapeHtml(props.openhour)}` : "";
             const scheduleLine = [openHourText, contactText].filter(Boolean).join(" ");
             const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
-            const noteLine = props.notes ? `${escapeHtml(props.notes)}` : "";
+            const noteLine = props.notes ? `🍽️ ${escapeHtml(props.notes)}` : "";
             const lines = [
               { key: "schedule", text: scheduleLine, secondary: false },
               { key: "address", text: addressText, secondary: true },
@@ -479,6 +602,25 @@ export default function MapView({
       )}
     </>
   );
+}
+
+function createUserLocationMarker(theme: ThemeMode) {
+  const element = document.createElement("div");
+  element.className = `user-location-marker user-location-marker--${theme}`;
+  return element;
+}
+
+function getGeolocationErrorMessage(error: GeolocationPositionError) {
+  switch (error.code) {
+    case error.PERMISSION_DENIED:
+      return "未获得定位授权，无法显示当前位置";
+    case error.POSITION_UNAVAILABLE:
+      return "无法获取有效的定位信息";
+    case error.TIMEOUT:
+      return "定位请求超时，请稍后重试";
+    default:
+      return "定位失败，请稍后重试";
+  }
 }
 
 function matchesSearch(feature: GeoFeature, field: SearchField, termLower: string) {

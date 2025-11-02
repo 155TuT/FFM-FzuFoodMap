@@ -56,16 +56,21 @@ export default function App() {
     const suffix = theme === "dark" ? "_dark" : "";
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
     const makePath = (file: string) => `${base}${file}`;
+    const themeToggleFile = theme === "light" ? "assets/icons/to_dark.svg" : "assets/icons/to_light.svg";
     return {
       announcement: makePath(`assets/icons/announcement${suffix}.svg`),
       favicon: makePath(`assets/icons/favicon${suffix}.svg`),
-      search: makePath(`assets/icons/search${suffix}.svg`)
+      search: makePath(`assets/icons/search${suffix}.svg`),
+      locate: makePath(`assets/icons/locate${suffix}.svg`),
+      themeToggle: makePath(themeToggleFile)
     };
   }, [theme]);
 
   const announcementIconUrl = iconPaths.announcement;
   const faviconIconUrl = iconPaths.favicon;
   const searchIconUrl = iconPaths.search;
+  const locateIconUrl = iconPaths.locate;
+  const themeToggleIconUrl = iconPaths.themeToggle;
 
   const announcementHtml = useMemo(() => {
     const rawHtml = marked.parse(announcementText, { breaks: true });
@@ -76,8 +81,11 @@ export default function App() {
   const [announcementIconError, setAnnouncementIconError] = useState(false);
   const [faviconError, setFaviconError] = useState(false);
   const [brandIconError, setBrandIconError] = useState(false);
+  const [locateIconError, setLocateIconError] = useState(false);
+  const [themeToggleIconError, setThemeToggleIconError] = useState(false);
 
   const onlyFav = false;
+  const [trackUserLocation, setTrackUserLocation] = useState(false);
 
   const handleShare = useCallback(
     (favIds: string[]) => {
@@ -99,6 +107,22 @@ export default function App() {
 
   const closeSearch = useCallback(() => {
     setSearchOpen(false);
+  }, []);
+
+  const toggleUserLocation = useCallback(() => {
+    if (!("geolocation" in navigator)) {
+      alert("当前浏览器不支持定位功能");
+      return;
+    }
+    setTrackUserLocation(prev => !prev);
+  }, []);
+
+  const handleUserLocationChange = useCallback((active: boolean) => {
+    setTrackUserLocation(active);
+  }, []);
+
+  const handleUserLocationError = useCallback((message: string) => {
+    alert(message);
   }, []);
 
   const handleSuggestionClick = useCallback(
@@ -158,6 +182,8 @@ export default function App() {
   useEffect(() => {
     setAnnouncementIconError(false);
     setBrandIconError(false);
+    setLocateIconError(false);
+    setThemeToggleIconError(false);
   }, [theme]);
 
   useEffect(() => {
@@ -382,16 +408,53 @@ export default function App() {
         onShare={handleShare}
         onSuggestionsChange={setSuggestions}
         theme={theme}
+        trackUserLocation={trackUserLocation}
+        onUserLocationChange={handleUserLocationChange}
+        onUserLocationError={handleUserLocationError}
       />
-
-      <button
-        type="button"
-        className="theme-toggle"
-        onClick={toggleTheme}
-        aria-label={theme === "light" ? TEXT.toggleDark : TEXT.toggleLight}
-      >
-        <span aria-hidden="true">{theme === "light" ? "🌙" : "☀️"}</span>
-      </button>
+      <div className="floating-actions" role="group" aria-label="界面功能">
+        <button
+          type="button"
+          className={`floating-action-button ${trackUserLocation ? "floating-action-button--active" : ""}`}
+          onClick={toggleUserLocation}
+          aria-pressed={trackUserLocation ? "true" : "false"}
+          aria-label={trackUserLocation ? "停止定位" : "显示我的位置"}
+          title={trackUserLocation ? "停止定位" : "显示我的位置"}
+        >
+          <span className="floating-action-icon" aria-hidden="true">
+            {locateIconError ? (
+              "📍"
+            ) : (
+              <img
+                src={locateIconUrl}
+                alt=""
+                onLoad={() => setLocateIconError(false)}
+                onError={() => setLocateIconError(true)}
+              />
+            )}
+          </span>
+        </button>
+        <button
+          type="button"
+          className="floating-action-button theme-toggle"
+          onClick={toggleTheme}
+          aria-label={theme === "light" ? TEXT.toggleDark : TEXT.toggleLight}
+          title={theme === "light" ? TEXT.toggleDark : TEXT.toggleLight}
+        >
+          <span className="floating-action-icon" aria-hidden="true">
+            {themeToggleIconError ? (
+              theme === "light" ? "🌙" : "☀️"
+            ) : (
+              <img
+                src={themeToggleIconUrl}
+                alt=""
+                onLoad={() => setThemeToggleIconError(false)}
+                onError={() => setThemeToggleIconError(true)}
+              />
+            )}
+          </span>
+        </button>
+      </div>
     </>
   );
 }
