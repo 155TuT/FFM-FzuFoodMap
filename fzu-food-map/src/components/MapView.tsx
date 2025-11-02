@@ -83,7 +83,7 @@ export default function MapView({
     const bounds = new maplibregl.LngLatBounds();
     feats.forEach(feature => bounds.extend(feature.geometry.coordinates as LngLatLike));
     if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, { padding: 40, maxZoom: 16 });
+      map.fitBounds(bounds, { padding: 40, maxZoom: Math.min(15, map.getMaxZoom()) });
     }
   }, []);
 
@@ -230,10 +230,16 @@ export default function MapView({
       container: containerRef.current,
       style: styleUrl,
       center: city.center,
-      zoom: city.zoom
+      zoom: city.zoom,
+      maxZoom: 17
     });
 
     mapRef.current = map;
+
+    const typedMap = map as MapLibreMap & { setPrefetchZoomDelta?: (delta: number) => void };
+    if (typeof typedMap.setPrefetchZoomDelta === "function") {
+      typedMap.setPrefetchZoomDelta(0);
+    }
 
     const handleClusterClick = (event: MapLayerMouseEvent) => {
       const features = map.queryRenderedFeatures(event.point, { layers: ["clusters"] }) as MapGeoJSONFeature[];
@@ -251,7 +257,7 @@ export default function MapView({
           if (zoom === undefined) return;
           const geometry = clusterFeature.geometry;
           if (!geometry || geometry.type !== "Point") return;
-          map.easeTo({ center: geometry.coordinates as LngLatLike, zoom });
+          map.easeTo({ center: geometry.coordinates as LngLatLike, zoom: Math.min(zoom, map.getMaxZoom()) });
         })
         .catch(() => undefined);
     };
@@ -262,7 +268,8 @@ export default function MapView({
       const props = feature.properties as PoiProps | undefined;
       if (!props) return;
       const coordinates = feature.geometry.coordinates as LngLatLike;
-      map.easeTo({ center: coordinates, zoom: Math.max(map.getZoom(), 15) });
+      const targetZoom = Math.min(Math.max(map.getZoom(), 15), map.getMaxZoom());
+      map.easeTo({ center: coordinates, zoom: targetZoom });
       showPoiPopup(props, coordinates);
     };
 
@@ -394,7 +401,9 @@ export default function MapView({
       const map = mapRef.current;
       if (!map) return;
       const coordinates = feature.geometry.coordinates as LngLatLike;
-      map.easeTo({ center: coordinates, zoom: Math.max(map.getZoom(), 16), duration: 600 });
+      const currentZoom = map.getZoom();
+      const targetZoom = Math.min(Math.max(currentZoom, 15), map.getMaxZoom());
+      map.easeTo({ center: coordinates, zoom: targetZoom, duration: 600 });
       showPoiPopup(feature.properties, coordinates);
     },
     [showPoiPopup]
@@ -423,7 +432,7 @@ export default function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.easeTo({ center: city.center as LngLatLike, zoom: city.zoom, duration: 600 });
+    map.easeTo({ center: city.center as LngLatLike, zoom: Math.min(city.zoom, map.getMaxZoom()), duration: 600 });
   }, [city.center, city.zoom]);
 
   return (
