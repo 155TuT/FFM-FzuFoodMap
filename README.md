@@ -1,28 +1,6 @@
 # ![favicon](./fzu-food-map/public/assets/icons/favicon.svg) FFM | Fzu Food Map
 
-## 0x00 项目相关
-
-### 技术路线
-
-本项目为纯前端项目，主要技术栈如下：
-
-- 框架采用[React](https://react.dev/reference/react)+[TypeScript](https://www.typescriptlang.org)+[Vite](https://github.com/vitejs/vite)轻量构建
-- 地图瓦片使用了免费的OSM：[MapTiler](https://www.maptiler.com) API
-- 网页由[Github Pages](https://githubdocs.cn/en/pages/getting-started-with-github-pages)托管
-- 图标由[shadcn/ui](https://github.com/shadcn-ui/ui)提供
-
-### 部署
-
-主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可
-
-### 杂项
-
-另有一些小工具在tools/中，包括：
-
-- 地图间经纬度转换工具
-- ...
-
-## 0x01 声明
+## 0x00 声明
 
 ~~本段同网页右上角公告~~
 
@@ -70,6 +48,29 @@
 - *(价格>150r)小资*
 
 **按菜品搜索时**，我们仅收录了每个店铺几道最好吃的菜，因此建议在特别想吃某个菜时使用
+
+## 0x01 项目相关
+
+### 技术路线
+
+本项目为纯前端项目，主要技术栈如下：
+
+- 框架采用[React](https://react.dev/reference/react)+[TypeScript](https://www.typescriptlang.org)+[Vite](https://github.com/vitejs/vite)轻量构建
+- 地图瓦片使用了免费的OSM：[MapTiler](https://www.maptiler.com) API
+- 网页由[Github Pages](https://githubdocs.cn/en/pages/getting-started-with-github-pages)托管
+- 图标由[shadcn/ui](https://github.com/shadcn-ui/ui)提供
+
+### 部署
+
+主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可
+
+### 杂项
+
+另有一些小工具在tools/中，包括：
+
+- 地图间经纬度转换工具
+- ...
+
 
 ## 0x02 致谢
 

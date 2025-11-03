@@ -393,7 +393,10 @@ export default function App() {
               role="region"
               aria-live="polite"
             >
-              <div dangerouslySetInnerHTML={{ __html: announcementHtml }} />
+              <div
+                className="info-panel-content"
+                dangerouslySetInnerHTML={{ __html: announcementHtml }}
+              />
             </div>
           )}
         </div>

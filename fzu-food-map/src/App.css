@@ -315,6 +315,27 @@ html, body, #root {
   flex-direction: column;
   gap: 8px;
   z-index: 12;
+  max-height: min(320px, 60vh);
+  overflow: hidden;
+}
+
+.info-panel-content {
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -8px;
+}
+
+.info-panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.info-panel-content::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+}
+
+.info-panel-content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .info-panel p {

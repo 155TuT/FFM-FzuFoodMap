@@ -104,7 +104,7 @@ int main(){
         double bd_lng, bd_lat;
         if (!(cin >> bd_lng >> delimiter >> bd_lat)) break;
         auto w = bd09_to_wgs84(bd_lng, bd_lat);
-        cout << w.first + 0.0001 << delimiter << ' ' << w.second - 0.0003 << '\n';
+        cout << w.first + 0.00006 << delimiter << ' ' << w.second - 0.0003 << '\n';
     }
     return 0;
 }

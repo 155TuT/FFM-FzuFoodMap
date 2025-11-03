@@ -219,11 +219,11 @@ export default function MapView({
       const tagText = Array.isArray(poi.tags) ? poi.tags.map(escapeHtml).join(DOT) : "";
       const priceText = poi.price ? escapeHtml(poi.price) : "";
       const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
-      const addressLine = poi.address ? `🏠 ${escapeHtml(poi.address)}` : "";
-      const contactLine = poi.contact ? `📞 ${escapeHtml(poi.contact)}` : "";
-      const openHourLine = poi.openhour ? `🕒 ${escapeHtml(poi.openhour)}` : "";
+      const addressLine = poi.address ? `${escapeHtml(poi.address)}` : "";
+      const contactLine = poi.contact ? `${escapeHtml(poi.contact)}` : "";
+      const openHourLine = poi.openhour ? `${escapeHtml(poi.openhour)}` : "";
       const scheduleLine = [openHourLine, contactLine].filter(Boolean).join(" ");
-      const noteHtml = poi.notes ? `<div class="poi-notes">🍽️ ${escapeHtml(poi.notes)}</div>` : "";
+      const noteHtml = poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
       const detailLinkHtml = poi.url
         ? `<a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a>`
         : "";
@@ -564,12 +564,12 @@ export default function MapView({
             const props = feature.properties;
             const tagText = Array.isArray(props.tags) ? props.tags.map(escapeHtml).slice(0, 3).join(DOT) : "";
             const priceText = props.price ? escapeHtml(props.price) : "";
-            const addressText = props.address ? `🏠 ${escapeHtml(props.address)}` : "";
-            const contactText = props.contact ? `📞 ${escapeHtml(props.contact)}` : "";
-            const openHourText = props.openhour ? `🕒 ${escapeHtml(props.openhour)}` : "";
+            const addressText = props.address ? `${escapeHtml(props.address)}` : "";
+            const contactText = props.contact ? `${escapeHtml(props.contact)}` : "";
+            const openHourText = props.openhour ? `${escapeHtml(props.openhour)}` : "";
             const scheduleLine = [openHourText, contactText].filter(Boolean).join(" ");
             const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
-            const noteLine = props.notes ? `🍽️ ${escapeHtml(props.notes)}` : "";
+            const noteLine = props.notes ? `${escapeHtml(props.notes)}` : "";
             const lines = [
               { key: "schedule", text: scheduleLine, secondary: false },
               { key: "address", text: addressText, secondary: true },
