@@ -64,6 +64,7 @@ export default function MapView({
   const [rawData, setRawData] = useState<GeoJson | null>(null);
   const [favSet, setFavSet] = useState<Set<string>>(() => getFavs());
   const favSetRef = useRef(favSet);
+  const rawDataRef = useRef<GeoJson | null>(null);
   const [suggestions, setSuggestions] = useState<GeoFeature[]>([]);
   const [mapReady, setMapReady] = useState(false);
   const userLocationWatchIdRef = useRef<number | null>(null);
@@ -122,6 +123,10 @@ export default function MapView({
   useEffect(() => {
     favSetRef.current = favSet;
   }, [favSet]);
+
+  useEffect(() => {
+    rawDataRef.current = rawData;
+  }, [rawData]);
 
   const fitToFeatures = useCallback((map: MapLibreMap, feats: GeoFeature[]) => {
     const bounds = new maplibregl.LngLatBounds();
@@ -207,7 +212,7 @@ export default function MapView({
   );
 
   const showPoiPopup = useCallback(
-    (poi: PoiProps, coordinates: LngLatLike) => {
+    (poi: PoiProps, coordinates: LngLatLike, options?: { highlightIncludeIndex?: number | null }) => {
       const map = mapRef.current;
       if (!map) return;
 
@@ -223,22 +228,40 @@ export default function MapView({
       const contactLine = poi.contact ? `${escapeHtml(poi.contact)}` : "";
       const openHourLine = poi.openhour ? `${escapeHtml(poi.openhour)}` : "";
       const scheduleLine = [openHourLine, contactLine].filter(Boolean).join(" ");
-      const noteHtml = poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
+      const includeEntries = getIncludeEntries(poi);
+      const includeHtml =
+        includeEntries.length > 0
+          ? `<ul class="poi-include-list">${includeEntries
+              .map(includeItem => {
+                const nameHtml = `<div class="poi-include-name">${escapeHtml(includeItem.name)}</div>`;
+                const noteHtml = includeItem.notes
+                  ? `<div class="poi-include-notes">${escapeHtml(includeItem.notes)}</div>`
+                  : "";
+                return `<li class="poi-include-item">${nameHtml}${noteHtml}</li>`;
+              })
+              .join("")}</ul>`
+          : "";
+      const noteHtml =
+        includeEntries.length === 0 && poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
       const detailLinkHtml = poi.url
         ? `<a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a>`
         : "";
+      const highlightIncludeIndex = options?.highlightIncludeIndex ?? null;
 
       const html = `
-        <div class="poi-title">${escapeHtml(poi.name)}</div>
-        ${scheduleLine ? `<div class="poi-meta">${scheduleLine}</div>` : ""}
-        ${addressLine ? `<div class="poi-meta">${addressLine}</div>` : ""}
-        ${tagPriceLine ? `<div class="poi-meta">${tagPriceLine}</div>` : ""}
-        ${noteHtml}
-        <div class="poi-actions">
-          ${detailLinkHtml}
-          <button class="fav-btn" data-id="${poi.id}" type="button">${
-            favSetRef.current.has(poi.id) ? TEXT.collected : TEXT.collect
-          }</button>
+        <div class="poi-card scrollable-card">
+          <div class="poi-title">${escapeHtml(poi.name)}</div>
+          ${scheduleLine ? `<div class="poi-meta">${scheduleLine}</div>` : ""}
+          ${addressLine ? `<div class="poi-meta">${addressLine}</div>` : ""}
+          ${tagPriceLine ? `<div class="poi-meta">${tagPriceLine}</div>` : ""}
+          ${includeHtml}
+          ${noteHtml}
+          <div class="poi-actions">
+            ${detailLinkHtml}
+            <button class="fav-btn" data-id="${poi.id}" type="button">${
+              favSetRef.current.has(poi.id) ? TEXT.collected : TEXT.collect
+            }</button>
+          </div>
         </div>
       `;
 
@@ -246,7 +269,26 @@ export default function MapView({
 
       queueMicrotask(() => {
         const element = popup.getElement();
-        const btn = element?.querySelector<HTMLButtonElement>(".fav-btn");
+        if (!element) return;
+
+        const card = element.querySelector<HTMLDivElement>(".poi-card.scrollable-card");
+        if (card) {
+          card.scrollTop = 0;
+          const includeItems = Array.from(card.querySelectorAll<HTMLLIElement>(".poi-include-item"));
+          includeItems.forEach(item => item.classList.remove("poi-include-item--active"));
+          if (
+            highlightIncludeIndex != null &&
+            highlightIncludeIndex >= 0 &&
+            highlightIncludeIndex < includeItems.length
+          ) {
+            const targetItem = includeItems[highlightIncludeIndex];
+            targetItem.classList.add("poi-include-item--active");
+            const targetOffset = Math.max(targetItem.offsetTop - 8, 0);
+            card.scrollTop = targetOffset;
+          }
+        }
+
+        const btn = element.querySelector<HTMLButtonElement>(".fav-btn");
         if (!btn) return;
         btn.onclick = () => {
           const id = btn.getAttribute("data-id");
@@ -309,12 +351,21 @@ export default function MapView({
     const handlePoiClick = (event: MapLayerMouseEvent) => {
       const feature = event.features?.[0];
       if (!feature || feature.geometry?.type !== "Point") return;
-      const props = feature.properties as PoiProps | undefined;
-      if (!props) return;
       const coordinates = feature.geometry.coordinates as LngLatLike;
       const targetZoom = Math.min(Math.max(map.getZoom(), 15), map.getMaxZoom());
+
+      const props = feature.properties as { id?: unknown } | undefined;
+      let poiForPopup: PoiProps | undefined;
+      if (props && typeof props.id === "string") {
+        poiForPopup = rawDataRef.current?.features.find(item => item.properties.id === props.id)?.properties;
+      }
+      if (!poiForPopup && props) {
+        poiForPopup = props as PoiProps;
+      }
+      if (!poiForPopup) return;
+
       map.easeTo({ center: coordinates, zoom: targetZoom });
-      showPoiPopup(props, coordinates);
+      showPoiPopup(poiForPopup, coordinates);
     };
 
     map.on("click", "clusters", handleClusterClick);
@@ -523,10 +574,14 @@ export default function MapView({
       const coordinates = feature.geometry.coordinates as LngLatLike;
       const currentZoom = map.getZoom();
       const targetZoom = Math.min(Math.max(currentZoom, 15), map.getMaxZoom());
+      const termLower = query.trim().toLowerCase();
+      const highlightIncludeIndex =
+        termLower.length > 0 ? computeIncludeHighlightIndex(feature.properties, searchField, termLower) : null;
       map.easeTo({ center: coordinates, zoom: targetZoom, duration: 600 });
-      showPoiPopup(feature.properties, coordinates);
+      const popupOptions = highlightIncludeIndex != null ? { highlightIncludeIndex } : undefined;
+      showPoiPopup(feature.properties, coordinates, popupOptions);
     },
-    [showPoiPopup]
+    [query, searchField, showPoiPopup]
   );
 
   useEffect(() => {
@@ -559,7 +614,7 @@ export default function MapView({
     <>
       <div id="map" ref={containerRef} />
       {showSuggestions && suggestions.length > 0 && (
-        <ul className="search-suggestions" aria-label={TEXT.searchLabel}>
+        <ul className="search-suggestions scrollable-card" aria-label={TEXT.searchLabel}>
           {suggestions.map(feature => {
             const props = feature.properties;
             const tagText = Array.isArray(props.tags) ? props.tags.map(escapeHtml).slice(0, 3).join(DOT) : "";
@@ -637,16 +692,63 @@ function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): any
   ];
 }
 
+type IncludeEntry = { name: string; notes: string };
+
+function getIncludeEntries(poi: PoiProps): IncludeEntry[] {
+  const include = poi.include;
+  if (!include) return [];
+
+  const names = Array.isArray(include.name) ? include.name : [];
+  const notes = Array.isArray(include.notes) ? include.notes : [];
+
+  return names
+    .map((rawName, index) => {
+      const name = typeof rawName === "string" ? rawName.trim() : "";
+      if (!name) return null;
+      const rawNote = notes[index];
+      const noteText = typeof rawNote === "string" ? rawNote.trim() : "";
+      return { name, notes: noteText };
+    })
+    .filter((entry): entry is IncludeEntry => entry !== null);
+}
+
+function computeIncludeHighlightIndex(poi: PoiProps, field: SearchField, termLower: string): number | null {
+  const entries = getIncludeEntries(poi);
+  if (!entries.length || !termLower) return null;
+
+  if (field === "name") {
+    const nameIndex = entries.findIndex(entry => entry.name.toLowerCase().includes(termLower));
+    if (nameIndex !== -1) {
+      return nameIndex;
+    }
+  }
+
+  if (field === "notes") {
+    const noteIndex = entries.findIndex(entry => entry.notes.toLowerCase().includes(termLower));
+    if (noteIndex !== -1) {
+      return noteIndex;
+    }
+  }
+
+  return null;
+}
+
 function matchesSearch(feature: GeoFeature, field: SearchField, termLower: string) {
   const { properties } = feature;
   if (field === "name") {
-    return properties.name.toLowerCase().includes(termLower);
+    if (properties.name.toLowerCase().includes(termLower)) {
+      return true;
+    }
+    return getIncludeEntries(properties).some(entry => entry.name.toLowerCase().includes(termLower));
   }
   if (field === "tags") {
     return (properties.tags ?? []).some(tag => tag.toLowerCase().includes(termLower));
   }
   if (field === "notes") {
-    return (properties.notes ?? "").toLowerCase().includes(termLower);
+    if ((properties.notes ?? "").toLowerCase().includes(termLower)) {
+      return true;
+    }
+    return getIncludeEntries(properties).some(entry => entry.notes.toLowerCase().includes(termLower));
   }
   return false;
 }

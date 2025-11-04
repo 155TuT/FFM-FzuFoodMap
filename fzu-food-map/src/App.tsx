@@ -286,7 +286,7 @@ export default function App() {
                   aria-label={TEXT.searchPlaceholder}
                 />
               </div>
-              <div className="search-popover-results" role="listbox" aria-label={TEXT.searchTitle}>
+              <div className="search-popover-results scrollable-card" role="listbox" aria-label={TEXT.searchTitle}>
                 {suggestions.length > 0 ? (
                   suggestions.map(feature => {
                     const props = feature.properties;
@@ -394,7 +394,7 @@ export default function App() {
               aria-live="polite"
             >
               <div
-                className="info-panel-content"
+                className="info-panel-content scrollable-card"
                 dangerouslySetInnerHTML={{ __html: announcementHtml }}
               />
             </div>

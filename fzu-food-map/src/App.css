@@ -321,21 +321,7 @@ html, body, #root {
 
 .info-panel-content {
   overflow-y: auto;
-  padding-right: 8px;
-  margin-right: -8px;
-}
-
-.info-panel-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.info-panel-content::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 999px;
-}
-
-.info-panel-content::-webkit-scrollbar-track {
-  background: transparent;
+  padding-right: 12px;
 }
 
 .info-panel p {
@@ -354,6 +340,62 @@ html, body, #root {
   box-shadow: var(--shadow-card);
 }
 
+.poi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scrollable-card {
+  position: relative;
+  overflow-y: auto;
+  max-height: 240px;
+  padding-right: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+}
+
+.info-panel-content,
+.search-popover-results,
+.search-suggestions {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
+}
+
+.scrollable-card::-webkit-scrollbar,
+.info-panel-content::-webkit-scrollbar,
+.search-popover-results::-webkit-scrollbar,
+.search-suggestions::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollable-card::-webkit-scrollbar-track,
+.info-panel-content::-webkit-scrollbar-track,
+.search-popover-results::-webkit-scrollbar-track,
+.search-suggestions::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1.5px var(--accent-primary);
+  margin: 4px 2px;
+}
+
+.scrollable-card::-webkit-scrollbar-thumb,
+.info-panel-content::-webkit-scrollbar-thumb,
+.search-popover-results::-webkit-scrollbar-thumb,
+.search-suggestions::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.65);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.scrollable-card::-webkit-scrollbar-thumb:hover,
+.info-panel-content::-webkit-scrollbar-thumb:hover,
+.search-popover-results::-webkit-scrollbar-thumb:hover,
+.search-suggestions::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.75);
+}
+
 .poi-title {
   font-weight: 600;
   margin-bottom: 4px;
@@ -368,6 +410,37 @@ html, body, #root {
 .poi-notes {
   font-size: 12px;
   margin-bottom: 6px;
+}
+
+.poi-include-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.poi-include-item {
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.poi-include-item:last-of-type {
+  margin-bottom: 0;
+}
+
+.poi-include-item--active {
+  border-color: var(--accent-primary);
+}
+
+.poi-include-name {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.poi-include-notes {
+  font-size: 12px;
 }
 
 .poi-actions {
