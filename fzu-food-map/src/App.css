@@ -57,8 +57,8 @@ html, body, #root {
   grid-template-areas: "brand search select info";
   align-items: center;
   gap: 12px;
-  padding: 14px 18px;
-  border-radius: 20px 20px 24px 24px;
+  padding: 12px 14px;
+  border-radius: 999px;
   background: var(--surface-toolbar);
   box-shadow: var(--shadow-strong);
   z-index: 10;
@@ -118,8 +118,6 @@ html, body, #root {
   max-width: 100%;
   justify-self: center;
 }
-
-
 
 .toolbar-search-field {
   display: flex;
