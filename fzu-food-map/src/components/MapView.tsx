@@ -147,7 +147,7 @@ export default function MapView({
         type: "geojson",
         data,
         cluster: true,
-        clusterMaxZoom: 14,
+        clusterMaxZoom: 15,
         clusterRadius: 48
       });
 
@@ -314,7 +314,7 @@ export default function MapView({
       style: styleUrl,
       center: city.center,
       zoom: city.zoom,
-      maxZoom: 17
+      maxZoom: 18
     });
 
     mapRef.current = map;
