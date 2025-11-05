@@ -39,6 +39,7 @@ export default function App() {
   const city = useMemo(() => getCityBySlug(citySlug), [citySlug]);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeQuery, setActiveQuery] = useState("");
   const [searchField, setSearchField] = useState<SearchField>("name");
   const [searchOpen, setSearchOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -62,7 +63,9 @@ export default function App() {
       favicon: makePath(`assets/icons/favicon${suffix}.svg`),
       search: makePath(`assets/icons/search${suffix}.svg`),
       locate: makePath(`assets/icons/locate${suffix}.svg`),
-      themeToggle: makePath(themeToggleFile)
+      themeToggle: makePath(themeToggleFile),
+      clear: makePath("assets/icons/delete.svg"),
+      collapse: makePath("assets/icons/liftup.svg")
     };
   }, [theme]);
 
@@ -71,6 +74,8 @@ export default function App() {
   const searchIconUrl = iconPaths.search;
   const locateIconUrl = iconPaths.locate;
   const themeToggleIconUrl = iconPaths.themeToggle;
+  const clearIconUrl = iconPaths.clear;
+  const collapseIconUrl = iconPaths.collapse;
 
   const announcementHtml = useMemo(() => {
     const rawHtml = marked.parse(announcementText, { breaks: true });
@@ -102,11 +107,18 @@ export default function App() {
 
   const openSearch = useCallback(() => {
     setInfoOpen(false);
-    setSearchOpen(prev => (prev ? prev : true));
-  }, []);
+    setSearchOpen(prev => {
+      if (!prev) {
+        setActiveQuery(searchTerm);
+        return true;
+      }
+      return prev;
+    });
+  }, [searchTerm]);
 
   const closeSearch = useCallback(() => {
     setSearchOpen(false);
+    setActiveQuery("");
   }, []);
 
   const toggleUserLocation = useCallback(() => {
@@ -124,6 +136,28 @@ export default function App() {
   const handleUserLocationError = useCallback((message: string) => {
     alert(message);
   }, []);
+
+  const handleSearchInputChange = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+      if (searchOpen) {
+        setActiveQuery(value);
+      }
+    },
+    [searchOpen]
+  );
+
+  const clearSearch = useCallback(() => {
+    setSearchTerm("");
+    setActiveQuery("");
+    requestAnimationFrame(() => {
+      if (searchOpen) {
+        (popoverInputRef.current ?? searchInputRef.current)?.focus();
+      } else {
+        searchInputRef.current?.focus();
+      }
+    });
+  }, [searchOpen]);
 
   const handleSuggestionClick = useCallback(
     (feature: GeoFeature) => {
@@ -219,6 +253,7 @@ export default function App() {
   }, [faviconError, faviconIconUrl]);
 
   const showEmptyState = searchTerm.trim().length > 0 && suggestions.length === 0;
+  const hasSearchValue = searchTerm.length > 0;
 
   return (
     <>
@@ -255,7 +290,7 @@ export default function App() {
             }
           }}
         >
-          <div className="toolbar-search-field">
+          <div className={`toolbar-search-field${hasSearchValue ? " toolbar-search-field--has-text" : ""}`}>
             <span className="toolbar-search-icon" aria-hidden="true">
               <img src={searchIconUrl} alt="" />
             </span>
@@ -266,12 +301,25 @@ export default function App() {
               value={searchTerm}
               ref={searchInputRef}
               onFocus={openSearch}
-              onChange={event => setSearchTerm(event.target.value)}
+              onChange={event => handleSearchInputChange(event.target.value)}
               aria-haspopup="dialog"
               aria-expanded={searchOpen ? "true" : "false"}
               aria-controls="search-popover"
               readOnly={!searchOpen}
             />
+            {hasSearchValue && (
+              <button
+                type="button"
+                className="toolbar-search-clear"
+                aria-label="清除搜索内容"
+                onClick={event => {
+                  event.stopPropagation();
+                  clearSearch();
+                }}
+              >
+                <img src={clearIconUrl} alt="" />
+              </button>
+            )}
           </div>
 
           {searchOpen && (
@@ -281,10 +329,20 @@ export default function App() {
                   type="search"
                   value={searchTerm}
                   ref={popoverInputRef}
-                  onChange={event => setSearchTerm(event.target.value)}
+                  onChange={event => handleSearchInputChange(event.target.value)}
                   placeholder={TEXT.searchPlaceholder}
                   aria-label={TEXT.searchPlaceholder}
                 />
+                {hasSearchValue && (
+                  <button
+                    type="button"
+                    className="search-popover-clear"
+                    aria-label="清除搜索内容"
+                    onClick={clearSearch}
+                  >
+                    <img src={clearIconUrl} alt="" />
+                  </button>
+                )}
               </div>
               <div className="search-popover-results scrollable-card" role="listbox" aria-label={TEXT.searchTitle}>
                 {suggestions.length > 0 ? (
@@ -333,18 +391,35 @@ export default function App() {
                   </p>
                 )}
               </div>
-              <div className="search-field-chips" role="group" aria-label={TEXT.chipGroup}>
-                {SEARCH_OPTIONS.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`chip ${searchField === option.value ? "chip--active" : ""}`}
-                    onClick={() => setSearchField(option.value)}
-                    aria-pressed={searchField === option.value}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+              <div className="search-popover-footer">
+                <div className="search-field-chips" role="group" aria-label={TEXT.chipGroup}>
+                  {SEARCH_OPTIONS.map(option => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`chip ${searchField === option.value ? "chip--active" : ""}`}
+                      onClick={() => setSearchField(option.value)}
+                      aria-pressed={searchField === option.value}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="search-popover-collapse"
+                  onClick={event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeSearch();
+                  }}
+                  aria-label="收起搜索面板"
+                >
+                  <span className="search-popover-collapse-text">收起</span>
+                  <span className="search-popover-collapse-icon" aria-hidden="true">
+                    <img src={collapseIconUrl} alt="" />
+                  </span>
+                </button>
               </div>
             </div>
           )}
@@ -404,7 +479,7 @@ export default function App() {
 
       <MapView
         city={city}
-        query={searchTerm}
+        query={activeQuery}
         searchField={searchField}
         onlyFav={onlyFav}
         showSuggestions={false}

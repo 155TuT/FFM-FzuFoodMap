@@ -4,7 +4,8 @@ import maplibregl, {
   type LngLatLike,
   type Map as MapLibreMap,
   type MapGeoJSONFeature,
-  type MapLayerMouseEvent
+  type MapLayerMouseEvent,
+  type ExpressionSpecification
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { CityConfig } from "../cities";
@@ -14,13 +15,18 @@ import { parseFavFromUrl } from "../utils/share";
 
 const SEARCH_LIMIT = 8;
 const DOT = " \u00b7 ";
+const UNCLUSTERED_ZOOM = 16;
+const CATEGORY_STORE = "\u95e8\u5e97";
+const CATEGORY_CANTEEN = "\u98df\u5802";
+const CATEGORY_STALL = "\u644a\u4f4d";
+
 const CATEGORY_COLORS: Record<string, { light: string; dark: string }> = {
-  门店: { light: "#38bdf8", dark: "#38bdf8" },
-  食堂: { light: "#34d399", dark: "#34d399" },
-  摊位: { light: "#fbbf24", dark: "#facc15" },
-  连锁: { light: "#a78bfa", dark: "#c084fc" },
-  外卖: { light: "#fb7185", dark: "#fb7185" }
+  [CATEGORY_STORE]: { light: "#0ea5e9", dark: "#7dd3fc" },
+  [CATEGORY_CANTEEN]: { light: "#22c55e", dark: "#86efac" },
+  [CATEGORY_STALL]: { light: "#8b5cf6", dark: "#c4b5fd" }
 };
+const DEFAULT_CATEGORY = CATEGORY_STORE;
+
 const TEXT = {
   details: "详情",
   collect: "收藏",
@@ -132,7 +138,7 @@ export default function MapView({
     const bounds = new maplibregl.LngLatBounds();
     feats.forEach(feature => bounds.extend(feature.geometry.coordinates as LngLatLike));
     if (!bounds.isEmpty()) {
-      map.fitBounds(bounds, { padding: 40, maxZoom: Math.min(15, map.getMaxZoom()) });
+      map.fitBounds(bounds, { padding: 40, maxZoom: Math.min(UNCLUSTERED_ZOOM, map.getMaxZoom()) });
     }
   }, []);
 
@@ -147,9 +153,12 @@ export default function MapView({
         type: "geojson",
         data,
         cluster: true,
-        clusterMaxZoom: 15,
+        clusterMaxZoom: UNCLUSTERED_ZOOM - 1,
         clusterRadius: 48
       });
+
+      const clusterStyle = getClusterPaint(themeRef.current);
+      const unclusteredStrokeColor = getCircleStrokeColor(themeRef.current);
 
       map.addLayer({
         id: "clusters",
@@ -157,17 +166,7 @@ export default function MapView({
         source: "pois",
         filter: ["has", "point_count"],
         paint: {
-          "circle-color": [
-            "step",
-            ["get", "point_count"],
-            "#93c5fd",
-            10,
-            "#60a5fa",
-            30,
-            "#3b82f6",
-            80,
-            "#1d4ed8"
-          ],
+          "circle-color": clusterStyle.circleColor,
           "circle-radius": [
             "step",
             ["get", "point_count"],
@@ -179,8 +178,8 @@ export default function MapView({
             80,
             28
           ],
-          "circle-stroke-width": 1.2,
-          "circle-stroke-color": "white"
+          "circle-stroke-width": 1.3,
+          "circle-stroke-color": clusterStyle.strokeColor
         }
       });
 
@@ -190,7 +189,7 @@ export default function MapView({
         source: "pois",
         filter: ["has", "point_count"],
         layout: { "text-field": "{point_count_abbreviated}", "text-size": 12 },
-        paint: { "text-color": "#0b1b36" }
+        paint: { "text-color": clusterStyle.textColor }
       });
 
       map.addLayer({
@@ -201,8 +200,8 @@ export default function MapView({
         paint: {
           "circle-color": createCircleColorExpression(themeRef.current, favSetRef.current),
           "circle-radius": 6,
-          "circle-stroke-width": 1.2,
-          "circle-stroke-color": "white"
+          "circle-stroke-width": 1.3,
+          "circle-stroke-color": unclusteredStrokeColor
         }
       });
 
@@ -314,7 +313,7 @@ export default function MapView({
       style: styleUrl,
       center: city.center,
       zoom: city.zoom,
-      maxZoom: 18
+      maxZoom: 19
     });
 
     mapRef.current = map;
@@ -352,7 +351,7 @@ export default function MapView({
       const feature = event.features?.[0];
       if (!feature || feature.geometry?.type !== "Point") return;
       const coordinates = feature.geometry.coordinates as LngLatLike;
-      const targetZoom = Math.min(Math.max(map.getZoom(), 15), map.getMaxZoom());
+      const targetZoom = Math.min(Math.max(map.getZoom(), UNCLUSTERED_ZOOM), map.getMaxZoom());
 
       const props = feature.properties as { id?: unknown } | undefined;
       let poiForPopup: PoiProps | undefined;
@@ -431,7 +430,7 @@ export default function MapView({
           }
 
           if (!userLocationCenteredRef.current) {
-            const targetZoom = Math.min(Math.max(map.getZoom(), 15), map.getMaxZoom());
+            const targetZoom = Math.min(Math.max(map.getZoom(), UNCLUSTERED_ZOOM), map.getMaxZoom());
             map.easeTo({ center: coords, zoom: targetZoom, duration: 600 });
             userLocationCenteredRef.current = true;
           }
@@ -509,8 +508,22 @@ export default function MapView({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.getLayer("unclustered")) return;
-    map.setPaintProperty("unclustered", "circle-color", createCircleColorExpression(theme, favSet));
+    if (!map) return;
+
+    const clusterStyle = getClusterPaint(theme);
+    const unclusteredStrokeColor = getCircleStrokeColor(theme);
+
+    if (map.getLayer("unclustered")) {
+      map.setPaintProperty("unclustered", "circle-color", createCircleColorExpression(theme, favSet));
+      map.setPaintProperty("unclustered", "circle-stroke-color", unclusteredStrokeColor);
+    }
+    if (map.getLayer("clusters")) {
+      map.setPaintProperty("clusters", "circle-color", clusterStyle.circleColor);
+      map.setPaintProperty("clusters", "circle-stroke-color", clusterStyle.strokeColor);
+    }
+    if (map.getLayer("cluster-count")) {
+      map.setPaintProperty("cluster-count", "text-color", clusterStyle.textColor);
+    }
   }, [favSet, theme]);
 
   useEffect(() => {
@@ -573,7 +586,7 @@ export default function MapView({
       if (!map) return;
       const coordinates = feature.geometry.coordinates as LngLatLike;
       const currentZoom = map.getZoom();
-      const targetZoom = Math.min(Math.max(currentZoom, 15), map.getMaxZoom());
+      const targetZoom = Math.min(Math.max(currentZoom, UNCLUSTERED_ZOOM), map.getMaxZoom());
       const termLower = query.trim().toLowerCase();
       const highlightIncludeIndex =
         termLower.length > 0 ? computeIncludeHighlightIndex(feature.properties, searchField, termLower) : null;
@@ -677,11 +690,11 @@ function getGeolocationErrorMessage(error: GeolocationPositionError) {
 
 function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): any {
   const paletteKey = theme === "dark" ? "dark" : "light";
-  const matchExpression: any[] = ["match", ["coalesce", ["get", "category"], "门店"]];
+  const matchExpression: any[] = ["match", ["coalesce", ["get", "category"], DEFAULT_CATEGORY]];
   for (const [key, value] of Object.entries(CATEGORY_COLORS)) {
     matchExpression.push(key, value[paletteKey]);
   }
-  const fallbackColor = CATEGORY_COLORS["门店"][paletteKey];
+  const fallbackColor = CATEGORY_COLORS[DEFAULT_CATEGORY][paletteKey];
   matchExpression.push(fallbackColor);
 
   return [
@@ -690,6 +703,57 @@ function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): any
     "#f59e0b",
     matchExpression
   ];
+}
+
+type ClusterPaint = { circleColor: ExpressionSpecification; strokeColor: string; textColor: string };
+
+function resolveCssColor(token: string, fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  return value || fallback;
+}
+
+function getCircleStrokeColor(theme: ThemeMode) {
+  return theme === "dark"
+    ? resolveCssColor("--border-soft", "rgba(148, 163, 184, 0.45)")
+    : "rgba(255, 255, 255, 0.95)";
+}
+
+function createClusterColorExpression(theme: ThemeMode): ExpressionSpecification {
+  if (theme === "dark") {
+    return [
+      "step",
+      ["get", "point_count"],
+      "#8288a2",
+      10,
+      "#505676",
+      30,
+      "#424547",
+      80,
+      "#27254b"
+    ] as ExpressionSpecification;
+  }
+
+  return [
+    "step",
+    
+    ["get", "point_count"],
+    "#93c5fd",
+    10,
+    "#60a5fa",
+    30,
+    "#3b82f6",
+    80,
+    "#1d4ed8"
+  ] as ExpressionSpecification;
+}
+
+function getClusterPaint(theme: ThemeMode): ClusterPaint {
+  return {
+    circleColor: createClusterColorExpression(theme),
+    strokeColor: getCircleStrokeColor(theme),
+    textColor: resolveCssColor("--text-primary", theme === "dark" ? "#e2e8f0" : "#0f172a")
+  };
 }
 
 type IncludeEntry = { name: string; notes: string };

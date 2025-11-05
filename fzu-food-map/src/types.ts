@@ -1,4 +1,4 @@
-export type PoiCategory = "门店" | "食堂" | "摊位" | "连锁" | "外卖";
+export type PoiCategory = "门店" | "食堂" | "摊位";
 
 export type PoiProps = {
   id: string;
