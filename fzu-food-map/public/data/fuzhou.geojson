@@ -1,6 +1,6 @@
 {
   "type": "FeatureCollection",
-  "_notes": "1~38为旗山校区内及附属学生街点位,39~当前为铜盘校区内及如软件园点位",
+  "_notes": "1~39为旗山校区内及附属学生街点位,40~当前为铜盘校区内及如软件园点位",
   "license": "CC BY-NC 4.0",
   "features": [
     {
@@ -1229,6 +1229,31 @@
       "type": "Feature",
       "properties": {
         "id": "foc-039",
+        "category": "小摊",
+        "name": "卤百味",
+        "tags": [
+          "卤味",
+          "便宜",
+          "小吃",
+          "日常",
+          "一人食"
+        ],
+        "rating": 3.3,
+        "price": "12¥",
+        "address": "岐安福大学生街学府北路10号"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18695905,
+          26.06248518
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "foc-040",
         "category": "门店",
         "name": "不差钱东北菜",
         "tags": [
@@ -1242,7 +1267,7 @@
           "适合聚餐"
         ],
         "rating": 4.0,
-        "price": "39¥",
+        "price": "49¥",
         "notes": "锅包肉，肘子，地三鲜，炸茄盒，三丝爆豆",
         "address": "梅峰路山海观小区c座5号店",
         "contact": "13559162610",
@@ -1259,7 +1284,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "foc-040",
+        "id": "foc-041",
         "category": "门店",
         "name": "熏+12HOURS·12小时果木烟熏烤肉·精酿啤酒",
         "tags": [
@@ -1287,7 +1312,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "foc-041",
+        "id": "foc-042",
         "category": "门店",
         "name": "漩涡鸟烧·居酒屋",
         "tags": [
@@ -1315,7 +1340,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "foc-042",
+        "id": "foc-043",
         "category": "门店",
         "name": "渔哥活鱼大排档",
         "tags": [
@@ -1343,7 +1368,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "foc-043",
+        "id": "foc-044",
         "category": "门店",
         "name": "新疆阿里木羊肉串羊蝎子火锅",
         "tags": [

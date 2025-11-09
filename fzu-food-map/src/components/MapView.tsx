@@ -450,6 +450,7 @@ export default function MapView({
 
       userLocationWatchIdRef.current = watchId;
     } catch (error) {
+      console.error(error);
       onUserLocationError?.("定位功能被浏览器阻止，无法显示当前位置");
       stopUserLocationTracking();
     }
@@ -688,21 +689,29 @@ function getGeolocationErrorMessage(error: GeolocationPositionError) {
   }
 }
 
-function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): any {
+function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): ExpressionSpecification {
   const paletteKey = theme === "dark" ? "dark" : "light";
-  const matchExpression: any[] = ["match", ["coalesce", ["get", "category"], DEFAULT_CATEGORY]];
+  const categoryStops: string[] = [];
   for (const [key, value] of Object.entries(CATEGORY_COLORS)) {
-    matchExpression.push(key, value[paletteKey]);
+    categoryStops.push(key, value[paletteKey]);
   }
   const fallbackColor = CATEGORY_COLORS[DEFAULT_CATEGORY][paletteKey];
-  matchExpression.push(fallbackColor);
 
-  return [
+  const matchExpression = [
+    "match",
+    ["coalesce", ["get", "category"], DEFAULT_CATEGORY],
+    ...categoryStops,
+    fallbackColor
+  ] as unknown as ExpressionSpecification;
+
+  const circleColorExpression = [
     "case",
     ["in", ["get", "id"], ["literal", Array.from(favSet)]],
     "#f59e0b",
     matchExpression
-  ];
+  ] as unknown as ExpressionSpecification;
+
+  return circleColorExpression;
 }
 
 type ClusterPaint = { circleColor: ExpressionSpecification; strokeColor: string; textColor: string };

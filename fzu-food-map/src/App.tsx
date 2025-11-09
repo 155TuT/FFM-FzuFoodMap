@@ -303,7 +303,6 @@ export default function App() {
               onFocus={openSearch}
               onChange={event => handleSearchInputChange(event.target.value)}
               aria-haspopup="dialog"
-              aria-expanded={searchOpen ? "true" : "false"}
               aria-controls="search-popover"
               readOnly={!searchOpen}
             />
@@ -399,7 +398,6 @@ export default function App() {
                       type="button"
                       className={`chip ${searchField === option.value ? "chip--active" : ""}`}
                       onClick={() => setSearchField(option.value)}
-                      aria-pressed={searchField === option.value}
                     >
                       {option.label}
                     </button>
@@ -443,7 +441,6 @@ export default function App() {
           <button
             type="button"
             className="info-button"
-            aria-expanded={infoOpen ? "true" : "false"}
             aria-controls="toolbar-announcement"
             onClick={() => setInfoOpen(prev => !prev)}
             aria-label={TEXT.infoLabel}
@@ -495,7 +492,6 @@ export default function App() {
           type="button"
           className={`floating-action-button ${trackUserLocation ? "floating-action-button--active" : ""}`}
           onClick={toggleUserLocation}
-          aria-pressed={trackUserLocation ? "true" : "false"}
           aria-label={trackUserLocation ? "停止定位" : "显示我的位置"}
           title={trackUserLocation ? "停止定位" : "显示我的位置"}
         >
