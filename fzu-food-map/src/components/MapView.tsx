@@ -19,6 +19,7 @@ const UNCLUSTERED_ZOOM = 16;
 const CATEGORY_STORE = "\u95e8\u5e97";
 const CATEGORY_CANTEEN = "\u98df\u5802";
 const CATEGORY_STALL = "\u644a\u4f4d";
+const REGION_UNASSIGNED = "__unassigned__";
 
 const CATEGORY_COLORS: Record<string, { light: string; dark: string }> = {
   [CATEGORY_STORE]: { light: "#0ea5e9", dark: "#7dd3fc" },
@@ -38,6 +39,7 @@ type ThemeMode = "light" | "dark";
 
 type Props = {
   city: CityConfig;
+  activeRegionId: string | null;
   query: string;
   searchField: SearchField;
   onlyFav: boolean;
@@ -52,6 +54,7 @@ type Props = {
 
 export default function MapView({
   city,
+  activeRegionId,
   query,
   searchField,
   onlyFav,
@@ -79,6 +82,28 @@ export default function MapView({
   const userLocationActiveRef = useRef(false);
   const themeRef = useRef<ThemeMode>(theme);
   themeRef.current = theme;
+  const citywideRegionId = useMemo(() => {
+    const citywide = city.regions.find(region => region.isCitywide);
+    return citywide?.id ?? city.defaultRegionId ?? city.regions[0]?.id ?? null;
+  }, [city]);
+  const activeRegionRef = useRef<string | null>(activeRegionId);
+  activeRegionRef.current = activeRegionId;
+  const citywideRegionRef = useRef<string | null>(citywideRegionId);
+  citywideRegionRef.current = citywideRegionId;
+  const regionIdsRef = useRef<string[]>([]);
+  const regionNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    city.regions.forEach(region => map.set(region.id, region.name));
+    return map;
+  }, [city.regions]);
+
+  useEffect(() => {
+    const ids = city.regions.map(region => region.id);
+    if (!ids.includes(REGION_UNASSIGNED)) {
+      ids.push(REGION_UNASSIGNED);
+    }
+    regionIdsRef.current = ids;
+  }, [city.regions]);
 
   const stopUserLocationTracking = useCallback(
     (options?: { notify?: boolean }) => {
@@ -149,16 +174,30 @@ export default function MapView({
       if (map.getLayer("unclustered")) map.removeLayer("unclustered");
       if (map.getSource("pois")) map.removeSource("pois");
 
+      const regionIds = regionIdsRef.current;
       map.addSource("pois", {
         type: "geojson",
         data,
         cluster: true,
         clusterMaxZoom: UNCLUSTERED_ZOOM - 1,
-        clusterRadius: 48
+        clusterRadius: 48,
+        clusterProperties: buildClusterProperties(regionIds)
       });
 
-      const clusterStyle = getClusterPaint(themeRef.current);
+      const highlightAll = !activeRegionRef.current || activeRegionRef.current === citywideRegionRef.current;
+      const clusterStyle = getClusterPaint({
+        theme: themeRef.current,
+        highlightAll,
+        activeRegionId: activeRegionRef.current,
+        regionIds
+      });
       const unclusteredStrokeColor = getCircleStrokeColor(themeRef.current);
+      const circleColorExpression = createCircleColorExpression(
+        themeRef.current,
+        favSetRef.current,
+        activeRegionRef.current,
+        highlightAll
+      );
 
       map.addLayer({
         id: "clusters",
@@ -198,7 +237,7 @@ export default function MapView({
         source: "pois",
         filter: ["!", ["has", "point_count"]],
         paint: {
-          "circle-color": createCircleColorExpression(themeRef.current, favSetRef.current),
+          "circle-color": circleColorExpression,
           "circle-radius": 6,
           "circle-stroke-width": 1.3,
           "circle-stroke-color": unclusteredStrokeColor
@@ -480,16 +519,44 @@ export default function MapView({
     const loadData = async () => {
       try {
         const baseUrl = window.location.origin + import.meta.env.BASE_URL;
-        const dataUrl = new URL(city.dataPath, baseUrl).toString();
-        const res = await fetch(dataUrl);
-        if (!res.ok) throw new Error(`加载 ${city.dataPath} 失败 (${res.status})`);
-        const data = (await res.json()) as GeoJson;
+        const datasetRegions = city.regions.filter(region => region.dataPath);
+        const fetchTargets = datasetRegions.map(region => ({
+          id: region.id,
+          url: new URL(region.dataPath!, baseUrl).toString()
+        }));
+
+        const results = await Promise.all(
+          fetchTargets.map(async target => {
+            try {
+              const res = await fetch(target.url);
+              if (!res.ok) throw new Error(`加载 ${target.url} 失败 (${res.status})`);
+              const json = (await res.json()) as GeoJson;
+              return { target, data: json };
+            } catch (error) {
+              console.error(error);
+              return null;
+            }
+          })
+        );
+
         if (cancelled) return;
-        setRawData(data);
+
+        const features: GeoFeature[] = [];
+        results.forEach(result => {
+          if (!result) return;
+          result.data.features.forEach(feature => {
+            const assignedRegion = feature.properties.regionId ?? result.target.id ?? REGION_UNASSIGNED;
+            feature.properties.regionId = assignedRegion;
+            features.push(feature);
+          });
+        });
+
+        const aggregated: GeoJson = { type: "FeatureCollection", features };
+        setRawData(aggregated);
 
         const map = mapRef.current;
         if (!map) return;
-        const rebuild = () => rebuildPoiLayers(map, data);
+        const rebuild = () => rebuildPoiLayers(map, aggregated);
         if (map.isStyleLoaded()) {
           rebuild();
         } else {
@@ -511,11 +578,22 @@ export default function MapView({
     const map = mapRef.current;
     if (!map) return;
 
-    const clusterStyle = getClusterPaint(theme);
+    const highlightAll = !activeRegionId || activeRegionId === citywideRegionId;
+    const regionIds = regionIdsRef.current;
+    const clusterStyle = getClusterPaint({
+      theme,
+      highlightAll,
+      activeRegionId,
+      regionIds
+    });
     const unclusteredStrokeColor = getCircleStrokeColor(theme);
 
     if (map.getLayer("unclustered")) {
-      map.setPaintProperty("unclustered", "circle-color", createCircleColorExpression(theme, favSet));
+      map.setPaintProperty(
+        "unclustered",
+        "circle-color",
+        createCircleColorExpression(theme, favSet, activeRegionId, highlightAll)
+      );
       map.setPaintProperty("unclustered", "circle-stroke-color", unclusteredStrokeColor);
     }
     if (map.getLayer("clusters")) {
@@ -525,7 +603,7 @@ export default function MapView({
     if (map.getLayer("cluster-count")) {
       map.setPaintProperty("cluster-count", "text-color", clusterStyle.textColor);
     }
-  }, [favSet, theme]);
+  }, [activeRegionId, citywideRegionId, favSet, theme]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -536,7 +614,7 @@ export default function MapView({
 
     if (trimmed) {
       nextFeatures = rawData.features
-        .filter(feature => matchesSearch(feature, searchField, trimmed))
+        .filter(feature => matchesSearch(feature, searchField, trimmed, regionNameMap))
         .sort((a, b) => ratingValue(b) - ratingValue(a));
     }
 
@@ -552,7 +630,7 @@ export default function MapView({
     if ((trimmed || onlyFav) && nextFeatures.length) {
       fitToFeatures(map, nextFeatures);
     }
-  }, [query, searchField, onlyFav, favSet, rawData, fitToFeatures]);
+  }, [query, searchField, onlyFav, favSet, rawData, fitToFeatures, regionNameMap]);
 
   useEffect(() => {
     if (!rawData) {
@@ -567,7 +645,7 @@ export default function MapView({
     }
 
     const termLower = trimmedOriginal.toLowerCase();
-    let matches = rawData.features.filter(feature => matchesSearch(feature, searchField, termLower));
+    let matches = rawData.features.filter(feature => matchesSearch(feature, searchField, termLower, regionNameMap));
 
     if (onlyFav) {
       matches = matches.filter(feature => favSet.has(feature.properties.id));
@@ -575,7 +653,7 @@ export default function MapView({
 
     matches.sort((a, b) => ratingValue(b) - ratingValue(a));
     setSuggestions(matches.slice(0, SEARCH_LIMIT));
-  }, [query, searchField, onlyFav, favSet, rawData]);
+  }, [query, searchField, onlyFav, favSet, rawData, regionNameMap]);
 
   useEffect(() => {
     onSuggestionsChange?.(suggestions);
@@ -621,8 +699,14 @@ export default function MapView({
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.easeTo({ center: city.center as LngLatLike, zoom: Math.min(city.zoom, map.getMaxZoom()), duration: 600 });
-  }, [city.center, city.zoom]);
+    const targetRegion =
+      city.regions.find(region => region.id === activeRegionId) ??
+      city.regions.find(region => region.isCitywide) ??
+      null;
+    const nextCenter = (targetRegion?.center ?? city.center) as LngLatLike;
+    const targetZoom = targetRegion?.zoom ?? city.zoom;
+    map.easeTo({ center: nextCenter, zoom: Math.min(targetZoom, map.getMaxZoom()), duration: 600 });
+  }, [activeRegionId, city]);
 
   return (
     <>
@@ -689,13 +773,19 @@ function getGeolocationErrorMessage(error: GeolocationPositionError) {
   }
 }
 
-function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): ExpressionSpecification {
+function createCircleColorExpression(
+  theme: ThemeMode,
+  favSet: Set<string>,
+  activeRegionId: string | null,
+  highlightAll: boolean
+): ExpressionSpecification {
   const paletteKey = theme === "dark" ? "dark" : "light";
   const categoryStops: string[] = [];
   for (const [key, value] of Object.entries(CATEGORY_COLORS)) {
     categoryStops.push(key, value[paletteKey]);
   }
   const fallbackColor = CATEGORY_COLORS[DEFAULT_CATEGORY][paletteKey];
+  const fadedColor = theme === "dark" ? "rgba(100, 116, 139, 0.45)" : "rgba(148, 163, 184, 0.5)";
 
   const matchExpression = [
     "match",
@@ -704,14 +794,43 @@ function createCircleColorExpression(theme: ThemeMode, favSet: Set<string>): Exp
     fallbackColor
   ] as unknown as ExpressionSpecification;
 
+  const regionAwareExpression = highlightAll || !activeRegionId
+    ? matchExpression
+    : ([
+        "case",
+        ["==", ["coalesce", ["get", "regionId"], REGION_UNASSIGNED], activeRegionId],
+        matchExpression,
+        fadedColor
+      ] as unknown as ExpressionSpecification);
+
   const circleColorExpression = [
     "case",
     ["in", ["get", "id"], ["literal", Array.from(favSet)]],
     "#f59e0b",
-    matchExpression
+    regionAwareExpression
   ] as unknown as ExpressionSpecification;
 
   return circleColorExpression;
+}
+
+function getClusterPropertyName(regionId: string) {
+  return `count_${regionId}`;
+}
+
+function buildClusterProperties(regionIds: string[]) {
+  return regionIds.reduce<Record<string, unknown>>((acc, regionId) => {
+    acc[getClusterPropertyName(regionId)] = [
+      "+",
+      [
+        "case",
+        ["==", ["coalesce", ["get", "regionId"], REGION_UNASSIGNED], regionId],
+        1,
+        0
+      ],
+      0
+    ];
+    return acc;
+  }, {});
 }
 
 type ClusterPaint = { circleColor: ExpressionSpecification; strokeColor: string; textColor: string };
@@ -728,38 +847,62 @@ function getCircleStrokeColor(theme: ThemeMode) {
     : "rgba(255, 255, 255, 0.95)";
 }
 
-function createClusterColorExpression(theme: ThemeMode): ExpressionSpecification {
-  if (theme === "dark") {
-    return [
-      "step",
-      ["get", "point_count"],
-      "#8288a2",
-      10,
-      "#505676",
-      30,
-      "#424547",
-      80,
-      "#27254b"
-    ] as ExpressionSpecification;
+function createClusterColorExpression(
+  theme: ThemeMode,
+  highlightAll: boolean,
+  activeRegionId: string | null,
+  regionIds: string[]
+): ExpressionSpecification {
+  const baseExpression =
+    theme === "dark"
+      ? ([
+          "step",
+          ["get", "point_count"],
+          "#8288a2",
+          10,
+          "#505676",
+          30,
+          "#424547",
+          80,
+          "#27254b"
+        ] as ExpressionSpecification)
+      : ([
+          "step",
+          ["get", "point_count"],
+          "#93c5fd",
+          10,
+          "#60a5fa",
+          30,
+          "#3b82f6",
+          80,
+          "#1d4ed8"
+        ] as ExpressionSpecification);
+
+  if (highlightAll || !activeRegionId || !regionIds.includes(activeRegionId)) {
+    return baseExpression;
   }
 
+  const activeCountExpression = ["get", getClusterPropertyName(activeRegionId)] as ExpressionSpecification;
+  const inactiveColor = theme === "dark" ? "rgba(66, 70, 87, 0.7)" : "rgba(148, 163, 184, 0.55)";
+
   return [
-    "step",
-    
-    ["get", "point_count"],
-    "#93c5fd",
-    10,
-    "#60a5fa",
-    30,
-    "#3b82f6",
-    80,
-    "#1d4ed8"
+    "case",
+    [">", activeCountExpression, 0],
+    baseExpression,
+    inactiveColor
   ] as ExpressionSpecification;
 }
 
-function getClusterPaint(theme: ThemeMode): ClusterPaint {
+type ClusterPaintArgs = {
+  theme: ThemeMode;
+  highlightAll: boolean;
+  activeRegionId: string | null;
+  regionIds: string[];
+};
+
+function getClusterPaint({ theme, highlightAll, activeRegionId, regionIds }: ClusterPaintArgs): ClusterPaint {
   return {
-    circleColor: createClusterColorExpression(theme),
+    circleColor: createClusterColorExpression(theme, highlightAll, activeRegionId, regionIds),
     strokeColor: getCircleStrokeColor(theme),
     textColor: resolveCssColor("--text-primary", theme === "dark" ? "#e2e8f0" : "#0f172a")
   };
@@ -806,7 +949,12 @@ function computeIncludeHighlightIndex(poi: PoiProps, field: SearchField, termLow
   return null;
 }
 
-function matchesSearch(feature: GeoFeature, field: SearchField, termLower: string) {
+function matchesSearch(
+  feature: GeoFeature,
+  field: SearchField,
+  termLower: string,
+  regionNameMap: Map<string, string>
+) {
   const { properties } = feature;
   if (field === "name") {
     if (properties.name.toLowerCase().includes(termLower)) {
@@ -822,6 +970,11 @@ function matchesSearch(feature: GeoFeature, field: SearchField, termLower: strin
       return true;
     }
     return getIncludeEntries(properties).some(entry => entry.notes.toLowerCase().includes(termLower));
+  }
+  if (field === "region") {
+    const regionId = properties.regionId ?? "";
+    const label = regionNameMap.get(regionId) ?? regionId;
+    return label.toLowerCase().includes(termLower) || regionId.toLowerCase().includes(termLower);
   }
   return false;
 }

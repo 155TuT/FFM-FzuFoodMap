@@ -13,6 +13,10 @@
   --shadow-card: 0 16px 32px rgba(15, 23, 42, 0.18);
   --corner-hover: rgba(14, 165, 233, 0.14);
   --icon-button-icon-size: 18px;
+  --floating-actions-width: 52px;
+  --panel-gap: 24px;
+  --toolbar-horizontal-gap: 16px;
+  --location-panel-extra-gap: 4px;
   color: var(--text-primary);
 }
 
@@ -53,10 +57,11 @@ html, body, #root {
   right: 16px;
   top: 16px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  grid-template-areas: "brand search select info";
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "brand search select";
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
+  row-gap: 10px;
   padding: 12px 14px;
   border-radius: 999px;
   background: var(--surface-toolbar);
@@ -191,28 +196,199 @@ html, body, #root {
   display: block;
 }
 
-.toolbar select {
+.toolbar-location {
   grid-area: select;
-  min-width: 0;
+  position: relative;
+  justify-self: flex-end;
+}
+
+.toolbar-location-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 88px;
   height: 36px;
+  padding: 0 12px;
   border-radius: 12px;
   border: 1px solid var(--border-soft);
   background: var(--surface-card);
-  padding: 0 28px 0 12px;
-  font-size: 1em;
   color: inherit;
-  width: clamp(88px, 24vw, 112px);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.toolbar-location-trigger--open {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.toolbar-location-label {
   max-width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  justify-self: flex-start;
-  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.95em;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
-.toolbar select:focus-visible,
+.toolbar-location-trigger--open .toolbar-location-label {
+  color: var(--text-primary);
+}
+
+.toolbar-location-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
+
+.toolbar-location-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.location-panel {
+  position: absolute;
+  top: calc(100% + 32px);
+  right: var(--location-panel-extra-gap);
+  width: fit-content;
+  min-width: 220px;
+  max-width: min(320px, calc(100vw - (var(--toolbar-horizontal-gap) + var(--location-panel-extra-gap) + 32px)));
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  z-index: 16;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: visible;
+}
+
+.location-panel-expression {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 6px;
+  row-gap: 8px;
+  font-size: 0.95em;
+  color: var(--text-muted);
+}
+
+.location-panel-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.location-panel-control--region {
+  flex: 1 1 auto;
+}
+
+.location-panel-suffix {
+  font-weight: 600;
+  margin: 0 4px;
+  color: currentColor;
+}
+
+.location-panel-button {
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.location-panel-button:hover,
+.location-panel-button:focus-visible {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  outline: none;
+}
+
+.location-panel-button-label {
+  font-size: 0.85em;
+  color: inherit;
+  font-weight: 600;
+}
+
+.location-panel-button-icon {
+  display: inline-flex;
+  width: 10px;
+  height: 10px;
+}
+
+.location-panel-button-icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.location-panel-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  padding: 6px 0;
+  border-radius: 18px;
+  border: none;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-strong);
+  min-width: 180px;
+  max-height: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 20;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.location-panel-dropdown--region {
+  left: auto;
+  right: 0;
+}
+
+.location-panel-option {
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.location-panel-option + .location-panel-option {
+  border-top: 1px solid var(--border-soft);
+}
+
+.location-panel-option:hover,
+.location-panel-option:focus-visible {
+  background: var(--corner-hover);
+  outline: none;
+}
+
+.location-panel-option--active {
+  background: rgba(14, 165, 233, 0.12);
+  color: var(--accent-primary);
+}
+
+.toolbar-location-trigger:focus-visible,
 .search-popover-input:focus-visible,
-.info-button:focus-visible,
 .theme-toggle:focus-visible {
   outline: 2px solid rgba(14, 165, 233, 0.55);
   outline-offset: 2px;
@@ -225,22 +401,16 @@ html, body, #root {
   outline-offset: 2px;
 }
 
-.toolbar-info {
-  grid-area: info;
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-self: flex-end;
-}
-
 @media (max-width: 719px) {
   .toolbar {
     padding: 12px 14px;
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-areas:
+      "brand search select";
     align-items: center;
     column-gap: 8px;
+    row-gap: 6px;
   }
 
   .toolbar-brand {
@@ -274,33 +444,23 @@ html, body, #root {
     display: none;
   }
 
-  .toolbar select {
+  .toolbar-location {
     justify-self: end;
   }
 
-  .toolbar-info {
-    justify-self: end;
+  .toolbar-location-trigger {
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 0.9em;
   }
 
   .search-popover {
     width: calc(100vw - 48px);
     max-width: calc(100vw - 48px);
   }
+
 }
 
-.info-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  border: 1px solid var(--border-soft);
-  background: var(--surface-card);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-}
 .info-button-icon {
   display: inline-flex;
   align-items: center;
@@ -315,20 +475,8 @@ html, body, #root {
   object-fit: contain;
 }
 
-.info-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 14px rgba(15, 23, 42, 0.12);
-  background: rgba(148, 163, 184, 0.08);
-}
-
-.info-button:active {
-  transform: translateY(0);
-}
-
 .info-panel {
-  position: absolute;
-  inset: calc(100% + 24px) 0 auto auto;
-  width: min(260px, 80vw);
+  width: min(320px, calc(100vw - 32px - var(--floating-actions-width) - var(--panel-gap)));
   padding: 12px 16px;
   border-radius: 16px;
   border: 1px solid var(--border-strong);
@@ -338,9 +486,9 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  z-index: 12;
   max-height: min(320px, 60vh);
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .info-panel-content {
@@ -595,6 +743,39 @@ html, body, #root {
   padding: 4px 0;
 }
 
+.search-popover-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.search-popover-group + .search-popover-group {
+  margin-top: 8px;
+}
+
+.search-popover-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 4px 4px 2px;
+  color: var(--border-strong);
+  font-size: 0.75em;
+}
+
+.search-popover-group-label {
+  color: inherit;
+  font-weight: 500;
+}
+
+.search-popover-group-divider {
+  flex: 1;
+  max-width: 60%;
+  height: 1px;
+  background: currentColor;
+  border-radius: 999px;
+}
+
 .search-popover-result {
   display: flex;
   flex-direction: column;
@@ -769,19 +950,30 @@ html, body, #root {
   }
 }
 
-.floating-actions {
+.floating-dock {
   position: fixed;
   left: 16px;
   bottom: 16px;
   display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: var(--panel-gap);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.floating-actions {
+  display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: center;
   padding: 6px 6px;
   border-radius: 28px;
   background: var(--surface-toolbar);
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-strong);
-  z-index: 10;
+  pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .floating-action-button {

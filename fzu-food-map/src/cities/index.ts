@@ -12,14 +12,24 @@ export type GeoFeature = {
   properties: PoiProps;
   geometry: { type: "Point"; coordinates: [number, number] };
 };
-export type GeoJson = { type: "FeatureCollection"; features: GeoFeature[]; };
-// src/cities/index.ts
+export type GeoJson = { type: "FeatureCollection"; features: GeoFeature[] };
+
+export type RegionConfig = {
+  id: string;
+  name: string;
+  center: [number, number];
+  zoom: number;
+  isCitywide?: boolean;
+  dataPath?: string;
+};
+
 export type CityConfig = {
   slug: string;
   name: string;
   center: [number, number];
   zoom: number;
-  dataPath: string;
+  regions: RegionConfig[];
+  defaultRegionId?: string;
   theme: { primary: string; danger: string; warning: string };
 };
 

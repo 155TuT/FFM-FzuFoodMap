@@ -4,6 +4,7 @@ export type PoiProps = {
   id: string;
   category: PoiCategory;
   name: string;
+  regionId?: string;
   tags?: string[];
   rating?: number;
   price?: string;
@@ -27,4 +28,4 @@ export type GeoFeature = {
 
 export type GeoJson = { type: "FeatureCollection"; features: GeoFeature[] };
 
-export type SearchField = "name" | "tags" | "notes";
+export type SearchField = "name" | "tags" | "notes" | "region";

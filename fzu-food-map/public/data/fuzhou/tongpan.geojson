@@ -1,0 +1,151 @@
+{
+  "type": "FeatureCollection",
+  "license": "CC BY-NC 4.0",
+  "_notes": "铜盘校区点位",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tongpan-001",
+        "category": "门店",
+        "name": "不差钱东北菜",
+        "tags": [
+          "东北菜",
+          "小吃",
+          "便宜",
+          "日常",
+          "堂食",
+          "炒菜",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 4.0,
+        "price": "49¥",
+        "notes": "锅包肉，肘子，地三鲜，炸茄盒，三丝爆豆",
+        "address": "梅峰路山海观小区c座5号店",
+        "contact": "13559162610",
+        "openhour": "09:00-14:00,16:00-00:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.27611290,
+          26.09834103
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tongpan-002",
+        "category": "门店",
+        "name": "熏+12HOURS·12小时果木烟熏烤肉·精酿啤酒",
+        "tags": [
+          "美式烤肉",
+          "轻奢",
+          "堂食",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 4.8,
+        "price": "143¥",
+        "notes": "焖烤牛胸肉，12小时烟熏牛肋排，伊比利亚猪肋排",
+        "address": "屏西路110号AONE运动公园内a1-28号",
+        "contact": "18060677597",
+        "openhour": "16:30-次日01:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.27989353,
+          26.10852957
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tongpan-003",
+        "category": "门店",
+        "name": "漩涡鸟烧·居酒屋",
+        "tags": [
+          "日式",
+          "轻奢",
+          "堂食",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 3.9,
+        "price": "112¥",
+        "notes": "月见饭，鸡皮，明太子鸡翅，炸鸡块，提灯",
+        "address": "屏西路110号(A-one运动公园)小白楼2号楼",
+        "contact": "(0591)83518480",
+        "openhour": "12:00-00:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.28149709,
+          26.10787891
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tongpan-004",
+        "category": "门店",
+        "name": "渔哥活鱼大排档",
+        "tags": [
+          "闽菜",
+          "平价",
+          "堂食",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 4.3,
+        "price": "77¥",
+        "notes": "石锅黑鱼/脆鱼，荔枝肉，红醩小肠，醉排骨，海蛎煲",
+        "address": "晋安区金城花园西北门旁",
+        "contact": "13075928862",
+        "openhour": "10:30-14:00,16:30-次日02:00"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.29140481,
+          26.12727189
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "tongpan-005",
+        "category": "门店",
+        "name": "新疆阿里木羊肉串羊蝎子火锅",
+        "tags": [
+          "新疆烧烤",
+          "平价",
+          "堂食",
+          "一人食",
+          "适合聚餐",
+          "可外卖"
+        ],
+        "rating": 3.9,
+        "price": "59¥",
+        "notes": "红柳大串，带骨羊排，烤馕，烤花菜，烤羊肝，烤香菇，烤韭菜",
+        "address": "梅峰支路99号一层06店-1（龙峰宾馆旁）",
+        "contact": "13609550450",
+        "openhour": "16:00-次日03:30"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.26929125,
+          26.09882003
+        ]
+      }
+    }
+  ]
+}

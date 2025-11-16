@@ -62,6 +62,8 @@
 
 主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可
 
+注意：部署后在使用前需在fzu-food-map即项目文件夹中创建 `.env.local` 文件并输入 `VITE_MAPTILER_KEY=你从MapTiler获取的API` 来替换成自己开发环境下的地图瓦片
+
 ### 杂项
 
 另有一些小工具在tools/中，包括：
@@ -81,6 +83,7 @@
 - [低调的唐老师](https://space.bilibili.com/24103340) *@bilibili*
 - [Victoria-Ling](https://space.bilibili.com/33183682) *@bilibili*
 - [李李吃吃喝喝](https://space.bilibili.com/3546942816651864) *@bilibili*
+- [达哥在上海](https://space.bilibili.com/504799975) *@bilibili*
 
 以及两位只做过一条视频但也很精品的
 
