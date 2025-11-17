@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "license": "CC BY-NC 4.0",
+  "_notes": "台江区点位",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "taijiang-001",
+        "category": "门店",
+        "name": "巨鳄披萨Crocodile Pizza",
+        "tags": [
+          "披萨",
+          "平价",
+          "日常",
+          "堂食",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 4.5,
+        "price": "54¥",
+        "notes": "松露培根温泉蛋披萨，经典玛格丽特披萨，焦糖香蕉披萨",
+        "address": "学军路1-11号",
+        "contact": "15759400352",
+        "openhour": "11:00-14:30,16:30-21:30,周一休息"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.30337346,
+          26.05932327
+        ]
+      }
+    }
+  ]
+}

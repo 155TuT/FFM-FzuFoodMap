@@ -51,6 +51,65 @@ html, body, #root {
   inset: 0;
 }
 
+.map-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(148, 163, 184, 0.22);
+  color: rgba(15, 23, 42, 0.7);
+  font-size: clamp(16px, 4vw, 22px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .map-loading-overlay {
+  background: rgba(15, 23, 42, 0.78);
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.map-loading-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.map-loading-dots {
+  display: inline-flex;
+  gap: 4px;
+  font-size: 1.2em;
+}
+
+.map-loading-dots span {
+  display: inline-block;
+  animation: map-loading-bounce 0.9s ease-in-out infinite;
+  transform-origin: center;
+  opacity: 0.6;
+}
+
+.map-loading-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.map-loading-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes map-loading-bounce {
+  0% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
 .toolbar {
   position: fixed;
   left: 16px;
@@ -274,9 +333,8 @@ html, body, #root {
 .location-panel-expression {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  column-gap: 6px;
-  row-gap: 8px;
+  flex-wrap: nowrap;
+  column-gap: 4px;
   font-size: 0.95em;
   color: var(--text-muted);
 }
@@ -286,15 +344,13 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-}
-
-.location-panel-control--region {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .location-panel-suffix {
   font-weight: 600;
-  margin: 0 4px;
+  margin: 0 2px;
   color: currentColor;
 }
 
@@ -302,7 +358,7 @@ html, body, #root {
   border: 1px solid var(--border-soft);
   background: transparent;
   border-radius: 999px;
-  padding: 4px 12px;
+  padding: 4px 10px;
   font: inherit;
   color: var(--text-muted);
   cursor: pointer;
@@ -310,6 +366,8 @@ html, body, #root {
   align-items: center;
   gap: 4px;
   transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .location-panel-button:hover,
@@ -323,6 +381,18 @@ html, body, #root {
   font-size: 0.85em;
   color: inherit;
   font-weight: 600;
+  display: inline-block;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.location-panel-button-label--city {
+  width: 6ch;
+}
+
+.location-panel-button-label--region {
+  width: 14ch;
 }
 
 .location-panel-button-icon {
@@ -339,37 +409,38 @@ html, body, #root {
 
 .location-panel-dropdown {
   position: absolute;
-  top: calc(100% + 12px);
+  top: 100%;
   left: 0;
-  padding: 6px 0;
-  border-radius: 18px;
+  margin-top: -2px;
+  padding: 4px 0;
+  border-radius: 16px;
   border: none;
   background: var(--surface-card);
-  box-shadow: var(--shadow-strong);
-  min-width: 180px;
-  max-height: 240px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  max-height: 220px;
   display: flex;
   flex-direction: column;
   gap: 0;
-  z-index: 20;
+  z-index: 1;
   overflow: hidden;
   overflow-y: auto;
-}
-
-.location-panel-dropdown--region {
-  left: auto;
-  right: 0;
 }
 
 .location-panel-option {
   width: 100%;
   text-align: left;
-  padding: 10px 16px;
+  padding: 6px 10px;
   border: none;
   background: transparent;
   color: var(--text-primary);
   cursor: pointer;
   font-size: 0.95em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .location-panel-option + .location-panel-option {
@@ -385,6 +456,22 @@ html, body, #root {
 .location-panel-option--active {
   background: rgba(14, 165, 233, 0.12);
   color: var(--accent-primary);
+}
+
+.location-panel-option-label {
+  display: inline-block;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  color: inherit;
+}
+
+.location-panel-option-label--city {
+  width: 6ch;
+}
+
+.location-panel-option-label--region {
+  width: 14ch;
 }
 
 .toolbar-location-trigger:focus-visible,

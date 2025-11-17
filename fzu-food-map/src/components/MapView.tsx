@@ -614,7 +614,7 @@ export default function MapView({
 
     if (trimmed) {
       nextFeatures = rawData.features
-        .filter(feature => matchesSearch(feature, searchField, trimmed, regionNameMap))
+        .filter(feature => matchesSearch(feature, searchField, trimmed))
         .sort((a, b) => ratingValue(b) - ratingValue(a));
     }
 
@@ -645,7 +645,7 @@ export default function MapView({
     }
 
     const termLower = trimmedOriginal.toLowerCase();
-    let matches = rawData.features.filter(feature => matchesSearch(feature, searchField, termLower, regionNameMap));
+    let matches = rawData.features.filter(feature => matchesSearch(feature, searchField, termLower));
 
     if (onlyFav) {
       matches = matches.filter(feature => favSet.has(feature.properties.id));
@@ -711,6 +711,18 @@ export default function MapView({
   return (
     <>
       <div id="map" ref={containerRef} />
+      {!mapReady && (
+        <div className="map-loading-overlay" aria-live="polite" aria-busy="true">
+          <span className="map-loading-text">
+            稍等，美味正在赶来
+            <span className="map-loading-dots" aria-hidden="true">
+              <span>·</span>
+              <span>·</span>
+              <span>·</span>
+            </span>
+          </span>
+        </div>
+      )}
       {showSuggestions && suggestions.length > 0 && (
         <ul className="search-suggestions scrollable-card" aria-label={TEXT.searchLabel}>
           {suggestions.map(feature => {
@@ -949,12 +961,7 @@ function computeIncludeHighlightIndex(poi: PoiProps, field: SearchField, termLow
   return null;
 }
 
-function matchesSearch(
-  feature: GeoFeature,
-  field: SearchField,
-  termLower: string,
-  regionNameMap: Map<string, string>
-) {
+function matchesSearch(feature: GeoFeature, field: SearchField, termLower: string) {
   const { properties } = feature;
   if (field === "name") {
     if (properties.name.toLowerCase().includes(termLower)) {
@@ -970,11 +977,6 @@ function matchesSearch(
       return true;
     }
     return getIncludeEntries(properties).some(entry => entry.notes.toLowerCase().includes(termLower));
-  }
-  if (field === "region") {
-    const regionId = properties.regionId ?? "";
-    const label = regionNameMap.get(regionId) ?? regionId;
-    return label.toLowerCase().includes(termLower) || regionId.toLowerCase().includes(termLower);
   }
   return false;
 }

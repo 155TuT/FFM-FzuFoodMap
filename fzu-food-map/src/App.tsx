@@ -26,13 +26,25 @@ const TEXT = {
 const SEARCH_OPTIONS: { value: SearchField; label: string }[] = [
   { value: "name", label: "店名" },
   { value: "tags", label: "标签" },
-  { value: "notes", label: "菜品" },
-  { value: "region", label: "区域" }
+  { value: "notes", label: "菜品" }
 ];
 
 const SYMBOL = {
   dot: " · "
 } as const;
+
+const CITY_NAME_VISIBLE_CHARS = 3;
+const REGION_NAME_VISIBLE_CHARS = 7;
+
+function formatDisplayLabel(label: string, visibleChars: number) {
+  const value = label ?? "";
+  if (value.length <= visibleChars) return value;
+  const sliceLength = Math.max(1, visibleChars - 1);
+  return `${value.slice(0, sliceLength)}…`;
+}
+
+const formatCityLabel = (label: string) => formatDisplayLabel(label, CITY_NAME_VISIBLE_CHARS);
+const formatRegionLabel = (label: string) => formatDisplayLabel(label, REGION_NAME_VISIBLE_CHARS);
 
 const REGION_UNASSIGNED_ID = "__unassigned__";
 const REGION_UNASSIGNED_LABEL = "未分区";
@@ -402,6 +414,12 @@ export default function App() {
     );
   }, [activeRegionId, city.regions, regionNameMap]);
 
+  const cityDisplayLabel = useMemo(() => formatCityLabel(city.name), [city.name]);
+  const activeRegionDisplayLabel = useMemo(
+    () => formatRegionLabel(activeRegionLabel),
+    [activeRegionLabel]
+  );
+
   return (
     <>
       <div className="toolbar">
@@ -640,13 +658,15 @@ export default function App() {
                     }
                     aria-haspopup="listbox"
                     aria-expanded={cityListOpen}
+                    title={city.name}
                   >
-                    <span className="location-panel-button-label">{city.name}</span>
+                    <span className="location-panel-button-label location-panel-button-label--city">
+                      {cityDisplayLabel}
+                    </span>
                     <span className="location-panel-button-icon" aria-hidden="true">
                       <img src={cityListOpen ? liftupIconUrl : dropdownIconUrl} alt="" />
                     </span>
                   </button>
-                  <span className="location-panel-suffix">市</span>
                   {cityListOpen && (
                     <div className="location-panel-dropdown location-panel-dropdown--city" role="listbox" aria-label={TEXT.selectCity}>
                       {CITIES.map(item => (
@@ -657,13 +677,17 @@ export default function App() {
                           role="option"
                           aria-selected={item.slug === citySlug}
                           onClick={() => handleCitySelect(item.slug)}
+                          title={item.name}
                         >
-                          {item.name}
+                          <span className="location-panel-option-label location-panel-option-label--city">
+                            {formatCityLabel(item.name)}
+                          </span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
+                <span className="location-panel-suffix">市</span>
                 <div className="location-panel-control location-panel-control--region">
                   <button
                     type="button"
@@ -677,8 +701,11 @@ export default function App() {
                     }
                     aria-haspopup="listbox"
                     aria-expanded={regionListOpen}
+                    title={activeRegionLabel}
                   >
-                    <span className="location-panel-button-label">{activeRegionLabel}</span>
+                    <span className="location-panel-button-label location-panel-button-label--region">
+                      {activeRegionDisplayLabel}
+                    </span>
                     <span className="location-panel-button-icon" aria-hidden="true">
                       <img src={regionListOpen ? liftupIconUrl : dropdownIconUrl} alt="" />
                     </span>
@@ -693,8 +720,11 @@ export default function App() {
                           role="option"
                           aria-selected={region.id === activeRegionId}
                           onClick={() => handleRegionSelect(region.id)}
+                          title={region.name}
                         >
-                          {region.name}
+                          <span className="location-panel-option-label location-panel-option-label--region">
+                            {formatRegionLabel(region.name)}
+                          </span>
                         </button>
                       ))}
                     </div>

@@ -28,4 +28,4 @@ export type GeoFeature = {
 
 export type GeoJson = { type: "FeatureCollection"; features: GeoFeature[] };
 
-export type SearchField = "name" | "tags" | "notes" | "region";
+export type SearchField = "name" | "tags" | "notes";

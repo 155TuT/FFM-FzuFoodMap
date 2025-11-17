@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "license": "CC BY-NC 4.0",
+  "_notes": "仓山区至福州南站点位",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "cangshan-001",
+        "category": "门店",
+        "name": "初恋野串",
+        "tags": [
+          "烧烤",
+          "平价",
+          "日常",
+          "堂食",
+          "一人食",
+          "适合聚餐"
+        ],
+        "rating": 4.3,
+        "price": "65¥",
+        "notes": "爆汁油边，羔羊肋排，黑虎虾，宫后，生蚝",
+        "address": "葛屿路与洪湾中路交叉口东60米铁皮房",
+        "contact": "vx:z394606373",
+        "openhour": "18:30-00:00，需微信预约"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.24581899,
+          26.03537142
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "type": "FeatureCollection",
+  "license": "CC BY-NC 4.0",
+  "_notes": "鼓楼区点位",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "gulou-001",
+        "category": "门店",
+        "name": "福井烧·港澳烧腊",
+        "tags": [
+          "港式",
+          "烧腊",
+          "平价",
+          "堂食",
+          "日常",
+          "可外卖",
+          "一人食"
+        ],
+        "rating": 4.7,
+        "price": "32¥",
+        "notes": "烧鸭，芝麻鸡，黯然销魂蛋叉饭，坚果双皮奶",
+        "address": "七星井巷6号",
+        "contact": "13305928961",
+        "openhour": "10:55-23:59"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.29840183,
+          26.09448892
+        ]
+      }
+    }
+  ]
+}
