@@ -31,8 +31,7 @@ const DEFAULT_CATEGORY = CATEGORY_STORE;
 const TEXT = {
   details: "详情",
   collect: "收藏",
-  collected: "已收藏",
-  searchLabel: "搜索结果"
+  collected: "已收藏"
 } as const;
 
 type ThemeMode = "light" | "dark";
@@ -43,7 +42,6 @@ type Props = {
   query: string;
   searchField: SearchField;
   onlyFav: boolean;
-  showSuggestions: boolean;
   onShare: (favIds: string[]) => void;
   onSuggestionsChange?: (suggestions: GeoFeature[]) => void;
   theme: ThemeMode;
@@ -58,7 +56,6 @@ export default function MapView({
   query,
   searchField,
   onlyFav,
-  showSuggestions,
   onShare,
   onSuggestionsChange,
   theme,
@@ -91,11 +88,6 @@ export default function MapView({
   const citywideRegionRef = useRef<string | null>(citywideRegionId);
   citywideRegionRef.current = citywideRegionId;
   const regionIdsRef = useRef<string[]>([]);
-  const regionNameMap = useMemo(() => {
-    const map = new Map<string, string>();
-    city.regions.forEach(region => map.set(region.id, region.name));
-    return map;
-  }, [city.regions]);
 
   useEffect(() => {
     const ids = city.regions.map(region => region.id);
@@ -630,7 +622,7 @@ export default function MapView({
     if ((trimmed || onlyFav) && nextFeatures.length) {
       fitToFeatures(map, nextFeatures);
     }
-  }, [query, searchField, onlyFav, favSet, rawData, fitToFeatures, regionNameMap]);
+  }, [query, searchField, onlyFav, favSet, rawData, fitToFeatures]);
 
   useEffect(() => {
     if (!rawData) {
@@ -653,7 +645,7 @@ export default function MapView({
 
     matches.sort((a, b) => ratingValue(b) - ratingValue(a));
     setSuggestions(matches.slice(0, SEARCH_LIMIT));
-  }, [query, searchField, onlyFav, favSet, rawData, regionNameMap]);
+  }, [query, searchField, onlyFav, favSet, rawData]);
 
   useEffect(() => {
     onSuggestionsChange?.(suggestions);
@@ -722,45 +714,6 @@ export default function MapView({
             </span>
           </span>
         </div>
-      )}
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="search-suggestions scrollable-card" aria-label={TEXT.searchLabel}>
-          {suggestions.map(feature => {
-            const props = feature.properties;
-            const tagText = Array.isArray(props.tags) ? props.tags.map(escapeHtml).slice(0, 3).join(DOT) : "";
-            const priceText = props.price ? escapeHtml(props.price) : "";
-            const addressText = props.address ? `${escapeHtml(props.address)}` : "";
-            const contactText = props.contact ? `${escapeHtml(props.contact)}` : "";
-            const openHourText = props.openhour ? `${escapeHtml(props.openhour)}` : "";
-            const scheduleLine = [openHourText, contactText].filter(Boolean).join(" ");
-            const tagPriceLine = [tagText, priceText].filter(Boolean).join(DOT);
-            const noteLine = props.notes ? `${escapeHtml(props.notes)}` : "";
-            const lines = [
-              { key: "schedule", text: scheduleLine, secondary: false },
-              { key: "address", text: addressText, secondary: true },
-              { key: "tagprice", text: tagPriceLine, secondary: false },
-              { key: "note", text: noteLine, secondary: true }
-            ].filter(item => item.text);
-
-            return (
-              <li key={props.id}>
-                <button type="button" onClick={() => handleSuggestionSelect(feature)}>
-                  <span className="search-suggestion-title" title={props.name}>
-                    {props.name}
-                  </span>
-                  {lines.map(item => (
-                    <span
-                      key={`${props.id}-meta-${item.key}`}
-                      className={`search-suggestion-meta${item.secondary ? " search-suggestion-meta--secondary" : ""}`}
-                    >
-                      {item.text}
-                    </span>
-                  ))}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
       )}
     </>
   );

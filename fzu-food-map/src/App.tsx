@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import MapView from "./components/MapView";
@@ -50,6 +50,164 @@ const REGION_UNASSIGNED_ID = "__unassigned__";
 const REGION_UNASSIGNED_LABEL = "未分区";
 
 type SuggestionGroup = { regionId: string; label: string; items: GeoFeature[] };
+
+type SearchInputProps = {
+  variant: "toolbar" | "popover";
+  value: string;
+  placeholder: string;
+  hasValue: boolean;
+  searchIconUrl?: string;
+  clearIconUrl: string;
+  inputRef: RefObject<HTMLInputElement | null>;
+  onChange: (value: string) => void;
+  onClear: () => void;
+  onFocus?: () => void;
+  readOnly?: boolean;
+};
+
+type SelectionDropdownOption = {
+  key: string;
+  label: string;
+  title: string;
+  selected: boolean;
+};
+
+type SelectionDropdownProps = {
+  open: boolean;
+  title: string;
+  ariaLabel: string;
+  controlClassName: string;
+  buttonLabelClassName: string;
+  optionLabelClassName: string;
+  dropdownClassName: string;
+  triggerLabel: string;
+  dropdownIconUrl: string;
+  liftupIconUrl: string;
+  options: SelectionDropdownOption[];
+  onToggle: () => void;
+  onSelect: (key: string) => void;
+};
+
+function SearchInput({
+  variant,
+  value,
+  placeholder,
+  hasValue,
+  searchIconUrl,
+  clearIconUrl,
+  inputRef,
+  onChange,
+  onClear,
+  onFocus,
+  readOnly
+}: SearchInputProps) {
+  if (variant === "popover") {
+    return (
+      <div className="search-popover-input-row">
+        <input
+          type="search"
+          value={value}
+          ref={inputRef}
+          onChange={event => onChange(event.target.value)}
+          placeholder={placeholder}
+          aria-label={placeholder}
+        />
+        {hasValue && (
+          <button
+            type="button"
+            className="search-popover-clear"
+            onClick={onClear}
+          >
+            <img src={clearIconUrl} alt="" />
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`toolbar-search-field${hasValue ? " toolbar-search-field--has-text" : ""}`}>
+      <span className="toolbar-search-icon" aria-hidden="true">
+        <img src={searchIconUrl} alt="" />
+      </span>
+      <input
+        type="search"
+        className="toolbar-search-input"
+        placeholder={placeholder}
+        value={value}
+        ref={inputRef}
+        onFocus={onFocus}
+        onChange={event => onChange(event.target.value)}
+        aria-haspopup="dialog"
+        aria-controls="search-popover"
+        readOnly={readOnly}
+      />
+      {hasValue && (
+        <button
+          type="button"
+          className="toolbar-search-clear"
+          onClick={event => {
+            event.stopPropagation();
+            onClear();
+          }}
+        >
+          <img src={clearIconUrl} alt="" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function SelectionDropdown({
+  open,
+  title,
+  ariaLabel,
+  controlClassName,
+  buttonLabelClassName,
+  optionLabelClassName,
+  dropdownClassName,
+  triggerLabel,
+  dropdownIconUrl,
+  liftupIconUrl,
+  options,
+  onToggle,
+  onSelect
+}: SelectionDropdownProps) {
+  return (
+    <div className={controlClassName}>
+      <button
+        type="button"
+        className="location-panel-button"
+        onClick={onToggle}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        title={title}
+      >
+        <span className={`location-panel-button-label ${buttonLabelClassName}`}>{triggerLabel}</span>
+        <span className="location-panel-button-icon" aria-hidden="true">
+          <img src={open ? liftupIconUrl : dropdownIconUrl} alt="" />
+        </span>
+      </button>
+      {open && (
+        <div className={`location-panel-dropdown ${dropdownClassName}`} role="listbox" aria-label={ariaLabel}>
+          {options.map(option => (
+            <button
+              key={option.key}
+              type="button"
+              className={`location-panel-option${option.selected ? " location-panel-option--active" : ""}`}
+              role="option"
+              aria-selected={option.selected}
+              onClick={() => onSelect(option.key)}
+              title={option.title}
+            >
+              <span className={`location-panel-option-label ${optionLabelClassName}`}>{option.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function resolveDefaultRegionId(city: CityConfig) {
   return (
@@ -419,6 +577,26 @@ export default function App() {
     () => formatRegionLabel(activeRegionLabel),
     [activeRegionLabel]
   );
+  const cityOptions = useMemo(
+    () =>
+      CITIES.map(item => ({
+        key: item.slug,
+        label: formatCityLabel(item.name),
+        title: item.name,
+        selected: item.slug === citySlug
+      })),
+    [citySlug]
+  );
+  const regionOptions = useMemo(
+    () =>
+      city.regions.map(region => ({
+        key: region.id,
+        label: formatRegionLabel(region.name),
+        title: region.name,
+        selected: region.id === activeRegionId
+      })),
+    [activeRegionId, city.regions]
+  );
 
   return (
     <>
@@ -455,59 +633,38 @@ export default function App() {
             }
           }}
         >
-          <div className={`toolbar-search-field${hasSearchValue ? " toolbar-search-field--has-text" : ""}`}>
-            <span className="toolbar-search-icon" aria-hidden="true">
-              <img src={searchIconUrl} alt="" />
-            </span>
-            <input
-              type="search"
-              className="toolbar-search-input"
-              placeholder={TEXT.searchPlaceholder}
-              value={searchTerm}
-              ref={searchInputRef}
-              onFocus={openSearch}
-              onChange={event => handleSearchInputChange(event.target.value)}
-              aria-haspopup="dialog"
-              aria-controls="search-popover"
-              readOnly={!searchOpen}
-            />
-            {hasSearchValue && (
-              <button
-                type="button"
-                className="toolbar-search-clear"
+          <SearchInput
+            variant="toolbar"
+            value={searchTerm}
+            placeholder={TEXT.searchPlaceholder}
+            hasValue={hasSearchValue}
+            searchIconUrl={searchIconUrl}
+            clearIconUrl={clearIconUrl}
+            inputRef={searchInputRef}
+            onChange={handleSearchInputChange}
+            onClear={clearSearch}
+            onFocus={openSearch}
+            readOnly={!searchOpen}
+          />
+          {/*
                 aria-label="清除搜索内容"
-                onClick={event => {
-                  event.stopPropagation();
-                  clearSearch();
-                }}
-              >
-                <img src={clearIconUrl} alt="" />
-              </button>
-            )}
-          </div>
 
+          */}
           {searchOpen && (
             <div id="search-popover" className="search-popover" role="dialog" aria-label={TEXT.searchTitle}>
-              <div className="search-popover-input-row">
-                <input
-                  type="search"
-                  value={searchTerm}
-                  ref={popoverInputRef}
-                  onChange={event => handleSearchInputChange(event.target.value)}
-                  placeholder={TEXT.searchPlaceholder}
-                  aria-label={TEXT.searchPlaceholder}
-                />
-                {hasSearchValue && (
-                  <button
-                    type="button"
-                    className="search-popover-clear"
+              <SearchInput
+                variant="popover"
+                value={searchTerm}
+                placeholder={TEXT.searchPlaceholder}
+                hasValue={hasSearchValue}
+                clearIconUrl={clearIconUrl}
+                inputRef={popoverInputRef}
+                onChange={handleSearchInputChange}
+                onClear={clearSearch}
+              />
+              {/*
                     aria-label="清除搜索内容"
-                    onClick={clearSearch}
-                  >
-                    <img src={clearIconUrl} alt="" />
-                  </button>
-                )}
-              </div>
+              */}
               <div className="search-popover-results scrollable-card" role="listbox" aria-label={TEXT.searchTitle}>
                 {suggestions.length > 0 ? (
                   groupedSuggestions.map(group => {
@@ -645,91 +802,56 @@ export default function App() {
               aria-label="切换区域"
             >
               <div className="location-panel-expression">
-                <div className="location-panel-control location-panel-control--city">
-                  <button
-                    type="button"
-                    className="location-panel-button"
-                    onClick={() =>
-                      setCityListOpen(prev => {
-                        const next = !prev;
-                        if (next) setRegionListOpen(false);
-                        return next;
-                      })
-                    }
-                    aria-haspopup="listbox"
-                    aria-expanded={cityListOpen}
-                    title={city.name}
-                  >
-                    <span className="location-panel-button-label location-panel-button-label--city">
-                      {cityDisplayLabel}
-                    </span>
-                    <span className="location-panel-button-icon" aria-hidden="true">
-                      <img src={cityListOpen ? liftupIconUrl : dropdownIconUrl} alt="" />
-                    </span>
-                  </button>
-                  {cityListOpen && (
-                    <div className="location-panel-dropdown location-panel-dropdown--city" role="listbox" aria-label={TEXT.selectCity}>
-                      {CITIES.map(item => (
-                        <button
-                          key={item.slug}
-                          type="button"
-                          className={`location-panel-option${item.slug === citySlug ? " location-panel-option--active" : ""}`}
-                          role="option"
-                          aria-selected={item.slug === citySlug}
-                          onClick={() => handleCitySelect(item.slug)}
-                          title={item.name}
-                        >
-                          <span className="location-panel-option-label location-panel-option-label--city">
-                            {formatCityLabel(item.name)}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <SelectionDropdown
+                  open={cityListOpen}
+                  title={city.name}
+                  ariaLabel={TEXT.selectCity}
+                  controlClassName="location-panel-control location-panel-control--city"
+                  buttonLabelClassName="location-panel-button-label--city"
+                  optionLabelClassName="location-panel-option-label--city"
+                  dropdownClassName="location-panel-dropdown--city"
+                  triggerLabel={cityDisplayLabel}
+                  dropdownIconUrl={dropdownIconUrl}
+                  liftupIconUrl={liftupIconUrl}
+                  options={cityOptions}
+                  onToggle={() =>
+                    setCityListOpen(prev => {
+                      const next = !prev;
+                      if (next) setRegionListOpen(false);
+                      return next;
+                    })
+                  }
+                  onSelect={handleCitySelect}
+                />
                 <span className="location-panel-suffix">市</span>
-                <div className="location-panel-control location-panel-control--region">
-                  <button
-                    type="button"
-                    className="location-panel-button"
-                    onClick={() =>
-                      setRegionListOpen(prev => {
-                        const next = !prev;
-                        if (next) setCityListOpen(false);
-                        return next;
-                      })
-                    }
-                    aria-haspopup="listbox"
-                    aria-expanded={regionListOpen}
-                    title={activeRegionLabel}
-                  >
-                    <span className="location-panel-button-label location-panel-button-label--region">
-                      {activeRegionDisplayLabel}
-                    </span>
-                    <span className="location-panel-button-icon" aria-hidden="true">
-                      <img src={regionListOpen ? liftupIconUrl : dropdownIconUrl} alt="" />
-                    </span>
-                  </button>
-                  {regionListOpen && (
+                <SelectionDropdown
+                  open={regionListOpen}
+                  title={activeRegionLabel}
+                  ariaLabel="閫夋嫨鍖哄煙"
+                  controlClassName="location-panel-control location-panel-control--region"
+                  buttonLabelClassName="location-panel-button-label--region"
+                  optionLabelClassName="location-panel-option-label--region"
+                  dropdownClassName="location-panel-dropdown--region"
+                  triggerLabel={activeRegionDisplayLabel}
+                  dropdownIconUrl={dropdownIconUrl}
+                  liftupIconUrl={liftupIconUrl}
+                  options={regionOptions}
+                  onToggle={() =>
+                    setRegionListOpen(prev => {
+                      const next = !prev;
+                      if (next) setCityListOpen(false);
+                      return next;
+                    })
+                  }
+                  onSelect={handleRegionSelect}
+                />
+                {/*
+                    <div className="location-panel-dropdown location-panel-dropdown--region" role="listbox" aria-label="閫夋嫨鍖哄煙">
+                />
                     <div className="location-panel-dropdown location-panel-dropdown--region" role="listbox" aria-label="选择区域">
-                      {city.regions.map(region => (
-                        <button
-                          key={region.id}
-                          type="button"
-                          className={`location-panel-option${region.id === activeRegionId ? " location-panel-option--active" : ""}`}
-                          role="option"
-                          aria-selected={region.id === activeRegionId}
-                          onClick={() => handleRegionSelect(region.id)}
-                          title={region.name}
-                        >
-                          <span className="location-panel-option-label location-panel-option-label--region">
-                            {formatRegionLabel(region.name)}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              </div>
+              </div>
+                */}
               </div>
             </div>
           )}
@@ -742,7 +864,6 @@ export default function App() {
         query={activeQuery}
         searchField={searchField}
         onlyFav={onlyFav}
-        showSuggestions={false}
         onShare={handleShare}
         onSuggestionsChange={setSuggestions}
         theme={theme}
