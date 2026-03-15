@@ -23,7 +23,15 @@
         "notes": "烧鸭，芝麻鸡，黯然销魂蛋叉饭，坚果双皮奶",
         "address": "七星井巷6号",
         "contact": "13305928961",
-        "openhour": "10:55-23:59"
+        "openhour": "10:55-23:59",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",

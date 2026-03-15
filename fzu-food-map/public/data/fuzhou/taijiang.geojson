@@ -22,7 +22,15 @@
         "notes": "松露培根温泉蛋披萨，经典玛格丽特披萨，焦糖香蕉披萨",
         "address": "学军路1-11号",
         "contact": "15759400352",
-        "openhour": "11:00-14:30,16:30-21:30,周一休息"
+        "openhour": "11:00-14:30,16:30-21:30,周一休息",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",

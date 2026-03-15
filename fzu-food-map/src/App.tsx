@@ -253,19 +253,18 @@ export default function App() {
   const locationButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const iconPaths = useMemo(() => {
-    const suffix = theme === "dark" ? "_dark" : "";
     const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
     const makePath = (file: string) => `${base}${file}`;
-    const themeToggleFile = theme === "light" ? "assets/icons/to_dark.svg" : "assets/icons/to_light.svg";
+    const themedIconDir = theme === "dark" ? "dark" : "light";
     return {
-      announcement: makePath(`assets/icons/announcement${suffix}.svg`),
-      favicon: makePath(`assets/icons/favicon${suffix}.svg`),
-      search: makePath(`assets/icons/search${suffix}.svg`),
-      locate: makePath(`assets/icons/locate${suffix}.svg`),
-      themeToggle: makePath(themeToggleFile),
-      clear: makePath("assets/icons/delete.svg"),
-      collapse: makePath("assets/icons/liftup.svg"),
-      dropdown: makePath("assets/icons/pulldown.svg")
+      announcement: makePath(`assets/icons/${themedIconDir}/announcement.svg`),
+      favicon: makePath(`assets/icons/${themedIconDir}/favicon.svg`),
+      search: makePath(`assets/icons/${themedIconDir}/search.svg`),
+      locate: makePath(`assets/icons/${themedIconDir}/locate.svg`),
+      themeToggle: makePath(`assets/icons/${themedIconDir}/to.svg`),
+      clear: makePath("assets/icons/normal/delete.svg"),
+      collapse: makePath("assets/icons/normal/liftup.svg"),
+      dropdown: makePath("assets/icons/normal/pulldown.svg")
     };
   }, [theme]);
 

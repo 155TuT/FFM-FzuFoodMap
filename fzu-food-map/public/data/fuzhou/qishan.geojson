@@ -23,7 +23,15 @@
         "notes": "锅包肉，酸辣鸡杂，地三鲜，东北大拉皮",
         "address": "岐安福大学生街A1区学府北路10-27号",
         "contact": "18694719345",
-        "openhour": "10:00-13:30,16:00-21:30"
+        "openhour": "10:00-13:30,16:00-21:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -54,7 +62,15 @@
         "notes": "羊肉串，牛肋条，油边，蚕蛹",
         "address": "岐安福大学生街C2区溪源宫路3-12号",
         "contact": "13685012781",
-        "openhour": "16:00-次日02:00"
+        "openhour": "16:00-次日02:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -80,7 +96,15 @@
         "price": "6¥",
         "notes": "梅菜、鲜肉、瘦肉锅盔",
         "address": "福州大学（旗山校区）西1门附近",
-        "openhour": "17:30-00:00"
+        "openhour": "17:30-00:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -107,7 +131,15 @@
         "price": "10¥",
         "notes": "炸蘑菇（六合一），年糕，鸡柳",
         "address": "岐安福大学生街B1区",
-        "openhour": "暂无营业时间，一般晚上营业"
+        "openhour": "暂无营业时间，一般晚上营业",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -134,7 +166,15 @@
         "notes": "片皮鸭卷，烤冷面，香酥鸭",
         "address": "岐安福大学生街B3区学府北路10-192号",
         "contact": "13600873645",
-        "openhour": "10:00-次日01:00"
+        "openhour": "10:00-次日01:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -161,7 +201,15 @@
         "notes": "豆花，椰奶冰，清补凉",
         "address": "岐安福大学生街B1区",
         "contact": "18506943337",
-        "openhour": "暂无营业时间"
+        "openhour": "暂无营业时间",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -189,7 +237,15 @@
         "notes": "油边，牛肉串",
         "address": "岐安福大学生街C1区学府北路10-180号",
         "contact": "13941777553",
-        "openhour": "10:00-22:00"
+        "openhour": "10:00-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -219,7 +275,15 @@
         "notes": "鸡腿，三叉骨，鸡肉条",
         "address": "岐安福大学生街C1区学府北路10-177号",
         "contact": "15988002382",
-        "openhour": "10:00-22:00"
+        "openhour": "10:00-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -275,7 +339,15 @@
         },
         "notes": "特色：食惠烧腊，咖喱饭，众沙县，老顺德干蒸菜 连锁：小街胡同，塔斯汀，杨国福，临榆炸鸡腿",
         "address": "福州大学生活区三区（一楼）",
-        "openhour": "06:00-19:30"
+        "openhour": "06:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -322,7 +394,15 @@
         },
         "notes": "特色：米婆婆，重庆面食，客家牛肉面 连锁：永兴发",
         "address": "福州大学生活区三区（二楼）",
-        "openhour": "09:00-19:30"
+        "openhour": "09:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -370,7 +450,15 @@
         },
         "notes": "特色：烧腊，梦想咖喱，牛杂面 连锁：麦当劳",
         "address": "福州大学生活区三区（一楼）",
-        "openhour": "06:00-19:30"
+        "openhour": "06:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -417,7 +505,15 @@
         },
         "notes": "特色：粤福记烧腊，清谷寻味，乡村炖品 连锁：猪角",
         "address": "福州大学生活区三区（二楼）",
-        "openhour": "09:00-23:30"
+        "openhour": "09:00-23:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -458,7 +554,15 @@
         },
         "notes": "特色：隆江猪脚饭 连锁：肯德基",
         "address": "福州大学生活区一区（一楼）",
-        "openhour": "06:00-23:30"
+        "openhour": "06:00-23:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -499,7 +603,15 @@
         },
         "notes": "连锁：阿肥发，张亮麻辣烫",
         "address": "福州大学生活区一区（二楼）",
-        "openhour": "09:00-19:30"
+        "openhour": "09:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -537,7 +649,15 @@
         },
         "notes": "特色：酷乐普斯",
         "address": "福州大学生活区一区（三楼）",
-        "openhour": "09:00-19:30"
+        "openhour": "09:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -584,7 +704,15 @@
         },
         "notes": "特色：金翼瓦罐套餐，老上海馄饨铺，蜀一蜀二，小猪麻辣烫",
         "address": "福州大学生活区一区（二楼）",
-        "openhour": "06:00-19:30"
+        "openhour": "06:00-19:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -611,7 +739,15 @@
         "price": "12¥",
         "notes": "煎饼果子",
         "address": "福州大学（旗山校区）西1门附近",
-        "openhour": "17:30-23:00"
+        "openhour": "17:30-23:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -638,7 +774,15 @@
         "price": "10¥",
         "notes": "锅贴",
         "address": "福州大学（旗山校区）西1门附近",
-        "openhour": "11:30-19:00，卖完收摊"
+        "openhour": "11:30-19:00，卖完收摊",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -664,7 +808,15 @@
         "price": "6¥",
         "notes": "烤玉米，烤红薯，烤鸡蛋，烤南瓜",
         "address": "岐安福大学生街A区入口附近",
-        "openhour": "16:30-23:00"
+        "openhour": "16:30-23:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -693,7 +845,15 @@
         "notes": "重庆小面，牛肉拌面，肉酱拌面",
         "address": "岐安福大学生街B2区学府北路10号",
         "contact": "暂无",
-        "openhour": "暂无"
+        "openhour": "暂无",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -722,7 +882,15 @@
         "notes": "肉夹馍，拌扁肉，凉皮",
         "address": "岐安福大学生街A2区B8-1学府北路10号",
         "contact": "15605087151",
-        "openhour": "10:00-13:00,16:00-22:30"
+        "openhour": "10:00-13:00,16:00-22:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -751,7 +919,15 @@
         "notes": "泡芙，麻薯，蛋挞，面包",
         "address": "岐安福大学生街学府北路10-110号",
         "contact": "13285002025",
-        "openhour": "08:00--23:30"
+        "openhour": "08:00--23:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -780,7 +956,15 @@
         "notes": "清远鸡，走地鸡",
         "address": "岐安福大学生街A1区学府北路10-22号",
         "contact": "18694719345",
-        "openhour": "10:00-次日01:00"
+        "openhour": "10:00-次日01:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -807,7 +991,15 @@
         "price": "10¥",
         "notes": "辣子鸡粉",
         "address": "福州大学（旗山校区）西1门附近",
-        "openhour": "16:30-21:00左右，不规律出摊"
+        "openhour": "16:30-21:00左右，不规律出摊",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -835,7 +1027,15 @@
         "notes": "咖喱鸡，咖喱牛肉",
         "address": "岐安福大学生街学府北路10-115号",
         "contact": "18150020016",
-        "openhour": "10:00-20:30"
+        "openhour": "10:00-20:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -863,7 +1063,15 @@
         "notes": "天九湾炝肉，山里炝粉，莆田卤面",
         "address": "岐安福大学生街B1区08店面学府北路10-92号",
         "contact": "13459066769",
-        "openhour": "10:00-13:30,16:00-22:00"
+        "openhour": "10:00-13:30,16:00-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -891,7 +1099,15 @@
         "notes": "滑蛋饭，三宝饭，菠萝油",
         "address": "岐安福大学生街学府北路10-103号",
         "contact": "15205083358",
-        "openhour": "10:30-22:00"
+        "openhour": "10:30-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -919,7 +1135,15 @@
         "notes": "栗酥饼，芋泥饼，榴莲饼",
         "address": "岐安福大学生街B1区学府北路10-106号",
         "contact": "17350355538",
-        "openhour": "10:30-21:30"
+        "openhour": "10:30-21:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -947,7 +1171,15 @@
         "notes": "沙姜焗鸡，豉汁排骨，蒜苗五花，南乳鸡翅，松板肉，脆卤肥肠",
         "address": "岐安福大学生街学府北路10-127号",
         "contact": "15880165661",
-        "openhour": "10:00-22:00"
+        "openhour": "10:00-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -977,7 +1209,15 @@
         "notes": "麻婆豆腐，脆皮鸭，水煮鱼，红糖糍粑",
         "address": "岐安福大学生街学府北路10-193号",
         "contact": "17305023786",
-        "openhour": "11:00-14:00,17:00-21:00"
+        "openhour": "11:00-14:00,17:00-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1006,7 +1246,15 @@
         "notes": "石锅拌饭，韩式炸酱面，芝士部队火锅",
         "address": "岐安福大学生街学府北路10-156号",
         "contact": "18805009250",
-        "openhour": "10:00-22:00"
+        "openhour": "10:00-22:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1035,7 +1283,15 @@
         "notes": "五花肉，包浆豆腐，手撕豆干，安顺小肠",
         "address": "岐安福大学生街学府北路10-137号",
         "contact": "13658574189",
-        "openhour": "10:00-次日01:00"
+        "openhour": "10:00-次日01:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1064,7 +1320,15 @@
         "notes": "甘蔗汁，雪梨汁，西瓜汁，炒板栗",
         "address": "岐安福大学生街B1区学府北路10-228号",
         "contact": "15397976547",
-        "openhour": "11:00-00:00"
+        "openhour": "11:00-00:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1106,7 +1370,15 @@
         },
         "notes": "冰火菠萝油，恩仔大阪烧",
         "address": "岐安福大学生街B1区学府北路10-228号",
-        "openhour": "12:00-21:00"
+        "openhour": "12:00-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1135,7 +1407,15 @@
         "notes": "洪濑鸡爪，卤味拼盘，牛肉羹",
         "address": "岐安福大学生街学府北路10-73号",
         "contact": "13655908096",
-        "openhour": "10:00-21:00"
+        "openhour": "10:00-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1165,7 +1445,15 @@
         "notes": "牛肉粉，羊肉米线，凉拌米线",
         "address": "岐安福大学生街学府北路10-235号",
         "contact": "13178234562",
-        "openhour": "09:00-23:30"
+        "openhour": "09:00-23:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1192,7 +1480,15 @@
         "notes": "东北烤冷面，火鸡面烤冷面，五花肉烤冷面",
         "address": "岐安福大学生街B1区学府北路10号",
         "contact": "19959106561",
-        "openhour": "16:00-00:30"
+        "openhour": "16:00-00:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1220,7 +1516,15 @@
         "notes": "（泰茶，抹茶青提，巧克力，老式酸梅）绵绵冰，大满贯糖水，巴斯克",
         "address": "岐安福大学生街学府北路10-205号",
         "contact": "19577666366",
-        "openhour": "14:00-23:00"
+        "openhour": "14:00-23:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1245,7 +1549,15 @@
         ],
         "rating": 3.3,
         "price": "12¥",
-        "address": "岐安福大学生街学府北路10号"
+        "address": "岐安福大学生街学府北路10号",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1274,7 +1586,15 @@
         "notes": "烤黑鱼，干锅包菜，椒盐掌中宝",
         "address": "岐安福大学生街A1区学府北路10号19店面",
         "contact": "13609503734",
-        "openhour": "16:00-次日02:30"
+        "openhour": "16:00-次日02:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1301,7 +1621,15 @@
         "rating": 3.7,
         "price": "19¥",
         "address": "岐安福大学生街学府北路10-231号",
-        "openhour": "11:30-13:30,15:30-23:50"
+        "openhour": "11:30-13:30,15:30-23:50",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1330,7 +1658,15 @@
         "notes": "鸡汤干豆腐，锅包肉，溜肉段，手工水饺",
         "address": "明德路6号万科金域蓝湾1栋115商铺",
         "contact": "13055414588",
-        "openhour": "10:30-21:00"
+        "openhour": "10:30-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1359,7 +1695,15 @@
         "notes": "麻婆豆腐，火爆腰花，椒麻猪舌，红糖糍粑",
         "address": "中海寰宇天下高新大道1-41号",
         "contact": "059123539389",
-        "openhour": "11:00-14:00,17:00-22:30"
+        "openhour": "11:00-14:00,17:00-22:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1389,7 +1733,15 @@
         "notes": "牛杂煲，萝卜牛杂汤",
         "address": "高新大道1-1号中海寰宇天下42号楼1层125商业",
         "contact": "17326581320",
-        "openhour": "09:30-21:00"
+        "openhour": "09:30-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1420,7 +1772,15 @@
         "notes": "（银粟芝士，黑胡椒蛋黄，鲜橙琥珀，牧场酱，蜂蜜山葵）炸鸡，塔塔酱洋葱炸鱼，薯条",
         "address": "国宾大道179-2号",
         "contact": "17326581320",
-        "openhour": "10:55-23:59"
+        "openhour": "10:55-23:59",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1451,7 +1811,15 @@
         "notes": "烤羊腿，烤羊排，烤油边，黑椒牛肉，宫后，牛板筋，烤菠萝",
         "address": "国宾大道266-5号家园酒店旁",
         "contact": "17842549721",
-        "openhour": "16:00-次日02:00"
+        "openhour": "16:00-次日02:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1481,7 +1849,15 @@
         "notes": "西瓜牛奶冰，芒果豆乳年糕牛奶冰",
         "address": "国宾大道233号博仕后时代购物广场1楼",
         "contact": "18250159735",
-        "openhour": "11:30-00:00"
+        "openhour": "11:30-00:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1511,7 +1887,15 @@
         "notes": "牛肉面，虾饺，盐酥鸡，甜不辣，卤鸭腿，炸猪排",
         "address": "源通东路59-56号",
         "contact": "15259616762",
-        "openhour": "10:30-21:00"
+        "openhour": "10:30-21:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1541,7 +1925,15 @@
         "notes": "干煸炒面，羊肉抓饭，过油肉炒面，馕，烤羊心，烤羊肝，红柳羊肉串",
         "address": "源通东路59-54号",
         "contact": "13067375989",
-        "openhour": "09:00-次日04:00"
+        "openhour": "09:00-次日04:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1571,7 +1963,15 @@
         "notes": "油封姜母鸭，牛排配薯条，千层面，培根菌菇奶油意面",
         "address": "国宾大道350号梅园上街广场4号楼元翔快线旁（近上街地铁站A出口）",
         "contact": "15080066268",
-        "openhour": "12:00-23:00"
+        "openhour": "12:00-23:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -1601,7 +2001,15 @@
         "notes": "牛肋条，松板肉，鸡软骨，京葱鸡肉，鳗鱼，明太子西葫芦",
         "address": "源通东路196号理想城二期7号楼1层113",
         "contact": "13067269632",
-        "openhour": "12:00-23:00"
+        "openhour": "12:00-23:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",

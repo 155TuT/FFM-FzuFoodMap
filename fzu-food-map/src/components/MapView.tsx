@@ -7,9 +7,11 @@ import maplibregl, {
   type MapLayerMouseEvent,
   type ExpressionSpecification
 } from "maplibre-gl";
+import { createRoot, type Root } from "react-dom/client";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { CityConfig } from "../cities";
 import type { GeoFeature, GeoJson, PoiProps, SearchField } from "../types";
+import SourcesSection from "./SourcesSection";
 import { getFavs, setFavs, toggleFav } from "../utils/favorites";
 import { parseFavFromUrl } from "../utils/share";
 
@@ -29,7 +31,6 @@ const CATEGORY_COLORS: Record<string, { light: string; dark: string }> = {
 const DEFAULT_CATEGORY = CATEGORY_STORE;
 
 const TEXT = {
-  details: "详情",
   collect: "收藏",
   collected: "已收藏"
 } as const;
@@ -66,6 +67,7 @@ export default function MapView({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const popupRef = useRef<maplibregl.Popup | null>(null);
+  const popupSourcesRootRef = useRef<Root | null>(null);
 
   const [rawData, setRawData] = useState<GeoJson | null>(null);
   const [favSet, setFavSet] = useState<Set<string>>(() => getFavs());
@@ -150,6 +152,11 @@ export default function MapView({
   useEffect(() => {
     rawDataRef.current = rawData;
   }, [rawData]);
+
+  const cleanupPopupSourcesRoot = useCallback(() => {
+    popupSourcesRootRef.current?.unmount();
+    popupSourcesRootRef.current = null;
+  }, []);
 
   const fitToFeatures = useCallback((map: MapLibreMap, feats: GeoFeature[]) => {
     const bounds = new maplibregl.LngLatBounds();
@@ -246,8 +253,11 @@ export default function MapView({
       const map = mapRef.current;
       if (!map) return;
 
+      cleanupPopupSourcesRoot();
+
       if (!popupRef.current) {
         popupRef.current = new maplibregl.Popup({ offset: 10, closeButton: false, maxWidth: "260px" });
+        popupRef.current.on("close", cleanupPopupSourcesRoot);
       }
 
       const popup = popupRef.current;
@@ -258,6 +268,13 @@ export default function MapView({
       const contactLine = poi.contact ? `${escapeHtml(poi.contact)}` : "";
       const openHourLine = poi.openhour ? `${escapeHtml(poi.openhour)}` : "";
       const scheduleLine = [openHourLine, contactLine].filter(Boolean).join(" ");
+      const metaHtml = [
+        scheduleLine ? `<div class="poi-meta">${scheduleLine}</div>` : "",
+        addressLine ? `<div class="poi-meta">${addressLine}</div>` : "",
+        tagPriceLine ? `<div class="poi-meta">${tagPriceLine}</div>` : ""
+      ]
+        .filter(Boolean)
+        .join("");
       const includeEntries = getIncludeEntries(poi);
       const includeHtml =
         includeEntries.length > 0
@@ -273,24 +290,29 @@ export default function MapView({
           : "";
       const noteHtml =
         includeEntries.length === 0 && poi.notes ? `<div class="poi-notes">${escapeHtml(poi.notes)}</div>` : "";
-      const detailLinkHtml = poi.url
-        ? `<a href="${poi.url}" target="_blank" rel="noopener noreferrer">${TEXT.details}</a>`
-        : "";
       const highlightIncludeIndex = options?.highlightIncludeIndex ?? null;
+      const isFavorite = favSetRef.current.has(poi.id);
+      const favoriteLabel = getFavoriteLabel(isFavorite);
+      const favoriteIconUrl = getFavoriteIconPath(themeRef.current, isFavorite);
 
       const html = `
-        <div class="poi-card scrollable-card">
-          <div class="poi-title">${escapeHtml(poi.name)}</div>
-          ${scheduleLine ? `<div class="poi-meta">${scheduleLine}</div>` : ""}
-          ${addressLine ? `<div class="poi-meta">${addressLine}</div>` : ""}
-          ${tagPriceLine ? `<div class="poi-meta">${tagPriceLine}</div>` : ""}
-          ${includeHtml}
-          ${noteHtml}
-          <div class="poi-actions">
-            ${detailLinkHtml}
-            <button class="fav-btn" data-id="${poi.id}" type="button">${
-              favSetRef.current.has(poi.id) ? TEXT.collected : TEXT.collect
-            }</button>
+        <div class="poi-popup-shell">
+          <button
+            class="fav-btn"
+            data-id="${poi.id}"
+            type="button"
+            aria-pressed="${isFavorite ? "true" : "false"}"
+            aria-label="${favoriteLabel}"
+            title="${favoriteLabel}"
+          >
+            <img class="fav-btn__icon" src="${favoriteIconUrl}" alt="" aria-hidden="true" />
+          </button>
+          <div class="poi-card scrollable-card">
+            <div class="poi-title">${escapeHtml(poi.name)}</div>
+            ${metaHtml ? `<div class="poi-meta-group">${metaHtml}</div>` : ""}
+            ${includeHtml}
+            ${noteHtml}
+            <div class="poi-sources-slot"></div>
           </div>
         </div>
       `;
@@ -318,6 +340,13 @@ export default function MapView({
           }
         }
 
+        const sourcesMount = element.querySelector<HTMLDivElement>(".poi-sources-slot");
+        if (sourcesMount) {
+          const root = createRoot(sourcesMount);
+          popupSourcesRootRef.current = root;
+          root.render(<SourcesSection poi={poi} />);
+        }
+
         const btn = element.querySelector<HTMLButtonElement>(".fav-btn");
         if (!btn) return;
         btn.onclick = () => {
@@ -327,11 +356,11 @@ export default function MapView({
           const updated = new Set(nextFavs);
           setFavSet(updated);
           favSetRef.current = updated;
-          btn.textContent = updated.has(id) ? TEXT.collected : TEXT.collect;
+          syncFavoriteButton(btn, updated.has(id), themeRef.current);
         };
       });
     },
-    []
+    [cleanupPopupSourcesRoot]
   );
 
   useEffect(() => {
@@ -414,6 +443,7 @@ export default function MapView({
     });
 
     return () => {
+      cleanupPopupSourcesRoot();
       map.off("load", handleLoad);
       map.off("click", "clusters", handleClusterClick);
       map.off("click", "unclustered", handlePoiClick);
@@ -424,7 +454,7 @@ export default function MapView({
       mapRef.current = null;
       setMapReady(false);
     };
-  }, [city.center, city.zoom, showPoiPopup, styleUrl, stopUserLocationTracking]);
+  }, [city.center, city.zoom, cleanupPopupSourcesRoot, showPoiPopup, styleUrl, stopUserLocationTracking]);
 
   useEffect(() => {
     if (!trackUserLocation) {
@@ -503,6 +533,14 @@ export default function MapView({
       const element = marker.getElement();
       element.className = `user-location-marker user-location-marker--${theme}`;
     }
+  }, [theme]);
+
+  useEffect(() => {
+    const btn = popupRef.current?.getElement()?.querySelector<HTMLButtonElement>(".fav-btn");
+    if (!btn) return;
+    const id = btn.getAttribute("data-id");
+    if (!id) return;
+    syncFavoriteButton(btn, favSetRef.current.has(id), theme);
   }, [theme]);
 
   useEffect(() => {
@@ -936,6 +974,29 @@ function matchesSearch(feature: GeoFeature, field: SearchField, termLower: strin
 
 function ratingValue(feature: GeoFeature) {
   return feature.properties.rating ?? -Infinity;
+}
+
+function getFavoriteLabel(isFavorite: boolean) {
+  return isFavorite ? TEXT.collected : TEXT.collect;
+}
+
+function getFavoriteIconPath(theme: ThemeMode, isFavorite: boolean) {
+  const base = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
+  const themeDir = theme === "dark" ? "dark" : "light";
+  const iconName = isFavorite ? "stared" : "star";
+  return `${base}assets/icons/${themeDir}/${iconName}.svg`;
+}
+
+function syncFavoriteButton(button: HTMLButtonElement, isFavorite: boolean, theme: ThemeMode) {
+  const label = getFavoriteLabel(isFavorite);
+  button.setAttribute("aria-pressed", isFavorite ? "true" : "false");
+  button.setAttribute("aria-label", label);
+  button.title = label;
+
+  const icon = button.querySelector<HTMLImageElement>(".fav-btn__icon");
+  if (icon) {
+    icon.src = getFavoriteIconPath(theme, isFavorite);
+  }
 }
 
 function escapeHtml(text?: string) {

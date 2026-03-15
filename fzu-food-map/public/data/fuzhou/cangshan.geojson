@@ -22,7 +22,15 @@
         "notes": "爆汁油边，羔羊肋排，黑虎虾，宫后，生蚝",
         "address": "葛屿路与洪湾中路交叉口东60米铁皮房",
         "contact": "vx:z394606373",
-        "openhour": "18:30-00:00，需微信预约"
+        "openhour": "18:30-00:00，需微信预约",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",

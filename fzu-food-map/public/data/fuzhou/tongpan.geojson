@@ -19,17 +19,25 @@
           "一人食",
           "适合聚餐"
         ],
-        "rating": 4.0,
+        "rating": 4,
         "price": "49¥",
         "notes": "锅包肉，肘子，地三鲜，炸茄盒，三丝爆豆",
         "address": "梅峰路山海观小区c座5号店",
         "contact": "13559162610",
-        "openhour": "09:00-14:00,16:00-00:00"
+        "openhour": "09:00-14:00,16:00-00:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.27611290,
+          119.2761129,
           26.09834103
         ]
       }
@@ -52,7 +60,15 @@
         "notes": "焖烤牛胸肉，12小时烟熏牛肋排，伊比利亚猪肋排",
         "address": "屏西路110号AONE运动公园内a1-28号",
         "contact": "18060677597",
-        "openhour": "16:30-次日01:30"
+        "openhour": "16:30-次日01:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -80,7 +96,15 @@
         "notes": "月见饭，鸡皮，明太子鸡翅，炸鸡块，提灯",
         "address": "屏西路110号(A-one运动公园)小白楼2号楼",
         "contact": "(0591)83518480",
-        "openhour": "12:00-00:00"
+        "openhour": "12:00-00:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -108,7 +132,15 @@
         "notes": "石锅黑鱼/脆鱼，荔枝肉，红醩小肠，醉排骨，海蛎煲",
         "address": "晋安区金城花园西北门旁",
         "contact": "13075928862",
-        "openhour": "10:30-14:00,16:30-次日02:00"
+        "openhour": "10:30-14:00,16:30-次日02:00",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -137,7 +169,15 @@
         "notes": "红柳大串，带骨羊排，烤馕，烤花菜，烤羊肝，烤香菇，烤韭菜",
         "address": "梅峰支路99号一层06店-1（龙峰宾馆旁）",
         "contact": "13609550450",
-        "openhour": "16:00-次日03:30"
+        "openhour": "16:00-次日03:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -161,7 +201,7 @@
           "外卖",
           "一人食"
         ],
-        "rating": 3.0,
+        "rating": 3,
         "include": {
           "id": [
             "tongpan-006-1",
@@ -198,7 +238,15 @@
           ]
         },
         "notes": "特色：牛伯叔铁锅炖，南昌瓦罐，骨汤手工水饺，鱼粉花甲粉，鱼你沸腾 连锁：淳百味，北海小镇，小街胡同，猪角",
-        "openhour": "06:00-23:30"
+        "openhour": "06:00-23:30",
+        "source": "manual",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ]
       },
       "geometry": {
         "type": "Point",
