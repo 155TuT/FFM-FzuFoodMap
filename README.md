@@ -1,4 +1,12 @@
-# ![favicon](./fzu-food-map/public/assets/icons/favicon.svg) FFM | Fzu Food Map
+<h1>
+  <a href="https://github.com/155TuT/FFM-FzuFoodMap#gh-light-mode-only">
+    <img src="./fzu-food-map/public/assets/icons/light/favicon.svg" alt="favicon_light">
+  </a>
+  <a href="https://github.com/155TuT/FFM-FzuFoodMap#gh-dark-mode-only">
+    <img src="./fzu-food-map/public/assets/icons/dark/favicon.svg" alt="favicon_dark">
+  </a>
+  FFM | Fzu Food Map
+</h1>
 
 ## 0x00 声明
 
