@@ -250,8 +250,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.18650004,
-          26.06248072
+          119.18629323,
+          26.0619504
         ]
       }
     },
@@ -727,41 +727,6 @@
       "properties": {
         "id": "qishan-017",
         "category": "摊位",
-        "name": "山东杂粮煎饼",
-        "tags": [
-          "鲁菜",
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
-        "rating": 3.5,
-        "price": "12¥",
-        "notes": "煎饼果子",
-        "address": "福州大学（旗山校区）西1门附近",
-        "openhour": "17:30-23:00",
-        "source": "manual",
-        "sources": [
-          {
-            "platform": "manual",
-            "title": "手动添加",
-            "status": "manual"
-          }
-        ]
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.18840952,
-          26.05970001
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "qishan-018",
-        "category": "摊位",
         "name": "台湾锅贴",
         "tags": [
           "闽菜",
@@ -795,41 +760,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-019",
-        "category": "摊位",
-        "name": "阿凡提烤玉米",
-        "tags": [
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
-        "rating": 3.6,
-        "price": "6¥",
-        "notes": "烤玉米，烤红薯，烤鸡蛋，烤南瓜",
-        "address": "岐安福大学生街A区入口附近",
-        "openhour": "16:30-23:00",
-        "source": "manual",
-        "sources": [
-          {
-            "platform": "manual",
-            "title": "手动添加",
-            "status": "manual"
-          }
-        ]
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.18790413,
-          26.06180278
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "qishan-020",
+        "id": "qishan-018",
         "category": "门店",
         "name": "重庆小面",
         "tags": [
@@ -866,7 +797,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-021",
+        "id": "qishan-019",
         "category": "门店",
         "name": "刘记肉夹馍",
         "tags": [
@@ -903,7 +834,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-022",
+        "id": "qishan-020",
         "category": "摊位",
         "name": "可可烘焙",
         "tags": [
@@ -940,7 +871,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-023",
+        "id": "qishan-021",
         "category": "门店",
         "name": "广式养生鸡",
         "tags": [
@@ -977,7 +908,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-024",
+        "id": "qishan-022",
         "category": "摊位",
         "name": "贵州辣子鸡粉",
         "tags": [
@@ -1012,43 +943,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-025",
-        "category": "门店",
-        "name": "楠姜哩泰式料理",
-        "tags": [
-          "泰国菜",
-          "平价",
-          "堂食",
-          "日常",
-          "可外卖"
-        ],
-        "rating": 4.3,
-        "price": "20¥",
-        "notes": "咖喱鸡，咖喱牛肉",
-        "address": "岐安福大学生街学府北路10-115号",
-        "contact": "18150020016",
-        "openhour": "10:00-20:30",
-        "source": "manual",
-        "sources": [
-          {
-            "platform": "manual",
-            "title": "手动添加",
-            "status": "manual"
-          }
-        ]
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.1870292,
-          26.06209402
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "qishan-026",
+        "id": "qishan-023",
         "category": "门店",
         "name": "莆田卤面·天九湾炝肉·山里炝粉",
         "tags": [
@@ -1084,7 +979,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-027",
+        "id": "qishan-024",
         "category": "门店",
         "name": "鸿运茶餐厅",
         "tags": [
@@ -1120,7 +1015,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-028",
+        "id": "qishan-025",
         "category": "小摊",
         "name": "栗栗烘焙-栗酥饼（福大店）",
         "tags": [
@@ -1156,7 +1051,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-029",
+        "id": "qishan-026",
         "category": "门店",
         "name": "江一福·按时吃饭·啫啫煲",
         "tags": [
@@ -1192,7 +1087,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-030",
+        "id": "qishan-027",
         "category": "门店",
         "name": "周麻婆·新川式家常菜",
         "tags": [
@@ -1230,44 +1125,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-031",
-        "category": "门店",
-        "name": "喜善韩国料理",
-        "tags": [
-          "韩餐",
-          "平价",
-          "堂食",
-          "日常",
-          "可外卖",
-          "一人食"
-        ],
-        "rating": 4.3,
-        "price": "32¥",
-        "notes": "石锅拌饭，韩式炸酱面，芝士部队火锅",
-        "address": "岐安福大学生街学府北路10-156号",
-        "contact": "18805009250",
-        "openhour": "10:00-22:00",
-        "source": "manual",
-        "sources": [
-          {
-            "platform": "manual",
-            "title": "手动添加",
-            "status": "manual"
-          }
-        ]
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.18662431,
-          26.06216244
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "qishan-032",
+        "id": "qishan-028",
         "category": "门店",
         "name": "贵州特色烙锅",
         "tags": [
@@ -1304,7 +1162,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-033",
+        "id": "qishan-029",
         "category": "摊位",
         "name": "鲜榨果汁·现炒板栗",
         "tags": [
@@ -1341,7 +1199,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-034",
+        "id": "qishan-030",
         "category": "摊位",
         "name": "十里后院·快递夜市",
         "tags": [
@@ -1391,7 +1249,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-035",
+        "id": "qishan-031",
         "category": "门店",
         "name": "洪濑鸡爪",
         "tags": [
@@ -1428,7 +1286,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-036",
+        "id": "qishan-032",
         "category": "门店",
         "name": "云南铜锅牛羊肉米线",
         "tags": [
@@ -1466,7 +1324,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-037",
+        "id": "qishan-033",
         "category": "摊位",
         "name": "达叔肉夹馍·烤冷面",
         "tags": [
@@ -1501,7 +1359,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-038",
+        "id": "qishan-034",
         "category": "门店",
         "name": "拾柒糖水·古早手作糖水",
         "tags": [
@@ -1537,7 +1395,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-039",
+        "id": "qishan-035",
         "category": "小摊",
         "name": "卤百味",
         "tags": [
@@ -1570,7 +1428,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-040",
+        "id": "qishan-036",
         "category": "门店",
         "name": "成都纸包鱼烧烤大排档",
         "tags": [
@@ -1607,7 +1465,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-041",
+        "id": "qishan-037",
         "category": "摊位",
         "name": "桥头排骨",
         "tags": [
@@ -1642,7 +1500,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-042",
+        "id": "qishan-038",
         "category": "门店",
         "name": "北方饭店",
         "tags": [
@@ -1679,7 +1537,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-043",
+        "id": "qishan-039",
         "category": "门店",
         "name": "川册·川味小馆",
         "tags": [
@@ -1716,7 +1574,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-044",
+        "id": "qishan-040",
         "category": "门店",
         "name": "李夏记牛腩煲（原广式牛杂）",
         "tags": [
@@ -1754,7 +1612,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-045",
+        "id": "qishan-041",
         "category": "门店",
         "name": "焦焦牧场·鲜牛奶炸鸡",
         "tags": [
@@ -1793,7 +1651,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-046",
+        "id": "qishan-042",
         "category": "门店",
         "name": "116炭火",
         "tags": [
@@ -1832,7 +1690,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-047",
+        "id": "qishan-043",
         "category": "门店",
         "name": "fufu牛奶冰",
         "tags": [
@@ -1870,7 +1728,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-048",
+        "id": "qishan-044",
         "category": "门店",
         "name": "傻师傅台湾厨房",
         "tags": [
@@ -1908,7 +1766,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-049",
+        "id": "qishan-045",
         "category": "门店",
         "name": "新疆石榴花美食馆",
         "tags": [
@@ -1946,7 +1804,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-050",
+        "id": "qishan-046",
         "category": "门店",
         "name": "禾西Restaurant",
         "tags": [
@@ -1984,7 +1842,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-051",
+        "id": "qishan-047",
         "category": "门店",
         "name": "大福的烧鸟·居酒屋",
         "tags": [

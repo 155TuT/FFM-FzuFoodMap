@@ -1,0 +1,427 @@
+import fs from "node:fs/promises";
+import fssync from "node:fs";
+import http from "node:http";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const serverRoot = fileURLToPath(new URL(".", import.meta.url));
+const studioRoot = path.resolve(serverRoot, "..");
+const sourceRoot = path.resolve(studioRoot, "../fzu-food-map/public/data");
+const cacheRoot = path.resolve(studioRoot, ".cache/data");
+const port = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
+
+const CATEGORY_ALIASES = new Map([["小摊", "摊位"]]);
+
+function normalizeSeparators(value) {
+  return value.replace(/\\/g, "/");
+}
+
+function validateName(name, label) {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    throw new Error(`${label}不能为空`);
+  }
+  if (trimmed.includes("/") || trimmed.includes("\\") || trimmed.includes("..")) {
+    throw new Error(`${label}不允许包含路径分隔符`);
+  }
+  return trimmed;
+}
+
+function resolveCachePath(relativePath = "") {
+  const normalized = normalizeSeparators(relativePath).replace(/^\/+/, "");
+  const absolute = path.resolve(cacheRoot, normalized);
+  if (!absolute.startsWith(cacheRoot)) {
+    throw new Error("非法路径");
+  }
+  return absolute;
+}
+
+function resolveSourcePath(relativePath = "") {
+  const normalized = normalizeSeparators(relativePath).replace(/^\/+/, "");
+  const absolute = path.resolve(sourceRoot, normalized);
+  if (!absolute.startsWith(sourceRoot)) {
+    throw new Error("非法路径");
+  }
+  return absolute;
+}
+
+async function ensureDirectory(targetPath) {
+  await fs.mkdir(targetPath, { recursive: true });
+}
+
+async function copyIfMissing(sourcePath, targetPath) {
+  const stat = await fs.stat(sourcePath);
+  if (stat.isDirectory()) {
+    await ensureDirectory(targetPath);
+    const entries = await fs.readdir(sourcePath, { withFileTypes: true });
+    for (const entry of entries) {
+      await copyIfMissing(path.join(sourcePath, entry.name), path.join(targetPath, entry.name));
+    }
+    return;
+  }
+
+  if (!sourcePath.endsWith(".geojson")) {
+    return;
+  }
+
+  if (!fssync.existsSync(targetPath)) {
+    await ensureDirectory(path.dirname(targetPath));
+    await fs.copyFile(sourcePath, targetPath);
+  }
+}
+
+async function ensureCacheInitialized() {
+  await ensureDirectory(cacheRoot);
+  await copyIfMissing(sourceRoot, cacheRoot);
+}
+
+async function readJsonFile(filePath) {
+  const content = await fs.readFile(filePath, "utf8");
+  return JSON.parse(content);
+}
+
+async function writeJsonFile(filePath, data) {
+  await ensureDirectory(path.dirname(filePath));
+  await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+}
+
+async function isFileDirty(relativePath) {
+  const cachePath = resolveCachePath(relativePath);
+  const sourcePath = resolveSourcePath(relativePath);
+
+  if (!fssync.existsSync(cachePath)) return false;
+  if (!fssync.existsSync(sourcePath)) return true;
+
+  const [cacheContent, sourceContent] = await Promise.all([
+    fs.readFile(cachePath, "utf8"),
+    fs.readFile(sourcePath, "utf8")
+  ]);
+  return cacheContent !== sourceContent;
+}
+
+function createEmptyGeoJson(name) {
+  return {
+    type: "FeatureCollection",
+    license: "CC BY-NC 4.0",
+    _notes: `${name.replace(/\.geojson$/i, "")} 点位`,
+    features: []
+  };
+}
+
+async function listTree(dirPath = cacheRoot, relativePath = "") {
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  const children = [];
+
+  for (const entry of entries.sort((left, right) => {
+    if (left.isDirectory() && !right.isDirectory()) return -1;
+    if (!left.isDirectory() && right.isDirectory()) return 1;
+    return left.name.localeCompare(right.name, "zh-CN");
+  })) {
+    const absolute = path.join(dirPath, entry.name);
+    const childPath = normalizeSeparators(path.join(relativePath, entry.name));
+
+    if (entry.isDirectory()) {
+      children.push({
+        type: "directory",
+        name: entry.name,
+        path: childPath,
+        children: await listTree(absolute, childPath)
+      });
+      continue;
+    }
+
+    if (!entry.name.endsWith(".geojson")) {
+      continue;
+    }
+
+    let featureCount = 0;
+    try {
+      const content = await readJsonFile(absolute);
+      featureCount = Array.isArray(content.features) ? content.features.length : 0;
+    } catch {
+      featureCount = 0;
+    }
+
+    children.push({
+      type: "file",
+      name: entry.name,
+      path: childPath,
+      featureCount,
+      dirty: await isFileDirty(childPath)
+    });
+  }
+
+  return children;
+}
+
+async function collectTaxonomy() {
+  const categories = new Set();
+  const tags = new Set();
+
+  async function walk(dirPath) {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const absolute = path.join(dirPath, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absolute);
+        continue;
+      }
+      if (!entry.name.endsWith(".geojson")) {
+        continue;
+      }
+      try {
+        const content = await readJsonFile(absolute);
+        for (const feature of content.features ?? []) {
+          const category = feature?.properties?.category;
+          if (typeof category === "string" && category.trim()) {
+            categories.add(CATEGORY_ALIASES.get(category.trim()) ?? category.trim());
+          }
+          const rawTags = Array.isArray(feature?.properties?.tags) ? feature.properties.tags : [];
+          for (const tag of rawTags) {
+            if (typeof tag === "string" && tag.trim()) {
+              tags.add(tag.trim());
+            }
+          }
+        }
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  await walk(cacheRoot);
+
+  return {
+    categories: [...categories].sort((left, right) => left.localeCompare(right, "zh-CN")),
+    tags: [...tags].sort((left, right) => left.localeCompare(right, "zh-CN"))
+  };
+}
+
+async function buildWorkspace() {
+  await ensureCacheInitialized();
+  return {
+    sourceRoot: normalizeSeparators(path.relative(studioRoot, sourceRoot)),
+    cacheRoot: normalizeSeparators(path.relative(studioRoot, cacheRoot)),
+    tree: {
+      type: "directory",
+      name: "data",
+      path: "",
+      children: await listTree()
+    },
+    taxonomy: await collectTaxonomy()
+  };
+}
+
+async function getFile(relativePath) {
+  await ensureCacheInitialized();
+  const cachePath = resolveCachePath(relativePath);
+  if (!fssync.existsSync(cachePath)) {
+    throw new Error("文件不存在");
+  }
+
+  const data = await readJsonFile(cachePath);
+  return {
+    path: normalizeSeparators(relativePath),
+    dirty: await isFileDirty(relativePath),
+    data
+  };
+}
+
+async function updateCacheFile(relativePath, data) {
+  await ensureCacheInitialized();
+  const cachePath = resolveCachePath(relativePath);
+  await writeJsonFile(cachePath, data);
+  return {
+    file: await getFile(relativePath),
+    workspace: await buildWorkspace()
+  };
+}
+
+async function createFolder(parentPath, name) {
+  await ensureCacheInitialized();
+  const safeName = validateName(name, "文件夹名");
+  const directory = resolveCachePath(path.join(parentPath ?? "", safeName));
+  await ensureDirectory(directory);
+  return buildWorkspace();
+}
+
+async function createGeoJsonFile(parentPath, name) {
+  await ensureCacheInitialized();
+  const safeName = validateName(name, "文件名");
+  const fileName = safeName.endsWith(".geojson") ? safeName : `${safeName}.geojson`;
+  const relativePath = normalizeSeparators(path.join(parentPath ?? "", fileName));
+  const cachePath = resolveCachePath(relativePath);
+
+  if (fssync.existsSync(cachePath)) {
+    throw new Error("GeoJSON 文件已存在");
+  }
+
+  await writeJsonFile(cachePath, createEmptyGeoJson(fileName));
+  return {
+    path: relativePath,
+    workspace: await buildWorkspace(),
+    file: await getFile(relativePath)
+  };
+}
+
+async function saveFile(relativePath) {
+  await ensureCacheInitialized();
+  const cachePath = resolveCachePath(relativePath);
+  const sourcePath = resolveSourcePath(relativePath);
+
+  if (!fssync.existsSync(cachePath)) {
+    throw new Error("缓存文件不存在");
+  }
+
+  await ensureDirectory(path.dirname(sourcePath));
+  await fs.copyFile(cachePath, sourcePath);
+
+  return {
+    file: await getFile(relativePath),
+    workspace: await buildWorkspace()
+  };
+}
+
+async function saveAllFiles() {
+  await ensureCacheInitialized();
+
+  async function walk(dirPath, relativePath = "") {
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const absolute = path.join(dirPath, entry.name);
+      const childPath = normalizeSeparators(path.join(relativePath, entry.name));
+      if (entry.isDirectory()) {
+        await walk(absolute, childPath);
+        continue;
+      }
+      if (!entry.name.endsWith(".geojson")) {
+        continue;
+      }
+      if (await isFileDirty(childPath)) {
+        const sourcePath = resolveSourcePath(childPath);
+        await ensureDirectory(path.dirname(sourcePath));
+        await fs.copyFile(absolute, sourcePath);
+      }
+    }
+  }
+
+  await walk(cacheRoot);
+  return buildWorkspace();
+}
+
+async function readBody(request) {
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(chunk);
+  }
+  if (chunks.length === 0) {
+    return {};
+  }
+  const raw = Buffer.concat(chunks).toString("utf8");
+  return JSON.parse(raw);
+}
+
+function sendJson(response, statusCode, payload) {
+  response.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  response.end(JSON.stringify(payload));
+}
+
+function sendError(response, error) {
+  const message = error instanceof Error ? error.message : "服务异常";
+  sendJson(response, 400, { error: message });
+}
+
+const server = http.createServer(async (request, response) => {
+  const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "127.0.0.1"}`);
+
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  try {
+    if (request.method === "GET" && url.pathname === "/api/workspace") {
+      sendJson(response, 200, await buildWorkspace());
+      return;
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/file") {
+      const relativePath = url.searchParams.get("path");
+      if (!relativePath) {
+        throw new Error("缺少文件路径");
+      }
+      sendJson(response, 200, await getFile(relativePath));
+      return;
+    }
+
+    if (request.method === "PUT" && url.pathname === "/api/file") {
+      const body = await readBody(request);
+      if (typeof body.path !== "string") {
+        throw new Error("缺少文件路径");
+      }
+      if (!body.data || typeof body.data !== "object") {
+        throw new Error("缺少 GeoJSON 数据");
+      }
+      sendJson(response, 200, await updateCacheFile(body.path, body.data));
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/folders") {
+      const body = await readBody(request);
+      sendJson(response, 200, await createFolder(body.parentPath ?? "", body.name ?? ""));
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/files") {
+      const body = await readBody(request);
+      sendJson(response, 200, await createGeoJsonFile(body.parentPath ?? "", body.name ?? ""));
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/save") {
+      const body = await readBody(request);
+      if (typeof body.path !== "string") {
+        throw new Error("缺少文件路径");
+      }
+      sendJson(response, 200, await saveFile(body.path));
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/save-all") {
+      sendJson(response, 200, await saveAllFiles());
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/source-search") {
+      sendJson(response, 501, {
+        error: "来源搜索接口待实现",
+        message: "这里预留给后续半自动来源搜索组件。"
+      });
+      return;
+    }
+
+    sendJson(response, 404, { error: "未找到接口" });
+  } catch (error) {
+    sendError(response, error);
+  }
+});
+
+server.on("error", error => {
+  if (error && typeof error === "object" && "code" in error && error.code === "EADDRINUSE") {
+    console.error(`FFM Studio API 端口 ${port} 已被占用`);
+    process.exit(1);
+  }
+  throw error;
+});
+
+server.listen(port, "127.0.0.1", () => {
+  console.log(`FFM Studio API running at http://127.0.0.1:${port}`);
+});
