@@ -547,7 +547,7 @@ export default function App() {
 
         <div className="content-grid">
           <section className="panel panel--summary">
-            <div className="panel__header">
+            <div className="panel__header panel__header--compact">
               <div>
                 <p className="section-kicker">文件说明</p>
                 <h2>{filePathLabel}</h2>
@@ -572,18 +572,35 @@ export default function App() {
                 <strong>源目录：{workspace?.sourceRoot ?? "…"}</strong>
                 <p>缓存目录：{workspace?.cacheRoot ?? "…"}</p>
               </div>
-              <div className="summary-actions">
-                <button type="button" className="primary-button" disabled={!activeFilePath || busy} onClick={saveCurrent}>
+              <div className={`summary-actions status-banner status-banner--${loading ? "neutral" : tone}`}>
+                <span className="summary-status__message">{loading ? "正在读取工作区..." : message}</span>
+                <div className="summary-status__meta">
+                  <span className={`status-pill${activeFile?.dirty ? " status-pill--dirty" : ""}`}>
+                    {activeFile?.dirty ? "缓存已改动" : "已同步"}
+                  </span>
+                  <span className="summary-status__hint">{busy ? "处理中..." : "Ctrl+Z 可回退最近编辑"}</span>
+                </div>
+                <button
+                  type="button"
+                  className="primary-button primary-button--compact"
+                  disabled={!activeFilePath || busy}
+                  onClick={saveCurrent}
+                >
                   保存当前文件
                 </button>
-                <button type="button" className="ghost-button" disabled={!workspace || busy} onClick={saveAll}>
+                <button
+                  type="button"
+                  className="ghost-button summary-actions__secondary"
+                  disabled={!workspace || busy}
+                  onClick={saveAll}
+                >
                   保存全部缓存
                 </button>
               </div>
             </div>
           </section>
 
-          <section className="panel">
+          <section className="panel panel--feature">
             <div className="panel__header">
               <div>
                 <p className="section-kicker">点位</p>

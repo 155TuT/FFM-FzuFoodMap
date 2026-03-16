@@ -46,7 +46,7 @@ function TreeRow({
       <button
         type="button"
         className="tree-row"
-        style={{ paddingLeft: `${12 + depth * 16}px` }}
+        style={{ paddingLeft: `${10 + depth * 12}px` }}
         onClick={onClick}
       >
         <span className="tree-row__icon" aria-hidden="true">
@@ -78,7 +78,7 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
   if (node.type === "directory") {
     const expanded = props.expandedDirectories.has(node.path);
     return (
-      <div key={`dir-${node.path}`}>
+      <div key={`dir-${node.path}`} className="tree-node">
         <TreeRow
           depth={depth}
           label={node.name}
@@ -93,7 +93,7 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
 
   const active = props.activeFilePath === node.path;
   return (
-    <div key={`file-${node.path}`}>
+    <div key={`file-${node.path}`} className="tree-node">
       <TreeRow
         depth={depth}
         label={node.name}
