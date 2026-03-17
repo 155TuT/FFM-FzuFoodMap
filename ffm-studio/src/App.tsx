@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import {
   createFolder,
   createGeoJsonFile,
+  deleteFolder,
+  deleteGeoJsonFile,
   fetchFile,
   fetchWorkspace,
   saveAllGeoJsonFiles,
-  saveGeoJsonFile,
   searchSourceCandidates,
   updateCacheFile
 } from "./api";
@@ -71,7 +72,6 @@ function buildFeature(filePath: string, categories: string[]): GeoFeature {
       id: "",
       category: categories[0] ?? DEFAULT_CATEGORY,
       name: "新建点位",
-      regionId: basename(filePath).replace(/\.geojson$/i, ""),
       source: "manual",
       tags: [],
       notes: "",
@@ -82,6 +82,14 @@ function buildFeature(filePath: string, categories: string[]): GeoFeature {
     },
     geometry: { type: "Point", coordinates: DEFAULT_COORDS }
   };
+}
+
+function serializeGeoJsonDocument(document: GeoJsonDocument | null) {
+  return document ? `${JSON.stringify(document, null, 2)}\n` : null;
+}
+
+function isDirtyAgainstSource(document: GeoJsonDocument, sourceSnapshot: string | null) {
+  return sourceSnapshot === null ? true : serializeGeoJsonDocument(document) !== sourceSnapshot;
 }
 
 function toIncludeRows(include?: PoiInclude): IncludeRow[] {
@@ -205,14 +213,36 @@ export default function App() {
   const activeFilePathRef = useRef<string | null>(null);
   const undoStackRef = useRef<GeoJsonDocument[]>([]);
   const pendingCreateFeatureRef = useRef<string | null>(null);
+  const sourceSnapshotRef = useRef<string | null>(null);
 
   const applyWorkspace = (next: Workspace) => {
     setWorkspace(next);
+    const availableDirectories = collectDirectoryPaths(next.tree);
     setExpandedDirectories(previous => {
-      const nextSet = previous.size ? new Set(previous) : collectDirectoryPaths(next.tree);
-      for (const item of collectDirectoryPaths(next.tree)) nextSet.add(item);
+      if (!previous.size) {
+        return availableDirectories;
+      }
+      const nextSet = new Set<string>();
+      for (const item of previous) {
+        if (availableDirectories.has(item)) {
+          nextSet.add(item);
+        }
+      }
+      for (const item of availableDirectories) {
+        nextSet.add(item);
+      }
       return nextSet;
     });
+  };
+
+  const syncActiveFileAfterWorkspace = (next: Workspace, preferredPath: string | null = activeFilePathRef.current) => {
+    const nextPath = preferredPath && findFileNode(next.tree, preferredPath) ? preferredPath : firstFile(next.tree);
+    setActiveFilePath(nextPath);
+    if (nextPath !== preferredPath) {
+      setActiveFile(null);
+      setActiveFeatureId(null);
+      undoStackRef.current = [];
+    }
   };
 
   const flushPendingSave = async () => {
@@ -230,7 +260,7 @@ export default function App() {
       if (token !== syncRef.current) return;
       applyWorkspace(result.workspace);
       if (activeFilePathRef.current === pending.path) {
-        setActiveFile(previous => (previous ? { ...previous, dirty: result.file.dirty } : previous));
+        applyFilePayload(result.file);
       }
       setMessage("缓存已更新");
       setTone("success");
@@ -256,6 +286,15 @@ export default function App() {
   useEffect(() => {
     activeFilePathRef.current = activeFilePath;
   }, [activeFilePath]);
+
+  const applyFilePayload = (file: FilePayload) => {
+    const sourceSnapshot = serializeGeoJsonDocument(file.sourceData);
+    sourceSnapshotRef.current = sourceSnapshot;
+    setActiveFile({
+      ...file,
+      dirty: isDirtyAgainstSource(file.data, sourceSnapshot)
+    });
+  };
 
   useEffect(() => {
     void (async () => {
@@ -285,6 +324,7 @@ export default function App() {
       setActiveFile(null);
       setActiveFeatureId(null);
       undoStackRef.current = [];
+      sourceSnapshotRef.current = null;
       return;
     }
 
@@ -294,7 +334,7 @@ export default function App() {
       try {
         const file = await fetchFile(activeFilePath);
         if (cancelled) return;
-        setActiveFile(file);
+        applyFilePayload(file);
         setActiveFeatureId(current =>
           current && file.data.features.some(feature => feature.properties.id === current)
             ? current
@@ -327,7 +367,11 @@ export default function App() {
       event.preventDefault();
       const previous = undoStackRef.current.pop();
       if (!previous) return;
-      setActiveFile({ path: activeFilePath, dirty: true, data: previous });
+      setActiveFile(current =>
+        current
+          ? { ...current, data: previous, dirty: isDirtyAgainstSource(previous, sourceSnapshotRef.current) }
+          : current
+      );
       setActiveFeatureId(current =>
         current && previous.features.some(feature => feature.properties.id === current)
           ? current
@@ -374,7 +418,11 @@ export default function App() {
     if (undoStackRef.current.length > 100) {
       undoStackRef.current.shift();
     }
-    setActiveFile({ path: activeFilePath, dirty: true, data: nextData });
+    setActiveFile(previous =>
+      previous
+        ? { ...previous, data: nextData, dirty: isDirtyAgainstSource(nextData, sourceSnapshotRef.current) }
+        : previous
+    );
     if (typeof nextFeatureId !== "undefined") {
       setActiveFeatureId(nextFeatureId);
     }
@@ -420,30 +468,56 @@ export default function App() {
     mutateDocument(document => ({ ...document, features: nextFeatures }), nextFeatureId);
   }, [activeFile, categories]);
 
-  const handleDeleteFeature = () => {
-    if (!activeFile || !activeFeatureId) return;
-    const removedIndex = activeFile.data.features.findIndex(feature => feature.properties.id === activeFeatureId);
+  const handleDeleteFeature = (filePath = activeFile?.path ?? null, featureId = activeFeatureId) => {
+    if (!activeFile || !filePath || activeFile.path !== filePath || !featureId) return;
+    const removedIndex = activeFile.data.features.findIndex(feature => feature.properties.id === featureId);
     if (removedIndex === -1) return;
     const remaining = renumberFeatures(
       activeFile.path,
-      activeFile.data.features.filter(feature => feature.properties.id !== activeFeatureId)
+      activeFile.data.features.filter(feature => feature.properties.id !== featureId)
     );
     const nextFeatureId = remaining[Math.min(removedIndex, remaining.length - 1)]?.properties.id ?? null;
     mutateDocument(document => ({ ...document, features: remaining }), nextFeatureId);
   };
 
-  const saveCurrent = async () => {
-    if (!activeFilePath) return;
+  const handleDeleteFolder = async (folderPath: string) => {
+    const label = basename(folderPath);
+    if (!window.confirm(`确认删除缓存中的地区文件夹“${label}”及其下所有 GeoJSON 吗？点击保存前，不会同步到源目录。`)) {
+      return;
+    }
+
     await flushPendingSave();
     setBusy(true);
     try {
-      const result = await saveGeoJsonFile(activeFilePath);
-      applyWorkspace(result.workspace);
-      setActiveFile(previous => (previous ? { ...previous, dirty: result.file.dirty } : previous));
-      setMessage("已保存到 fzu-food-map/public/data");
+      const nextWorkspace = await deleteFolder(folderPath);
+      applyWorkspace(nextWorkspace);
+      syncActiveFileAfterWorkspace(nextWorkspace);
+      setMessage(`已从缓存删除地区文件夹：${label}`);
       setTone("success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "保存失败");
+      setMessage(error instanceof Error ? error.message : "删除地区文件夹失败");
+      setTone("error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDeleteGeoJsonFile = async (filePath: string) => {
+    const label = basename(filePath);
+    if (!window.confirm(`确认删除缓存中的 GeoJSON“${label}”吗？点击保存前，不会同步到源目录。`)) {
+      return;
+    }
+
+    await flushPendingSave();
+    setBusy(true);
+    try {
+      const nextWorkspace = await deleteGeoJsonFile(filePath);
+      applyWorkspace(nextWorkspace);
+      syncActiveFileAfterWorkspace(nextWorkspace);
+      setMessage(`已从缓存删除 GeoJSON：${label}`);
+      setTone("success");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "删除 GeoJSON 失败");
       setTone("error");
     } finally {
       setBusy(false);
@@ -455,11 +529,16 @@ export default function App() {
     setBusy(true);
     try {
       applyWorkspace(await saveAllGeoJsonFiles());
-      setActiveFile(previous => (previous ? { ...previous, dirty: false } : previous));
-      setMessage("全部缓存文件已写回源目录");
+      setActiveFile(previous => {
+        if (!previous) return previous;
+        const nextSourceSnapshot = serializeGeoJsonDocument(previous.data);
+        sourceSnapshotRef.current = nextSourceSnapshot;
+        return { ...previous, dirty: false };
+      });
+      setMessage("已将缓存内容完整覆写到 fzu-food-map/public/data");
       setTone("success");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "批量保存失败");
+      setMessage(error instanceof Error ? error.message : "保存暂存更改失败");
       setTone("error");
     } finally {
       setBusy(false);
@@ -477,7 +556,7 @@ export default function App() {
         const result = await createGeoJsonFile(dialog.parentPath, dialog.name);
         applyWorkspace(result.workspace);
         setActiveFilePath(result.path);
-        setActiveFile(result.file);
+        applyFilePayload(result.file);
         setActiveFeatureId(null);
         setMessage("GeoJSON 文件已创建到缓存目录");
       }
@@ -533,6 +612,9 @@ export default function App() {
             onCreateFolder={parentPath => setDialog({ type: "folder", parentPath, name: "" })}
             onCreateFile={parentPath => setDialog({ type: "file", parentPath, name: "" })}
             onCreateFeature={handleCreateFeature}
+            onDeleteFeature={handleDeleteFeature}
+            onDeleteFolder={handleDeleteFolder}
+            onDeleteFile={handleDeleteGeoJsonFile}
           />
         ) : (
           <div className="tree-panel tree-panel--empty">载入中…</div>
@@ -583,18 +665,10 @@ export default function App() {
                 <button
                   type="button"
                   className="primary-button primary-button--compact"
-                  disabled={!activeFilePath || busy}
-                  onClick={saveCurrent}
-                >
-                  保存当前文件
-                </button>
-                <button
-                  type="button"
-                  className="ghost-button summary-actions__secondary"
                   disabled={!workspace || busy}
                   onClick={saveAll}
                 >
-                  保存全部缓存
+                  同步缓存至项目
                 </button>
               </div>
             </div>
@@ -640,18 +714,6 @@ export default function App() {
                         <option key={item} value={item} />
                       ))}
                     </datalist>
-                  </label>
-                  <label className="field">
-                    <span>所属区域</span>
-                    <input
-                      value={activeFeature.properties.regionId ?? ""}
-                      onChange={event =>
-                        mutateFeature(feature => ({
-                          ...feature,
-                          properties: { ...feature.properties, regionId: event.target.value }
-                        }))
-                      }
-                    />
                   </label>
                   <label className="field">
                     <span>评分</span>
@@ -739,9 +801,6 @@ export default function App() {
                       <h3>标签</h3>
                       <p>支持从现有标签中选择，也支持直接录入新标签。</p>
                     </div>
-                    <button type="button" className="ghost-button" onClick={handleDeleteFeature}>
-                      删除当前点位
-                    </button>
                   </div>
                   <TagEditor
                     value={activeFeature.properties.tags ?? []}
@@ -860,16 +919,19 @@ export default function App() {
                     />
                   </label>
                 </div>
-                <MiniMap
-                  category={activeFeature.properties.category}
-                  coordinates={activeFeature.geometry.coordinates}
-                  onChangeCoordinates={next =>
-                    mutateFeature(feature => ({
-                      ...feature,
-                      geometry: { ...feature.geometry, coordinates: next }
-                    }))
-                  }
-                />
+                <div className="field map-preview-field">
+                  <span>位置预览</span>
+                  <MiniMap
+                    category={activeFeature.properties.category}
+                    coordinates={activeFeature.geometry.coordinates}
+                    onChangeCoordinates={next =>
+                      mutateFeature(feature => ({
+                        ...feature,
+                        geometry: { ...feature.geometry, coordinates: next }
+                      }))
+                    }
+                  />
+                </div>
                 <div className="json-preview">
                   <div className="editor-section__header">
                     <div>

@@ -3,6 +3,8 @@ import type { GeoFeature, WorkspaceDirectoryNode, WorkspaceFileNode, WorkspaceNo
 
 type TreeAction = {
   title: string;
+  label: string;
+  tone?: "default" | "danger";
   onClick: () => void;
 };
 
@@ -18,6 +20,9 @@ type Props = {
   onCreateFolder: (parentPath: string) => void;
   onCreateFile: (parentPath: string) => void;
   onCreateFeature: (filePath: string) => void;
+  onDeleteFeature: (filePath: string, featureId: string) => void;
+  onDeleteFolder: (path: string) => void;
+  onDeleteFile: (path: string) => void;
 };
 
 function TreeRow({
@@ -28,7 +33,7 @@ function TreeRow({
   dirty,
   muted,
   suffix,
-  action,
+  actions,
   onClick
 }: {
   depth: number;
@@ -38,7 +43,7 @@ function TreeRow({
   dirty?: boolean;
   muted?: boolean;
   suffix?: string;
-  action?: TreeAction;
+  actions?: TreeAction[];
   onClick?: () => void;
 }) {
   return (
@@ -56,19 +61,24 @@ function TreeRow({
         {suffix ? <span className="tree-row__suffix">{suffix}</span> : null}
         {dirty ? <span className="tree-row__dirty" title="缓存已修改，尚未保存到源目录" /> : null}
       </button>
-      {action ? (
-        <button
-          type="button"
-          className="tree-row__action"
-          title={action.title}
-          aria-label={action.title}
-          onClick={event => {
-            event.stopPropagation();
-            action.onClick();
-          }}
-        >
-          +
-        </button>
+      {actions?.length ? (
+        <div className="tree-row__actions">
+          {actions.map(action => (
+            <button
+              key={`${action.title}-${action.label}`}
+              type="button"
+              className={`tree-row__action${action.tone === "danger" ? " tree-row__action--danger" : ""}`}
+              title={action.title}
+              aria-label={action.title}
+              onClick={event => {
+                event.stopPropagation();
+                action.onClick();
+              }}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
       ) : null}
     </div>
   );
@@ -83,7 +93,10 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
           depth={depth}
           label={node.name}
           icon={expanded ? "v" : ">"}
-          action={{ title: "新建 GeoJSON", onClick: () => props.onCreateFile(node.path) }}
+          actions={[
+            { title: "删除当前地区文件夹", label: "x", tone: "danger", onClick: () => props.onDeleteFolder(node.path) },
+            { title: "新建 GeoJSON", label: "+", onClick: () => props.onCreateFile(node.path) }
+          ]}
           onClick={() => props.onToggleDirectory(node.path)}
         />
         {expanded ? node.children.map(child => renderNode(child, depth + 1, props)) : null}
@@ -101,7 +114,10 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
         suffix={`${node.featureCount}`}
         active={active}
         dirty={node.dirty}
-        action={{ title: "新建点位", onClick: () => props.onCreateFeature(node.path) }}
+        actions={[
+          { title: "删除当前 GeoJSON", label: "x", tone: "danger", onClick: () => props.onDeleteFile(node.path) },
+          { title: "新建点位", label: "+", onClick: () => props.onCreateFeature(node.path) }
+        ]}
         onClick={() => props.onSelectFile(node.path)}
       />
       {active
@@ -112,6 +128,14 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
               label={`${feature.properties.id} ${feature.properties.name || ""}`.trim()}
               icon="."
               active={props.activeFeatureId === feature.properties.id}
+              actions={[
+                {
+                  title: "删除当前点位",
+                  label: "x",
+                  tone: "danger",
+                  onClick: () => props.onDeleteFeature(node.path, feature.properties.id)
+                }
+              ]}
               onClick={() => props.onSelectFeature(node.path, feature.properties.id)}
             />
           ))
@@ -135,7 +159,7 @@ export default function TreePanel(props: Props) {
           label={props.root.name}
           icon={rootExpanded ? "v" : ">"}
           muted
-          action={{ title: "新建地区文件夹", onClick: () => props.onCreateFolder("") }}
+          actions={[{ title: "新建地区文件夹", label: "+", onClick: () => props.onCreateFolder("") }]}
           onClick={() => props.onToggleDirectory(props.root.path)}
         />
         {rootExpanded ? props.root.children.map(node => renderNode(node, 1, props)) : null}

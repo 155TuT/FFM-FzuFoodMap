@@ -7,7 +7,9 @@ import { fileURLToPath } from "node:url";
 const serverRoot = fileURLToPath(new URL(".", import.meta.url));
 const studioRoot = path.resolve(serverRoot, "..");
 const sourceRoot = path.resolve(studioRoot, "../fzu-food-map/public/data");
+const cacheStateRoot = path.resolve(studioRoot, ".cache");
 const cacheRoot = path.resolve(studioRoot, ".cache/data");
+const cacheInitMarker = path.resolve(cacheStateRoot, ".initialized");
 const port = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
 
 const CATEGORY_ALIASES = new Map([["小摊", "摊位"]]);
@@ -49,13 +51,38 @@ async function ensureDirectory(targetPath) {
   await fs.mkdir(targetPath, { recursive: true });
 }
 
-async function copyIfMissing(sourcePath, targetPath) {
+function sanitizeFeature(feature) {
+  if (!feature || typeof feature !== "object") {
+    return feature;
+  }
+  const properties =
+    feature.properties && typeof feature.properties === "object" && !Array.isArray(feature.properties)
+      ? feature.properties
+      : {};
+  const { regionId, ...restProperties } = properties;
+  return {
+    ...feature,
+    properties: restProperties
+  };
+}
+
+function sanitizeGeoJsonDocument(data) {
+  if (!data || typeof data !== "object") {
+    return data;
+  }
+  return {
+    ...data,
+    features: Array.isArray(data.features) ? data.features.map(sanitizeFeature) : []
+  };
+}
+
+async function copyGeoJsonTree(sourcePath, targetPath, skipExisting = false) {
   const stat = await fs.stat(sourcePath);
   if (stat.isDirectory()) {
     await ensureDirectory(targetPath);
     const entries = await fs.readdir(sourcePath, { withFileTypes: true });
     for (const entry of entries) {
-      await copyIfMissing(path.join(sourcePath, entry.name), path.join(targetPath, entry.name));
+      await copyGeoJsonTree(path.join(sourcePath, entry.name), path.join(targetPath, entry.name), skipExisting);
     }
     return;
   }
@@ -64,25 +91,36 @@ async function copyIfMissing(sourcePath, targetPath) {
     return;
   }
 
-  if (!fssync.existsSync(targetPath)) {
-    await ensureDirectory(path.dirname(targetPath));
-    await fs.copyFile(sourcePath, targetPath);
+  if (skipExisting && fssync.existsSync(targetPath)) {
+    return;
   }
+
+  await writeJsonFile(targetPath, await readJsonFile(sourcePath));
 }
 
 async function ensureCacheInitialized() {
+  await ensureDirectory(cacheStateRoot);
   await ensureDirectory(cacheRoot);
-  await copyIfMissing(sourceRoot, cacheRoot);
+  if (fssync.existsSync(cacheInitMarker)) {
+    return;
+  }
+
+  const entries = await fs.readdir(cacheRoot, { withFileTypes: true });
+  if (entries.length === 0 && fssync.existsSync(sourceRoot)) {
+    await copyGeoJsonTree(sourceRoot, cacheRoot, true);
+  }
+
+  await fs.writeFile(cacheInitMarker, `${new Date().toISOString()}\n`, "utf8");
 }
 
 async function readJsonFile(filePath) {
   const content = await fs.readFile(filePath, "utf8");
-  return JSON.parse(content);
+  return sanitizeGeoJsonDocument(JSON.parse(content));
 }
 
 async function writeJsonFile(filePath, data) {
   await ensureDirectory(path.dirname(filePath));
-  await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  await fs.writeFile(filePath, `${JSON.stringify(sanitizeGeoJsonDocument(data), null, 2)}\n`, "utf8");
 }
 
 async function isFileDirty(relativePath) {
@@ -215,6 +253,7 @@ async function buildWorkspace() {
 async function getFile(relativePath) {
   await ensureCacheInitialized();
   const cachePath = resolveCachePath(relativePath);
+  const sourcePath = resolveSourcePath(relativePath);
   if (!fssync.existsSync(cachePath)) {
     throw new Error("文件不存在");
   }
@@ -223,7 +262,8 @@ async function getFile(relativePath) {
   return {
     path: normalizeSeparators(relativePath),
     dirty: await isFileDirty(relativePath),
-    data
+    data,
+    sourceData: fssync.existsSync(sourcePath) ? await readJsonFile(sourcePath) : null
   };
 }
 
@@ -264,17 +304,67 @@ async function createGeoJsonFile(parentPath, name) {
   };
 }
 
-async function saveFile(relativePath) {
+async function deleteFolder(relativePath) {
   await ensureCacheInitialized();
+  const normalizedPath = normalizeSeparators(relativePath ?? "").replace(/^\/+/, "");
+  if (!normalizedPath) {
+    throw new Error("不能删除根目录");
+  }
+
+  const cachePath = resolveCachePath(normalizedPath);
+  if (!fssync.existsSync(cachePath)) {
+    throw new Error("文件夹不存在");
+  }
+
+  const stat = await fs.stat(cachePath);
+  if (!stat.isDirectory()) {
+    throw new Error("目标不是文件夹");
+  }
+
+  await fs.rm(cachePath, { recursive: true, force: true });
+
+  return buildWorkspace();
+}
+
+async function deleteGeoJsonFile(relativePath) {
+  await ensureCacheInitialized();
+  const normalizedPath = normalizeSeparators(relativePath ?? "").replace(/^\/+/, "");
+  if (!normalizedPath.endsWith(".geojson")) {
+    throw new Error("只能删除 GeoJSON 文件");
+  }
+
+  const cachePath = resolveCachePath(normalizedPath);
+  if (!fssync.existsSync(cachePath)) {
+    throw new Error("GeoJSON 文件不存在");
+  }
+
+  const stat = await fs.stat(cachePath);
+  if (!stat.isFile()) {
+    throw new Error("目标不是 GeoJSON 文件");
+  }
+
+  await fs.rm(cachePath, { force: true });
+
+  return buildWorkspace();
+}
+
+async function overwriteSourceFromCache() {
+  await ensureCacheInitialized();
+  await fs.rm(sourceRoot, { recursive: true, force: true });
+  await ensureDirectory(sourceRoot);
+  if (fssync.existsSync(cacheRoot)) {
+    await copyGeoJsonTree(cacheRoot, sourceRoot);
+  }
+}
+
+async function saveFile(relativePath) {
   const cachePath = resolveCachePath(relativePath);
-  const sourcePath = resolveSourcePath(relativePath);
 
   if (!fssync.existsSync(cachePath)) {
     throw new Error("缓存文件不存在");
   }
 
-  await ensureDirectory(path.dirname(sourcePath));
-  await fs.copyFile(cachePath, sourcePath);
+  await overwriteSourceFromCache();
 
   return {
     file: await getFile(relativePath),
@@ -283,29 +373,7 @@ async function saveFile(relativePath) {
 }
 
 async function saveAllFiles() {
-  await ensureCacheInitialized();
-
-  async function walk(dirPath, relativePath = "") {
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
-    for (const entry of entries) {
-      const absolute = path.join(dirPath, entry.name);
-      const childPath = normalizeSeparators(path.join(relativePath, entry.name));
-      if (entry.isDirectory()) {
-        await walk(absolute, childPath);
-        continue;
-      }
-      if (!entry.name.endsWith(".geojson")) {
-        continue;
-      }
-      if (await isFileDirty(childPath)) {
-        const sourcePath = resolveSourcePath(childPath);
-        await ensureDirectory(path.dirname(sourcePath));
-        await fs.copyFile(absolute, sourcePath);
-      }
-    }
-  }
-
-  await walk(cacheRoot);
+  await overwriteSourceFromCache();
   return buildWorkspace();
 }
 
@@ -338,7 +406,7 @@ const server = http.createServer(async (request, response) => {
   const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "127.0.0.1"}`);
 
   response.setHeader("Access-Control-Allow-Origin", "*");
-  response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS");
+  response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (request.method === "OPTIONS") {
@@ -380,9 +448,27 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    if (request.method === "DELETE" && url.pathname === "/api/folders") {
+      const relativePath = url.searchParams.get("path");
+      if (typeof relativePath !== "string") {
+        throw new Error("缺少文件夹路径");
+      }
+      sendJson(response, 200, await deleteFolder(relativePath));
+      return;
+    }
+
     if (request.method === "POST" && url.pathname === "/api/files") {
       const body = await readBody(request);
       sendJson(response, 200, await createGeoJsonFile(body.parentPath ?? "", body.name ?? ""));
+      return;
+    }
+
+    if (request.method === "DELETE" && url.pathname === "/api/files") {
+      const relativePath = url.searchParams.get("path");
+      if (typeof relativePath !== "string") {
+        throw new Error("缺少文件路径");
+      }
+      sendJson(response, 200, await deleteGeoJsonFile(relativePath));
       return;
     }
 

@@ -38,6 +38,13 @@ export function createFolder(parentPath: string, name: string) {
   });
 }
 
+export function deleteFolder(path: string) {
+  const query = new URLSearchParams({ path }).toString();
+  return request<Workspace>(`/api/folders?${query}`, {
+    method: "DELETE"
+  });
+}
+
 export function createGeoJsonFile(parentPath: string, name: string) {
   return request<{ path: string; file: FilePayload; workspace: Workspace }>("/api/files", {
     method: "POST",
@@ -45,10 +52,10 @@ export function createGeoJsonFile(parentPath: string, name: string) {
   });
 }
 
-export function saveGeoJsonFile(filePath: string) {
-  return request<FileUpdateResponse>("/api/save", {
-    method: "POST",
-    body: JSON.stringify({ path: filePath })
+export function deleteGeoJsonFile(path: string) {
+  const query = new URLSearchParams({ path }).toString();
+  return request<Workspace>(`/api/files?${query}`, {
+    method: "DELETE"
   });
 }
 

@@ -17,7 +17,6 @@ export type PoiProperties = {
   id: string;
   category: string;
   name: string;
-  regionId?: string;
   source?: string;
   tags?: string[];
   rating?: number;
@@ -76,6 +75,7 @@ export type FilePayload = {
   path: string;
   dirty: boolean;
   data: GeoJsonDocument;
+  sourceData: GeoJsonDocument | null;
 };
 
 export type FileUpdateResponse = {
