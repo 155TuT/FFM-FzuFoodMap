@@ -754,8 +754,8 @@ html, body, #root {
 .fav-btn {
   --press-button-rest-transform: translateY(-50%);
   position: absolute;
-  top: calc(var(--floating-action-radius) * -0.5);
-  right: calc(var(--floating-action-radius) * -1.7);
+  top: calc(var(--floating-action-radius) * -0.6);
+  right: calc(var(--floating-action-radius) * -1.6);
   padding: 0;
   z-index: 3;
   border-color: var(--border-strong);
