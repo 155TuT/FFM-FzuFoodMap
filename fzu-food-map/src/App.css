@@ -23,6 +23,7 @@
   --poi-meta-row-gap: 3px;
   --panel-gap: 24px;
   --toolbar-horizontal-gap: 16px;
+  --round-button-gap: 4px;
   --location-panel-extra-gap: 4px;
   color: var(--text-primary);
 }
@@ -211,10 +212,12 @@ html, body, #root {
 
 .toolbar-search-icon {
   display: inline-flex;
+  flex: 0 0 20px;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
+  align-self: center;
 }
 
 .toolbar-search-icon img {
@@ -542,8 +545,9 @@ html, body, #root {
   }
 
   .toolbar-search-icon {
-    width: 18px;
-    height: 18px;
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
   }
 
   .toolbar-search-input {
@@ -613,6 +617,8 @@ html, body, #root {
 
 .maplibregl-popup-content {
   padding: var(--card-compact-padding);
+  position: relative;
+  isolation: isolate;
   color: var(--text-primary);
   background: var(--surface-card-strong);
   border-radius: 14px;
@@ -622,7 +628,7 @@ html, body, #root {
 }
 
 .poi-popup-shell {
-  position: relative;
+  position: static;
 }
 
 .poi-card {
@@ -631,6 +637,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding-bottom: calc(var(--floating-action-radius) + 4px);
 }
 
 .scrollable-card {
@@ -752,12 +759,13 @@ html, body, #root {
 }
 
 .fav-btn {
-  --press-button-rest-transform: translateY(-50%);
+  /* Keep the button center pinned to the popup card's top-right corner. */
+  --press-button-rest-transform: translate(50%, -50%);
   position: absolute;
-  top: calc(var(--floating-action-radius) * -0.6);
-  right: calc(var(--floating-action-radius) * -1.6);
+  top: 0;
+  right: 0;
   padding: 0;
-  z-index: 3;
+  z-index: 4;
   border-color: var(--border-strong);
   background: var(--surface-card-strong);
   box-shadow: none;
@@ -791,21 +799,19 @@ html, body, #root {
 }
 
 .poi-sources {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-  min-height: var(--poi-action-size);
-}
-
-.poi-sources--multiple {
-  flex-direction: column;
-  align-items: flex-start;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .source-icon,
-.source-stack-trigger {
-  height: var(--poi-action-size);
+.poi-sources__toggle {
+  height: var(--floating-action-size);
   padding: 0;
   border: none;
   background: transparent;
@@ -813,55 +819,64 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 
 .source-icon {
-  width: var(--poi-action-size);
+  width: var(--floating-action-size);
   text-decoration: none;
   color: inherit;
 }
 
-.source-stack-trigger {
-  width: auto;
-  min-width: var(--poi-action-size);
+.poi-sources__toggle {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--floating-action-size);
+  z-index: 3;
+  transform: translate(-50%, 50%);
   cursor: pointer;
 }
 
-.source-icon__circle {
+.source-icon__circle,
+.poi-sources__toggle-circle {
   width: 100%;
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--floating-action-radius);
   border: 1px solid var(--border-strong);
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(56, 189, 248, 0.28));
+  background: var(--surface-card-strong);
   color: var(--text-primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  box-shadow: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.source-icon__circle {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  box-sizing: border-box;
-  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
 }
 
 .source-icon:hover .source-icon__circle,
 .source-icon:focus-visible .source-icon__circle,
-.source-stack-trigger:hover .source-icon__circle,
-.source-stack-trigger:focus-visible .source-icon__circle {
+.poi-sources__toggle:hover .poi-sources__toggle-circle,
+.poi-sources__toggle:focus-visible .poi-sources__toggle-circle {
   border-color: var(--accent-primary);
-  transform: translateY(-1px);
+  background: rgba(14, 165, 233, 0.12);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.08);
 }
 
 .source-icon:focus-visible,
-.source-stack-trigger:focus-visible {
-  outline: 2px solid rgba(14, 165, 233, 0.55);
-  outline-offset: 2px;
-  border-radius: 10px;
+.poi-sources__toggle:focus-visible {
+  outline: none;
 }
 
 .source-icon:active .source-icon__circle,
-.source-stack-trigger:active .source-icon__circle {
-  transform: translateY(0);
+.poi-sources__toggle:active .poi-sources__toggle-circle {
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.16), 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 .source-icon:disabled,
@@ -873,32 +888,47 @@ html, body, #root {
   opacity: 0.56;
 }
 
-.source-icon-stack {
-  display: inline-flex;
-  align-items: center;
-  height: var(--poi-action-size);
+.poi-sources__toggle-icon {
+  width: var(--icon-button-icon-size);
+  height: var(--icon-button-icon-size);
+  display: block;
+  object-fit: contain;
 }
 
-.source-icon-stack__slot {
-  position: relative;
-  flex: 0 0 auto;
-  width: var(--poi-action-size);
-  height: var(--poi-action-size);
+.poi-sources__strip {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--floating-action-size);
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(50%);
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 2;
 }
 
-.source-icon-stack__slot + .source-icon-stack__slot {
-  margin-left: calc(var(--poi-action-size) * -0.75);
+.poi-sources__strip--expanded {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.source-list-popover {
+.poi-sources__scroller {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  background: var(--surface-card);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+  align-items: center;
+  gap: var(--round-button-gap);
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-left: calc(var(--floating-action-radius) + var(--round-button-gap));
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.poi-sources__scroller::-webkit-scrollbar {
+  display: none;
 }
 
 .user-location-marker {
@@ -1177,7 +1207,7 @@ html, body, #root {
 .floating-actions {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--round-button-gap);
   align-items: center;
   padding: 6px 6px;
   border-radius: 28px;

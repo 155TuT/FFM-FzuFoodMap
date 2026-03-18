@@ -312,8 +312,8 @@ export default function MapView({
             ${metaHtml ? `<div class="poi-meta-group">${metaHtml}</div>` : ""}
             ${includeHtml}
             ${noteHtml}
-            <div class="poi-sources-slot"></div>
           </div>
+          <div class="poi-sources-slot"></div>
         </div>
       `;
 

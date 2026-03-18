@@ -2,8 +2,6 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { PoiProps } from "../types";
 import { getDisplaySources } from "../utils/sources";
 import SourceIcon from "./SourceIcon";
-import SourceIconStack from "./SourceIconStack";
-import SourceListPopover from "./SourceListPopover";
 
 type Props = {
   poi: PoiProps;
@@ -13,7 +11,9 @@ export default function SourcesSection({ poi }: Props) {
   const sources = useMemo(() => getDisplaySources(poi), [poi]);
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const popoverId = useId();
+  const listId = useId();
+  const iconBase = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
+  const toggleIcon = `${iconBase}assets/icons/normal/${expanded ? "left" : "right"}.svg`;
 
   useEffect(() => {
     if (!expanded) {
@@ -49,28 +49,39 @@ export default function SourcesSection({ poi }: Props) {
     return null;
   }
 
-  if (sources.length === 1) {
-    return (
-      <div className="poi-sources" ref={containerRef}>
-        <SourceIcon source={sources[0]} />
-      </div>
-    );
-  }
-
   return (
-    <div className="poi-sources poi-sources--multiple" ref={containerRef}>
+    <div className={`poi-sources${expanded ? " poi-sources--expanded" : ""}`} ref={containerRef}>
       <button
-        className="source-stack-trigger"
+        className="poi-sources__toggle"
         type="button"
         onClick={() => setExpanded(current => !current)}
         aria-expanded={expanded}
-        aria-controls={expanded ? popoverId : undefined}
-        title={`显示 ${sources.length} 个来源`}
-        aria-label={`显示 ${sources.length} 个来源`}
+        aria-controls={listId}
+        title={expanded ? "收起来源" : "查看来源"}
+        aria-label={expanded ? "收起来源" : "查看来源"}
       >
-        <SourceIconStack sources={sources} />
+        <span className="poi-sources__toggle-circle" aria-hidden="true">
+          <img
+            className="poi-sources__toggle-icon"
+            src={toggleIcon}
+            alt=""
+          />
+        </span>
       </button>
-      {expanded ? <SourceListPopover id={popoverId} sources={sources} /> : null}
+      <div
+        className={`poi-sources__strip${expanded ? " poi-sources__strip--expanded" : ""}`}
+        id={listId}
+        aria-label="来源列表"
+        aria-hidden={!expanded}
+      >
+        {expanded ? (
+          <div className="poi-sources__scroller">
+            {sources.map(source => (
+              <SourceIcon key={source.key} source={source} />
+            ))}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
