@@ -203,17 +203,6 @@
         ],
         "rating": 3,
         "include": {
-          "id": [
-            "tongpan-006-1",
-            "tongpan-006-2",
-            "tongpan-006-3",
-            "tongpan-006-4",
-            "tongpan-006-5",
-            "tongpan-006-6",
-            "tongpan-006-7",
-            "tongpan-006-8",
-            "tongpan-006-9"
-          ],
           "name": [
             "牛伯叔铁锅炖",
             "南昌瓦罐",
@@ -237,7 +226,7 @@
             "连锁"
           ]
         },
-        "notes": "特色：牛伯叔铁锅炖，南昌瓦罐，骨汤手工水饺，鱼粉花甲粉，鱼你沸腾 连锁：淳百味，北海小镇，小街胡同，猪角",
+        "notes": "",
         "openhour": "06:00-23:30",
         "source": "manual",
         "sources": [
