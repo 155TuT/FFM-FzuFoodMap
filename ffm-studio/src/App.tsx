@@ -47,6 +47,14 @@ function firstFile(node: Workspace["tree"]): string | null {
   return null;
 }
 
+function hasDirtyFiles(node: Workspace["tree"]): boolean {
+  for (const child of node.children) {
+    if (child.type === "file" && child.dirty) return true;
+    if (child.type === "directory" && hasDirtyFiles(child)) return true;
+  }
+  return false;
+}
+
 function featurePrefix(filePath: string) {
   return basename(filePath).replace(/\.geojson$/i, "").toLowerCase();
 }
@@ -203,6 +211,7 @@ export default function App() {
   const [expandedDirectories, setExpandedDirectories] = useState<Set<string>>(new Set([""]));
   const [dialog, setDialog] = useState<DialogState>(null);
   const [busy, setBusy] = useState(false);
+  const [autosaveQueued, setAutosaveQueued] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("正在载入工作区");
   const [tone, setTone] = useState<Tone>("neutral");
@@ -250,6 +259,7 @@ export default function App() {
       window.clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
+    setAutosaveQueued(false);
     const pending = pendingSaveRef.current;
     if (!pending) return;
     pendingSaveRef.current = null;
@@ -276,6 +286,7 @@ export default function App() {
     if (saveTimerRef.current) {
       window.clearTimeout(saveTimerRef.current);
     }
+    setAutosaveQueued(true);
     saveTimerRef.current = window.setTimeout(() => {
       void flushPendingSave();
     }, AUTOSAVE_DELAY);
@@ -411,6 +422,8 @@ export default function App() {
 
   const includeRows = activeFeature ? toIncludeRows(activeFeature.properties.include) : [];
   const filePathLabel = activeFilePath ? `data/${activeFilePath}` : "data";
+  const workspaceDirty = useMemo(() => (workspace ? hasDirtyFiles(workspace.tree) : false), [workspace]);
+  const rootStatusTone = autosaveQueued ? "loading" : workspaceDirty ? "warning" : "success";
 
   const commitDocument = (nextData: GeoJsonDocument, nextFeatureId?: string | null) => {
     if (!activeFilePath || !activeFile) return;
@@ -589,10 +602,12 @@ export default function App() {
         {workspace ? (
           <TreePanel
             root={workspace.tree}
+            rootStatusTone={rootStatusTone}
             activeFilePath={activeFilePath}
             activeFeatureId={activeFeatureId}
             activeFileFeatures={activeFile?.data.features ?? []}
             expandedDirectories={expandedDirectories}
+            busy={busy}
             onToggleDirectory={path =>
               setExpandedDirectories(previous => {
                 const next = new Set(previous);
@@ -615,6 +630,7 @@ export default function App() {
             onDeleteFeature={handleDeleteFeature}
             onDeleteFolder={handleDeleteFolder}
             onDeleteFile={handleDeleteGeoJsonFile}
+            onSaveAll={saveAll}
           />
         ) : (
           <div className="tree-panel tree-panel--empty">载入中…</div>
@@ -624,7 +640,7 @@ export default function App() {
       <main className="workbench">
         <section className="status-banner status-banner--neutral">
           <span>{loading ? "正在读取工作区" : message}</span>
-          <span>{busy ? "处理中…" : "Ctrl+Z 可回退最近编辑"}</span>
+          {busy ? <span>处理中…</span> : autosaveQueued ? <span>3 秒后自动写入缓存</span> : null}
         </section>
 
         <div className="content-grid">
@@ -634,8 +650,8 @@ export default function App() {
                 <p className="section-kicker">文件说明</p>
                 <h2>{filePathLabel}</h2>
               </div>
-              <span className={`status-pill${activeFile?.dirty ? " status-pill--dirty" : ""}`}>
-                {activeFile?.dirty ? "缓存已改动" : "已同步"}
+              <span className={`status-pill${workspaceDirty ? " status-pill--dirty" : ""}`}>
+                {workspaceDirty ? "缓存已改动" : "已同步"}
               </span>
             </div>
             <div className="summary-grid">
@@ -653,23 +669,6 @@ export default function App() {
                 <span className="summary-card__label">目录</span>
                 <strong>源目录：{workspace?.sourceRoot ?? "…"}</strong>
                 <p>缓存目录：{workspace?.cacheRoot ?? "…"}</p>
-              </div>
-              <div className={`summary-actions status-banner status-banner--${loading ? "neutral" : tone}`}>
-                <span className="summary-status__message">{loading ? "正在读取工作区..." : message}</span>
-                <div className="summary-status__meta">
-                  <span className={`status-pill${activeFile?.dirty ? " status-pill--dirty" : ""}`}>
-                    {activeFile?.dirty ? "缓存已改动" : "已同步"}
-                  </span>
-                  <span className="summary-status__hint">{busy ? "处理中..." : "Ctrl+Z 可回退最近编辑"}</span>
-                </div>
-                <button
-                  type="button"
-                  className="primary-button primary-button--compact"
-                  disabled={!workspace || busy}
-                  onClick={saveAll}
-                >
-                  同步缓存至项目
-                </button>
               </div>
             </div>
           </section>

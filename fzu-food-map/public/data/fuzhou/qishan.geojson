@@ -58,7 +58,7 @@
           "聚餐"
         ],
         "rating": 4.3,
-        "price": "58¥",
+        "price": "68¥",
         "notes": "羊肉串，牛肋条，油边，蚕蛹",
         "address": "岐安福大学生街C2区溪源宫路3-12号",
         "contact": "13685012781",
@@ -259,7 +259,7 @@
       "type": "Feature",
       "properties": {
         "id": "qishan-008",
-        "category": "摊位",
+        "category": "门店",
         "name": "临榆炸鸡腿（学生街店）",
         "tags": [
           "连锁店",
