@@ -729,10 +729,23 @@ pre {
 }
 
 .mini-map {
+  position: relative;
   height: 340px;
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid var(--border-soft);
+}
+
+.mini-map__error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  text-align: center;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.82);
+  z-index: 1;
 }
 
 .mini-map-marker {
@@ -792,11 +805,6 @@ pre {
 .modal-card__actions {
   display: flex;
   justify-content: flex-end;
-}
-
-.maplibregl-ctrl-bottom-right,
-.maplibregl-ctrl-bottom-left {
-  display: none;
 }
 
 @media (max-width: 1300px) {

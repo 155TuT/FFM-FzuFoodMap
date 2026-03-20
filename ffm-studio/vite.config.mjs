@@ -4,15 +4,16 @@ import { fileURLToPath } from "node:url";
 const studioRoot = fileURLToPath(new URL(".", import.meta.url));
 const sharedNodeModules = path.resolve(studioRoot, "../fzu-food-map/node_modules");
 const apiPort = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
+const sharedEnvDir = path.resolve(studioRoot, "../fzu-food-map");
 
 export default {
+  envDir: sharedEnvDir,
   resolve: {
     alias: {
       react: path.resolve(sharedNodeModules, "react"),
       "react/jsx-runtime": path.resolve(sharedNodeModules, "react/jsx-runtime.js"),
       "react-dom": path.resolve(sharedNodeModules, "react-dom"),
-      "react-dom/client": path.resolve(sharedNodeModules, "react-dom/client.js"),
-      "maplibre-gl": path.resolve(sharedNodeModules, "maplibre-gl")
+      "react-dom/client": path.resolve(sharedNodeModules, "react-dom/client.js")
     }
   },
   server: {
@@ -34,8 +35,7 @@ export default {
     rollupOptions: {
       output: {
         manualChunks: {
-          react: ["react", "react-dom"],
-          map: ["maplibre-gl"]
+          react: ["react", "react-dom"]
         }
       }
     }

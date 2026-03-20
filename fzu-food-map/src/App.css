@@ -80,6 +80,10 @@ html, body, #root {
   color: rgba(226, 232, 240, 0.85);
 }
 
+:root[data-theme="dark"] .map-loading-overlay--error {
+  background: rgba(15, 23, 42, 0.88);
+}
+
 .map-loading-text {
   display: inline-flex;
   align-items: baseline;
@@ -615,7 +619,10 @@ html, body, #root {
   color: var(--text-muted);
 }
 
-.maplibregl-popup-content {
+.baidu-map-popup {
+  box-sizing: border-box;
+  width: min(260px, calc(100vw - 48px));
+  min-width: 220px;
   padding: var(--card-compact-padding);
   position: relative;
   isolation: isolate;
@@ -625,6 +632,8 @@ html, body, #root {
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-card);
   overflow: visible;
+  max-width: 260px;
+  pointer-events: auto;
 }
 
 .poi-popup-shell {
@@ -637,6 +646,8 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
+  padding-right: calc(var(--floating-action-size) + 6px);
   padding-bottom: calc(var(--floating-action-radius) + 4px);
 }
 
@@ -645,6 +656,7 @@ html, body, #root {
   overflow-y: auto;
   max-height: 240px;
   padding: 2px 0;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.6) transparent;
 }
@@ -759,11 +771,10 @@ html, body, #root {
 }
 
 .fav-btn {
-  /* Keep the button center pinned to the popup card's top-right corner. */
-  --press-button-rest-transform: translate(50%, -50%);
+  --press-button-rest-transform: none;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 8px;
+  right: 8px;
   padding: 0;
   z-index: 4;
   border-color: var(--border-strong);

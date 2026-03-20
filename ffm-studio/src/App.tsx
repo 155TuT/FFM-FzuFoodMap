@@ -21,7 +21,7 @@ type Tone = "neutral" | "success" | "error";
 type DialogState = { type: "folder" | "file"; parentPath: string; name: string } | null;
 
 const DEFAULT_CATEGORY = "门店";
-const DEFAULT_COORDS: [number, number] = [119.29824947, 26.04783333];
+const DEFAULT_COORDS: [number, number] = [119.30952702, 26.05088034];
 const AUTOSAVE_DELAY = 3000;
 
 function uniq(values: string[]) {
@@ -877,14 +877,14 @@ export default function App() {
             <div className="panel__header">
               <div>
                 <p className="section-kicker">位置预览</p>
-                <h2>坐标与样式</h2>
+                <h2>BD-09 坐标</h2>
               </div>
             </div>
             {activeFeature ? (
               <>
                 <div className="form-grid">
                   <label className="field">
-                    <span>经度</span>
+                    <span>经度（BD-09）</span>
                     <input
                       type="number"
                       step="0.00000001"
@@ -901,7 +901,7 @@ export default function App() {
                     />
                   </label>
                   <label className="field">
-                    <span>纬度</span>
+                    <span>纬度（BD-09）</span>
                     <input
                       type="number"
                       step="0.00000001"

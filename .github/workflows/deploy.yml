@@ -20,6 +20,7 @@ defaults:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +36,7 @@ jobs:
 
       - name: Build
         env:
-          VITE_MAPTILER_KEY: ${{ secrets.VITE_MAPTILER_KEY }}
+          VITE_BAIDU_MAP_AK: ${{ secrets.VITE_BAIDU_MAP_AK }}
         run: |
           npm run build
           touch dist/.nojekyll
@@ -45,6 +46,7 @@ jobs:
         with:
           path: fzu-food-map/dist
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:

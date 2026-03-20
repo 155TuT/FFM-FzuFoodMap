@@ -1,6 +1,16 @@
-import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  applyBaiduMapTheme,
+  createBMapPoint,
+  getBaiduMapAk,
+  getBaiduMapMissingAkMessage,
+  loadBaiduMapApi,
+  roundCoordinates,
+  type BMapEvent,
+  type BMapGLNamespace,
+  type BMapMap,
+  type BMapMarker
+} from "../../../fzu-food-map/src/utils/baiduMap";
 
 const CATEGORY_COLORS: Record<string, string> = {
   门店: "#0ea5e9",
@@ -9,95 +19,154 @@ const CATEGORY_COLORS: Record<string, string> = {
   小摊: "#8b5cf6"
 };
 
-const style = {
-  version: 8,
-  sources: {
-    osm: {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "&copy; OpenStreetMap Contributors"
-    }
-  },
-  layers: [{ id: "osm", type: "raster", source: "osm" }]
-} as const;
-
 type Props = {
   category: string;
   coordinates: [number, number];
   onChangeCoordinates: (next: [number, number]) => void;
 };
 
-function buildMarker(category: string) {
-  const element = document.createElement("div");
-  element.className = "mini-map-marker";
-  element.style.background = CATEGORY_COLORS[category] ?? CATEGORY_COLORS["门店"];
-  return element;
-}
-
 export default function MiniMap({ category, coordinates, onChangeCoordinates }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const markerRef = useRef<maplibregl.Marker | null>(null);
+  const mapRef = useRef<BMapMap | null>(null);
+  const markerRef = useRef<BMapMarker | null>(null);
+  const baiduMapApiRef = useRef<BMapGLNamespace | null>(null);
+  const onChangeRef = useRef(onChangeCoordinates);
+  const [error, setError] = useState<string | null>(null);
+
+  const ak = useMemo(() => getBaiduMapAk(), []);
+  onChangeRef.current = onChangeCoordinates;
 
   useEffect(() => {
-    if (!containerRef.current || mapRef.current) {
+    if (!containerRef.current) return;
+
+    if (!ak) {
+      setError(getBaiduMapMissingAkMessage());
       return;
     }
 
-    const markerElement = buildMarker(category);
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style,
-      center: coordinates,
-      zoom: 15
-    });
+    let cancelled = false;
+    const cleanups: Array<() => void> = [];
 
-    const marker = new maplibregl.Marker({ element: markerElement, draggable: true })
-      .setLngLat(coordinates)
-      .addTo(map);
+    void loadBaiduMapApi(ak)
+      .then(BMapGL => {
+        if (cancelled || !containerRef.current) return;
 
-    marker.on("dragend", () => {
-      const lngLat = marker.getLngLat();
-      onChangeCoordinates([Number(lngLat.lng.toFixed(8)), Number(lngLat.lat.toFixed(8))]);
-    });
+        baiduMapApiRef.current = BMapGL;
+        const map = new BMapGL.Map(containerRef.current, {
+          minZoom: 3,
+          maxZoom: 19,
+          enableAutoResize: true,
+          enableTilt: false,
+          enableRotate: false,
+          enableRotateGestures: false,
+          enableTiltGestures: false,
+          displayOptions: {
+            poi: false,
+            poiText: false,
+            poiIcon: false,
+            overlay: true,
+            building: false,
+            indoor: false
+          }
+        });
 
-    map.on("click", event => {
-      const next: [number, number] = [
-        Number(event.lngLat.lng.toFixed(8)),
-        Number(event.lngLat.lat.toFixed(8))
-      ];
-      marker.setLngLat(next);
-      onChangeCoordinates(next);
-    });
+        map.centerAndZoom(createBMapPoint(BMapGL, coordinates), 15);
+        map.enableScrollWheelZoom();
+        map.setDisplayOptions({
+          poi: false,
+          poiText: false,
+          poiIcon: false,
+          overlay: true,
+          building: false,
+          indoor: false
+        });
+        applyBaiduMapTheme(map, "light");
 
-    mapRef.current = map;
-    markerRef.current = marker;
+        const marker = new BMapGL.Marker(createBMapPoint(BMapGL, coordinates), {
+          icon: createMiniMapMarkerIcon(BMapGL, category),
+          enableDragging: true,
+          title: "当前点位"
+        });
+        map.addOverlay(marker);
+
+        const handleDragEnd = () => {
+          const position = marker.getPosition();
+          onChangeRef.current(roundCoordinates([position.lng, position.lat]));
+        };
+
+        const handleMapClick = (event: BMapEvent) => {
+          const point = event.latlng ?? event.point;
+          if (!point) return;
+          const next = roundCoordinates([point.lng, point.lat]);
+          marker.setPosition(createBMapPoint(BMapGL, next));
+          onChangeRef.current(next);
+        };
+
+        marker.addEventListener?.("dragend", handleDragEnd);
+        map.addEventListener("click", handleMapClick);
+
+        cleanups.push(
+          () => marker.removeEventListener?.("dragend", handleDragEnd),
+          () => map.removeEventListener("click", handleMapClick)
+        );
+
+        mapRef.current = map;
+        markerRef.current = marker;
+        setError(null);
+      })
+      .catch(loadError => {
+        if (!cancelled) {
+          setError(loadError instanceof Error ? loadError.message : "百度地图加载失败");
+        }
+      });
 
     return () => {
-      marker.remove();
-      map.remove();
+      cancelled = true;
+      cleanups.forEach(cleanup => cleanup());
+      const map = mapRef.current;
+      if (markerRef.current && map) {
+        map.removeOverlay(markerRef.current);
+      }
       markerRef.current = null;
+      mapRef.current?.destroy?.();
       mapRef.current = null;
+      baiduMapApiRef.current = null;
     };
-  }, [category, coordinates, onChangeCoordinates]);
+  }, [ak]);
 
   useEffect(() => {
     const marker = markerRef.current;
     const map = mapRef.current;
-    if (!marker || !map) {
+    const BMapGL = baiduMapApiRef.current;
+    if (!marker || !map || !BMapGL) {
       return;
     }
 
-    marker.setLngLat(coordinates);
-    marker.getElement().style.background = CATEGORY_COLORS[category] ?? CATEGORY_COLORS["门店"];
-    map.easeTo({ center: coordinates, duration: 250 });
+    marker.setPosition(createBMapPoint(BMapGL, coordinates));
+    marker.setIcon(createMiniMapMarkerIcon(BMapGL, category));
+    map.panTo(createBMapPoint(BMapGL, coordinates), { noAnimation: false });
   }, [category, coordinates]);
 
   return (
     <div className="mini-map-shell">
-      <div className="mini-map" ref={containerRef} />
+      <div className="mini-map" ref={containerRef}>
+        {error ? <div className="mini-map__error">{error}</div> : null}
+      </div>
       <p className="mini-map__hint">拖动标记或点击地图即可更新当前点位坐标。</p>
     </div>
   );
+}
+
+function createMiniMapMarkerIcon(BMapGL: BMapGLNamespace, category: string) {
+  const size = 20;
+  const fill = CATEGORY_COLORS[category] ?? CATEGORY_COLORS["门店"];
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2 - 3}" fill="${fill}" stroke="rgba(255,255,255,0.96)" stroke-width="3" />
+    </svg>
+  `;
+
+  return new BMapGL.Icon(`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`, new BMapGL.Size(size, size), {
+    anchor: new BMapGL.Size(size / 2, size / 2)
+  });
 }
