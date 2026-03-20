@@ -62,22 +62,15 @@
 本项目为纯前端项目，主要技术栈如下：
 
 - 框架采用[React](https://react.dev/reference/react)+[TypeScript](https://www.typescriptlang.org)+[Vite](https://github.com/vitejs/vite)轻量构建
-- 地图瓦片使用了免费的OSM：[MapTiler](https://www.maptiler.com) API
+- 地图瓦片使用了[百度地图](https://lbs.baidu.com/faq/api?title=webapi/uri) API
 - 网页由[Github Pages](https://githubdocs.cn/en/pages/getting-started-with-github-pages)托管
 - 图标由[shadcn/ui](https://github.com/shadcn-ui/ui)提供
 
 ### 部署
 
-主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可
+主体仅需 `cd fzu-food-map` 后简单的 `npm install` 和 `npm run dev` 即可
 
-注意：部署后在使用前需在fzu-food-map即项目文件夹中创建 `.env.local` 文件并输入 `VITE_MAPTILER_KEY=你从MapTiler获取的API` 来替换成自己开发环境下的地图瓦片
-
-### 杂项
-
-另有一些小工具在tools/中，包括：
-
-- 地图间经纬度转换工具
-- ...
+在 `cd ffm-studio` 后（需先部署主体）可同样 `npm run dev` 以打开本地数据工作台用以进行地图点位编辑
 
 ## 0x02 致谢
 
