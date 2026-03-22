@@ -86,7 +86,7 @@ export default function SourceListEditor({ value, onChange, onTriggerSearch }: P
           </div>
         ))
       ) : (
-        <span className="empty-inline">暂无来源，新增点位默认会写入手动来源。</span>
+        <span className="empty-inline">暂无来源，新增点位默认会写入手动来源</span>
       )}
     </div>
   );

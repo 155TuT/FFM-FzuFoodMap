@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -9,21 +9,9 @@ const CATEGORY_COLORS: Record<string, string> = {
   小摊: "#8b5cf6"
 };
 
-const style = {
-  version: 8,
-  sources: {
-    osm: {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "&copy; OpenStreetMap Contributors"
-    }
-  },
-  layers: [{ id: "osm", type: "raster", source: "osm" }]
-} as const;
-
 type Props = {
   category: string;
+  theme: "light" | "dark";
   coordinates: [number, number];
   onChangeCoordinates: (next: [number, number]) => void;
 };
@@ -35,10 +23,21 @@ function buildMarker(category: string) {
   return element;
 }
 
-export default function MiniMap({ category, coordinates, onChangeCoordinates }: Props) {
+export default function MiniMap({ category, theme, coordinates, onChangeCoordinates }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
+  const onChangeCoordinatesRef = useRef(onChangeCoordinates);
+  const appliedStyleUrlRef = useRef<string | null>(null);
+  const styleUrl = useMemo(() => {
+    const key = import.meta.env.VITE_MAPTILER_KEY || "YOUR_KEY";
+    const styleName = theme === "dark" ? "streets-v4-dark" : "streets-v4";
+    return `https://api.maptiler.com/maps/${styleName}/style.json?key=${key}`;
+  }, [theme]);
+
+  useEffect(() => {
+    onChangeCoordinatesRef.current = onChangeCoordinates;
+  }, [onChangeCoordinates]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -48,10 +47,11 @@ export default function MiniMap({ category, coordinates, onChangeCoordinates }: 
     const markerElement = buildMarker(category);
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style,
+      style: styleUrl,
       center: coordinates,
       zoom: 15
     });
+    appliedStyleUrlRef.current = styleUrl;
 
     const marker = new maplibregl.Marker({ element: markerElement, draggable: true })
       .setLngLat(coordinates)
@@ -59,7 +59,7 @@ export default function MiniMap({ category, coordinates, onChangeCoordinates }: 
 
     marker.on("dragend", () => {
       const lngLat = marker.getLngLat();
-      onChangeCoordinates([Number(lngLat.lng.toFixed(8)), Number(lngLat.lat.toFixed(8))]);
+      onChangeCoordinatesRef.current([Number(lngLat.lng.toFixed(8)), Number(lngLat.lat.toFixed(8))]);
     });
 
     map.on("click", event => {
@@ -68,7 +68,7 @@ export default function MiniMap({ category, coordinates, onChangeCoordinates }: 
         Number(event.lngLat.lat.toFixed(8))
       ];
       marker.setLngLat(next);
-      onChangeCoordinates(next);
+      onChangeCoordinatesRef.current(next);
     });
 
     mapRef.current = map;
@@ -79,8 +79,19 @@ export default function MiniMap({ category, coordinates, onChangeCoordinates }: 
       map.remove();
       markerRef.current = null;
       mapRef.current = null;
+      appliedStyleUrlRef.current = null;
     };
-  }, [category, coordinates, onChangeCoordinates]);
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || appliedStyleUrlRef.current === styleUrl) {
+      return;
+    }
+
+    appliedStyleUrlRef.current = styleUrl;
+    map.setStyle(styleUrl);
+  }, [styleUrl]);
 
   useEffect(() => {
     const marker = markerRef.current;
@@ -97,7 +108,7 @@ export default function MiniMap({ category, coordinates, onChangeCoordinates }: 
   return (
     <div className="mini-map-shell">
       <div className="mini-map" ref={containerRef} />
-      <p className="mini-map__hint">拖动标记或点击地图即可更新当前点位坐标。</p>
+      <p className="mini-map__hint">拖动标记或点击地图即可更新当前点位坐标</p>
     </div>
   );
 }

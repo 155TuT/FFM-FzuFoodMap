@@ -6,6 +6,7 @@ const sharedNodeModules = path.resolve(studioRoot, "../fzu-food-map/node_modules
 const apiPort = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
 
 export default {
+  envDir: path.resolve(studioRoot, "../fzu-food-map"),
   resolve: {
     alias: {
       react: path.resolve(sharedNodeModules, "react"),

@@ -8,6 +8,30 @@ type TreeAction = {
   onClick: () => void;
 };
 
+type Props = {
+  root: WorkspaceDirectoryNode;
+  rootStatusTone: "success" | "loading" | "warning";
+  theme: "light" | "dark";
+  activeFilePath: string | null;
+  activeFeatureId: string | null;
+  activeFileDirty: boolean;
+  activeFileFeatures: GeoFeature[];
+  activeFeatureDirtyIds: ReadonlySet<string>;
+  expandedDirectories: Set<string>;
+  busy?: boolean;
+  onToggleTheme: () => void;
+  onToggleDirectory: (path: string) => void;
+  onSelectFile: (path: string) => void;
+  onSelectFeature: (filePath: string, featureId: string) => void;
+  onCreateFolder: (parentPath: string) => void;
+  onCreateFile: (parentPath: string) => void;
+  onCreateFeature: (filePath: string) => void;
+  onDeleteFeature: (filePath: string, featureId: string) => void;
+  onDeleteFolder: (path: string) => void;
+  onDeleteFile: (path: string) => void;
+  onSaveAll: () => void;
+};
+
 const deleteIconSrc = new URL(
   "../../../fzu-food-map/public/assets/icons/normal/delete.svg",
   import.meta.url
@@ -33,25 +57,34 @@ const pulldownIconSrc = new URL(
   import.meta.url
 ).href;
 
-type Props = {
-  root: WorkspaceDirectoryNode;
-  rootStatusTone: "success" | "loading" | "warning";
-  activeFilePath: string | null;
-  activeFeatureId: string | null;
-  activeFileFeatures: GeoFeature[];
-  expandedDirectories: Set<string>;
-  busy?: boolean;
-  onToggleDirectory: (path: string) => void;
-  onSelectFile: (path: string) => void;
-  onSelectFeature: (filePath: string, featureId: string) => void;
-  onCreateFolder: (parentPath: string) => void;
-  onCreateFile: (parentPath: string) => void;
-  onCreateFeature: (filePath: string) => void;
-  onDeleteFeature: (filePath: string, featureId: string) => void;
-  onDeleteFolder: (path: string) => void;
-  onDeleteFile: (path: string) => void;
-  onSaveAll: () => void;
-};
+const themeToggleLightIconSrc = new URL(
+  "../../../fzu-food-map/public/assets/icons/light/to.svg",
+  import.meta.url
+).href;
+
+const themeToggleDarkIconSrc = new URL(
+  "../../../fzu-food-map/public/assets/icons/dark/to.svg",
+  import.meta.url
+).href;
+
+const githubRepositoryUrl = "https://github.com/155TuT/FFM-FzuFoodMap";
+
+function GitHubIcon() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+        -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2
+        -3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.62
+        7.62 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15
+        0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01
+        8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+      />
+    </svg>
+  );
+}
 
 function TreeRow({
   depth,
@@ -146,6 +179,7 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
   }
 
   const active = props.activeFilePath === node.path;
+  const fileDirty = active ? props.activeFileDirty : node.dirty;
   return (
     <div key={`file-${node.path}`} className="tree-node tree-node--nested">
       <TreeRow
@@ -154,7 +188,7 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
         icon={<img className="tree-row__icon-image" src={active ? liftupIconSrc : pulldownIconSrc} alt="" />}
         suffix={`${node.featureCount}`}
         active={active}
-        dirty={node.dirty}
+        dirty={fileDirty}
         actions={[
           { title: "删除当前 GeoJSON", iconSrc: deleteIconSrc, onClick: () => props.onDeleteFile(node.path) },
           { title: "新建点位", iconSrc: addIconSrc, onClick: () => props.onCreateFeature(node.path) }
@@ -169,8 +203,14 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
               label={`${feature.properties.id} ${feature.properties.name || ""}`.trim()}
               icon="o"
               active={props.activeFeatureId === feature.properties.id}
-              dirty={node.dirty && props.activeFeatureId === feature.properties.id}
-              actions={[{ title: "删除当前点位", iconSrc: deleteIconSrc, onClick: () => props.onDeleteFeature(node.path, feature.properties.id) }]}
+              dirty={props.activeFeatureDirtyIds.has(feature.properties.id)}
+              actions={[
+                {
+                  title: "删除当前点位",
+                  iconSrc: deleteIconSrc,
+                  onClick: () => props.onDeleteFeature(node.path, feature.properties.id)
+                }
+              ]}
               onClick={() => props.onSelectFeature(node.path, feature.properties.id)}
             />
           ))
@@ -180,11 +220,37 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
 }
 
 export default function TreePanel(props: Props) {
+  const themeToggleIconSrc = props.theme === "light" ? themeToggleLightIconSrc : themeToggleDarkIconSrc;
+  const themeToggleLabel = props.theme === "light" ? "切换到暗色模式" : "切换到亮色模式";
+
   return (
     <div className="tree-panel">
       <div className="tree-panel__header">
-        <p className="tree-panel__eyebrow">FFM Studio</p>
-        <h2>GeoJSON 数据管理工作台</h2>
+        <div className="tree-panel__header-copy">
+          <h2>FFM-Studio</h2>
+          <p className="tree-panel__subtitle">GeoJSON本地编辑工作台</p>
+        </div>
+        <div className="tree-panel__toolbar">
+          <a
+            className="tree-panel__toolbar-button tree-panel__toolbar-button--icon"
+            href={githubRepositoryUrl}
+            target="_blank"
+            rel="noreferrer"
+            title="打开项目 GitHub 仓库"
+            aria-label="打开项目 GitHub 仓库"
+          >
+            <GitHubIcon />
+          </a>
+          <button
+            type="button"
+            className="tree-panel__toolbar-button tree-panel__theme-toggle"
+            title={themeToggleLabel}
+            aria-label={themeToggleLabel}
+            onClick={props.onToggleTheme}
+          >
+            <img className="tree-row__action-icon" src={themeToggleIconSrc} alt="" />
+          </button>
+        </div>
       </div>
       <div className="tree-panel__body">
         <TreeRow

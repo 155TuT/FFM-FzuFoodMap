@@ -10,19 +10,40 @@ import {
   searchSourceCandidates,
   updateCacheFile
 } from "./api";
+import { collectDirtyFeatureIds, isGeoJsonDirtyAgainstSource } from "./geojsonDiff";
 import IncludeEditor, { type IncludeRow } from "./components/IncludeEditor";
 import MiniMap from "./components/MiniMap";
 import SourceListEditor from "./components/SourceListEditor";
 import TagEditor from "./components/TagEditor";
 import TreePanel, { collectDirectoryPaths, findFileNode, listDirectories } from "./components/TreePanel";
+import fuzhou from "../../fzu-food-map/src/cities/fuzhou.config";
 import type { FilePayload, GeoFeature, GeoJsonDocument, PoiInclude, PoiSource, Workspace } from "./types";
 
 type Tone = "neutral" | "success" | "error";
 type DialogState = { type: "folder" | "file"; parentPath: string; name: string } | null;
+type ThemeMode = "light" | "dark";
 
 const DEFAULT_CATEGORY = "门店";
 const DEFAULT_COORDS: [number, number] = [119.29824947, 26.04783333];
 const AUTOSAVE_DELAY = 3000;
+const THEME_STORAGE_KEY = "ffm-studio-theme";
+const lightFaviconSrc = new URL("../../fzu-food-map/public/assets/icons/light/ffmstudio.svg", import.meta.url).href;
+const darkFaviconSrc = new URL("../../fzu-food-map/public/assets/icons/dark/ffmstudio.svg", import.meta.url).href;
+const REGION_DEFAULT_COORDS = fuzhou.regions.reduce<Record<string, [number, number]>>((acc, region) => {
+  acc[region.id.toLowerCase()] = region.center;
+  if (region.dataPath) {
+    acc[basename(region.dataPath).replace(/\.geojson$/i, "").toLowerCase()] = region.center;
+  }
+  return acc;
+}, {});
+
+function getInitialTheme(): ThemeMode {
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") {
+    return savedTheme;
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
 function uniq(values: string[]) {
   return [...new Set(values.map(item => item.trim()).filter(Boolean))];
@@ -47,10 +68,10 @@ function firstFile(node: Workspace["tree"]): string | null {
   return null;
 }
 
-function hasDirtyFiles(node: Workspace["tree"]): boolean {
+function hasDirtyFiles(node: Workspace["tree"], skipPath?: string | null): boolean {
   for (const child of node.children) {
-    if (child.type === "file" && child.dirty) return true;
-    if (child.type === "directory" && hasDirtyFiles(child)) return true;
+    if (child.type === "file" && child.path !== skipPath && child.dirty) return true;
+    if (child.type === "directory" && hasDirtyFiles(child, skipPath)) return true;
   }
   return false;
 }
@@ -73,7 +94,47 @@ function renumberFeatures(filePath: string, features: GeoFeature[]) {
   }));
 }
 
-function buildFeature(filePath: string, categories: string[]): GeoFeature {
+function resolveDocumentCenter(document?: GeoJsonDocument | null): [number, number] | null {
+  if (!document) {
+    return null;
+  }
+
+  const coordinates = document.features
+    .map(feature => feature.geometry.coordinates)
+    .filter((point): point is [number, number] => Number.isFinite(point[0]) && Number.isFinite(point[1]));
+
+  if (!coordinates.length) {
+    return null;
+  }
+
+  let minLng = coordinates[0][0];
+  let maxLng = coordinates[0][0];
+  let minLat = coordinates[0][1];
+  let maxLat = coordinates[0][1];
+
+  for (const [lng, lat] of coordinates.slice(1)) {
+    minLng = Math.min(minLng, lng);
+    maxLng = Math.max(maxLng, lng);
+    minLat = Math.min(minLat, lat);
+    maxLat = Math.max(maxLat, lat);
+  }
+
+  return [
+    Number(((minLng + maxLng) / 2).toFixed(8)),
+    Number(((minLat + maxLat) / 2).toFixed(8))
+  ];
+}
+
+function getDefaultCoordsForFile(filePath: string, document?: GeoJsonDocument | null): [number, number] {
+  const fileKey = basename(filePath).replace(/\.geojson$/i, "").toLowerCase();
+  const regionCenter = REGION_DEFAULT_COORDS[fileKey];
+  if (regionCenter) {
+    return [...regionCenter] as [number, number];
+  }
+  return resolveDocumentCenter(document) ?? DEFAULT_COORDS;
+}
+
+function buildFeature(filePath: string, categories: string[], coordinates: [number, number]): GeoFeature {
   return {
     type: "Feature",
     properties: {
@@ -88,16 +149,8 @@ function buildFeature(filePath: string, categories: string[]): GeoFeature {
       openhour: "",
       sources: [{ platform: "manual", title: "手动添加", status: "manual" }]
     },
-    geometry: { type: "Point", coordinates: DEFAULT_COORDS }
+    geometry: { type: "Point", coordinates: [...coordinates] as [number, number] }
   };
-}
-
-function serializeGeoJsonDocument(document: GeoJsonDocument | null) {
-  return document ? `${JSON.stringify(document, null, 2)}\n` : null;
-}
-
-function isDirtyAgainstSource(document: GeoJsonDocument, sourceSnapshot: string | null) {
-  return sourceSnapshot === null ? true : serializeGeoJsonDocument(document) !== sourceSnapshot;
 }
 
 function toIncludeRows(include?: PoiInclude): IncludeRow[] {
@@ -215,6 +268,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("正在载入工作区");
   const [tone, setTone] = useState<Tone>("neutral");
+  const [theme, setTheme] = useState<ThemeMode>(() => getInitialTheme());
+  const [tagLibrary, setTagLibrary] = useState<string[]>([]);
 
   const syncRef = useRef(0);
   const saveTimerRef = useRef<number | null>(null);
@@ -222,7 +277,7 @@ export default function App() {
   const activeFilePathRef = useRef<string | null>(null);
   const undoStackRef = useRef<GeoJsonDocument[]>([]);
   const pendingCreateFeatureRef = useRef<string | null>(null);
-  const sourceSnapshotRef = useRef<string | null>(null);
+  const sourceSnapshotRef = useRef<GeoJsonDocument | null>(null);
 
   const applyWorkspace = (next: Workspace) => {
     setWorkspace(next);
@@ -298,12 +353,44 @@ export default function App() {
     activeFilePathRef.current = activeFilePath;
   }, [activeFilePath]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+
+    let favicon = document.querySelector<HTMLLinkElement>('link[data-ffm-studio-favicon="true"]');
+    if (!favicon) {
+      favicon = document.createElement("link");
+      favicon.rel = "icon";
+      favicon.type = "image/svg+xml";
+      favicon.dataset.ffmStudioFavicon = "true";
+      document.head.appendChild(favicon);
+    }
+    favicon.href = theme === "dark" ? darkFaviconSrc : lightFaviconSrc;
+
+    let themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!themeColor) {
+      themeColor = document.createElement("meta");
+      themeColor.name = "theme-color";
+      document.head.appendChild(themeColor);
+    }
+    themeColor.content = theme === "dark" ? "#07111f" : "#f8fafc";
+  }, [theme]);
+
+  useEffect(() => {
+    if (!workspace) {
+      setTagLibrary([]);
+      return;
+    }
+    setTagLibrary(previous => uniq([...(workspace.taxonomy.tags ?? []), ...previous]));
+  }, [workspace]);
+
   const applyFilePayload = (file: FilePayload) => {
-    const sourceSnapshot = serializeGeoJsonDocument(file.sourceData);
-    sourceSnapshotRef.current = sourceSnapshot;
+    sourceSnapshotRef.current = file.sourceData;
     setActiveFile({
       ...file,
-      dirty: isDirtyAgainstSource(file.data, sourceSnapshot)
+      dirty: isGeoJsonDirtyAgainstSource(file.data, file.sourceData)
     });
   };
 
@@ -379,9 +466,7 @@ export default function App() {
       const previous = undoStackRef.current.pop();
       if (!previous) return;
       setActiveFile(current =>
-        current
-          ? { ...current, data: previous, dirty: isDirtyAgainstSource(previous, sourceSnapshotRef.current) }
-          : current
+        current ? { ...current, data: previous, dirty: isGeoJsonDirtyAgainstSource(previous, sourceSnapshotRef.current) } : current
       );
       setActiveFeatureId(current =>
         current && previous.features.some(feature => feature.properties.id === current)
@@ -415,15 +500,21 @@ export default function App() {
     [workspace?.taxonomy.categories, activeFeature]
   );
 
-  const tags = useMemo(
-    () => uniq([...(workspace?.taxonomy.tags ?? []), ...(activeFeature?.properties.tags ?? [])]),
-    [workspace?.taxonomy.tags, activeFeature]
-  );
+  const tags = useMemo(() => uniq(tagLibrary), [tagLibrary]);
 
   const includeRows = activeFeature ? toIncludeRows(activeFeature.properties.include) : [];
   const filePathLabel = activeFilePath ? `data/${activeFilePath}` : "data";
-  const workspaceDirty = useMemo(() => (workspace ? hasDirtyFiles(workspace.tree) : false), [workspace]);
-  const rootStatusTone = autosaveQueued ? "loading" : workspaceDirty ? "warning" : "success";
+  const activeFileDirty = activeFile?.path === activeFilePath ? activeFile.dirty : fileNode?.dirty ?? false;
+  const workspaceDirty = useMemo(
+    () => (workspace ? hasDirtyFiles(workspace.tree, activeFilePath) : false),
+    [workspace, activeFilePath]
+  );
+  const effectiveWorkspaceDirty = workspaceDirty || activeFileDirty;
+  const activeFeatureDirtyIds = useMemo(
+    () => (activeFile ? collectDirtyFeatureIds(activeFile.data, activeFile.sourceData) : new Set<string>()),
+    [activeFile]
+  );
+  const rootStatusTone = autosaveQueued ? "loading" : effectiveWorkspaceDirty ? "warning" : "success";
 
   const commitDocument = (nextData: GeoJsonDocument, nextFeatureId?: string | null) => {
     if (!activeFilePath || !activeFile) return;
@@ -432,9 +523,7 @@ export default function App() {
       undoStackRef.current.shift();
     }
     setActiveFile(previous =>
-      previous
-        ? { ...previous, data: nextData, dirty: isDirtyAgainstSource(nextData, sourceSnapshotRef.current) }
-        : previous
+      previous ? { ...previous, data: nextData, dirty: isGeoJsonDirtyAgainstSource(nextData, sourceSnapshotRef.current) } : previous
     );
     if (typeof nextFeatureId !== "undefined") {
       setActiveFeatureId(nextFeatureId);
@@ -463,7 +552,10 @@ export default function App() {
       setActiveFilePath(filePath);
       return;
     }
-    const nextFeatures = renumberFeatures(filePath, [...activeFile.data.features, buildFeature(filePath, categories)]);
+    const nextFeatures = renumberFeatures(filePath, [
+      ...activeFile.data.features,
+      buildFeature(filePath, categories, getDefaultCoordsForFile(filePath, activeFile.data))
+    ]);
     const nextFeatureId = nextFeatures[nextFeatures.length - 1]?.properties.id ?? null;
     mutateDocument(document => ({ ...document, features: nextFeatures }), nextFeatureId);
   };
@@ -475,7 +567,10 @@ export default function App() {
     pendingCreateFeatureRef.current = null;
     const nextFeatures = renumberFeatures(
       activeFile.path,
-      [...activeFile.data.features, buildFeature(activeFile.path, categories)]
+      [
+        ...activeFile.data.features,
+        buildFeature(activeFile.path, categories, getDefaultCoordsForFile(activeFile.path, activeFile.data))
+      ]
     );
     const nextFeatureId = nextFeatures[nextFeatures.length - 1]?.properties.id ?? null;
     mutateDocument(document => ({ ...document, features: nextFeatures }), nextFeatureId);
@@ -495,7 +590,7 @@ export default function App() {
 
   const handleDeleteFolder = async (folderPath: string) => {
     const label = basename(folderPath);
-    if (!window.confirm(`确认删除缓存中的地区文件夹“${label}”及其下所有 GeoJSON 吗？点击保存前，不会同步到源目录。`)) {
+    if (!window.confirm(`确认删除缓存中的地区文件夹“${label}”及其下所有 GeoJSON 吗？点击保存前，不会同步到源目录`)) {
       return;
     }
 
@@ -517,7 +612,7 @@ export default function App() {
 
   const handleDeleteGeoJsonFile = async (filePath: string) => {
     const label = basename(filePath);
-    if (!window.confirm(`确认删除缓存中的 GeoJSON“${label}”吗？点击保存前，不会同步到源目录。`)) {
+    if (!window.confirm(`确认删除缓存中的 GeoJSON“${label}”吗？点击保存前，不会同步到源目录`)) {
       return;
     }
 
@@ -544,9 +639,9 @@ export default function App() {
       applyWorkspace(await saveAllGeoJsonFiles());
       setActiveFile(previous => {
         if (!previous) return previous;
-        const nextSourceSnapshot = serializeGeoJsonDocument(previous.data);
+        const nextSourceSnapshot = structuredClone(previous.data);
         sourceSnapshotRef.current = nextSourceSnapshot;
-        return { ...previous, dirty: false };
+        return { ...previous, sourceData: nextSourceSnapshot, dirty: false };
       });
       setMessage("已将缓存内容完整覆写到 fzu-food-map/public/data");
       setTone("success");
@@ -603,11 +698,15 @@ export default function App() {
           <TreePanel
             root={workspace.tree}
             rootStatusTone={rootStatusTone}
+            theme={theme}
             activeFilePath={activeFilePath}
             activeFeatureId={activeFeatureId}
+            activeFileDirty={activeFileDirty}
             activeFileFeatures={activeFile?.data.features ?? []}
+            activeFeatureDirtyIds={activeFeatureDirtyIds}
             expandedDirectories={expandedDirectories}
             busy={busy}
+            onToggleTheme={() => setTheme(current => (current === "light" ? "dark" : "light"))}
             onToggleDirectory={path =>
               setExpandedDirectories(previous => {
                 const next = new Set(previous);
@@ -650,8 +749,8 @@ export default function App() {
                 <p className="section-kicker">文件说明</p>
                 <h2>{filePathLabel}</h2>
               </div>
-              <span className={`status-pill${workspaceDirty ? " status-pill--dirty" : ""}`}>
-                {workspaceDirty ? "缓存已改动" : "已同步"}
+              <span className={`status-pill${effectiveWorkspaceDirty ? " status-pill--dirty" : ""}`}>
+                {effectiveWorkspaceDirty ? "缓存已改动" : "已同步"}
               </span>
             </div>
             <div className="summary-grid">
@@ -798,12 +897,21 @@ export default function App() {
                   <div className="editor-section__header">
                     <div>
                       <h3>标签</h3>
-                      <p>支持从现有标签中选择，也支持直接录入新标签。</p>
+                      <p>删除后的标签会回到备选列表；新增标签会先加入标签库，再自动选中</p>
                     </div>
                   </div>
                   <TagEditor
                     value={activeFeature.properties.tags ?? []}
                     suggestions={tags}
+                    onCreateTag={tag => {
+                      const nextTag = tag.trim();
+                      if (!nextTag) return;
+                      setTagLibrary(previous => uniq([...previous, nextTag]));
+                      mutateFeature(feature => ({
+                        ...feature,
+                        properties: { ...feature.properties, tags: uniq([...(feature.properties.tags ?? []), nextTag]) }
+                      }));
+                    }}
                     onChange={next =>
                       mutateFeature(feature => ({
                         ...feature,
@@ -817,7 +925,7 @@ export default function App() {
                   <div className="editor-section__header">
                     <div>
                       <h3>包含店铺</h3>
-                      <p>用于把同一栋建筑内的多家店铺合并到同一个点位。</p>
+                      <p>用于把同一栋建筑内的多家店铺合并到同一个点位</p>
                     </div>
                   </div>
                   <IncludeEditor
@@ -839,7 +947,7 @@ export default function App() {
                   <div className="editor-section__header">
                     <div>
                       <h3>来源</h3>
-                      <p>新增点位默认来源为手动添加，后续可在这里接入半自动搜索。</p>
+                      <p>新增点位默认来源为手动添加，后续可在这里接入半自动搜索</p>
                     </div>
                   </div>
                   <div className="form-grid">
@@ -869,7 +977,7 @@ export default function App() {
                 </div>
               </>
             ) : (
-              <div className="empty-block">当前文件还没有选中点位，可以在左侧文件行 hover 后直接新建点位。</div>
+              <div className="empty-block">当前文件还没有选中点位，可以在左侧文件行 hover 后直接新建点位</div>
             )}
           </section>
 
@@ -922,6 +1030,7 @@ export default function App() {
                   <span>位置预览</span>
                   <MiniMap
                     category={activeFeature.properties.category}
+                    theme={theme}
                     coordinates={activeFeature.geometry.coordinates}
                     onChangeCoordinates={next =>
                       mutateFeature(feature => ({
@@ -935,14 +1044,14 @@ export default function App() {
                   <div className="editor-section__header">
                     <div>
                       <h3>当前点位 JSON 预览</h3>
-                      <p>这里展示当前缓存中的最终结构，便于快速核对。</p>
+                      <p>这里展示当前缓存中的最终结构，便于快速核对</p>
                     </div>
                   </div>
                   <pre>{JSON.stringify(activeFeature, null, 2)}</pre>
                 </div>
               </>
             ) : (
-              <div className="empty-block">选中点位后，这里会显示坐标编辑和地图预览。</div>
+              <div className="empty-block">选中点位后，这里会显示坐标编辑和地图预览</div>
             )}
           </section>
         </div>

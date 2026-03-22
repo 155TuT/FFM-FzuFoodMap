@@ -76,6 +76,34 @@ function sanitizeGeoJsonDocument(data) {
   };
 }
 
+function normalizeComparableValue(value) {
+  if (
+    value === null ||
+    typeof value === "boolean" ||
+    typeof value === "number" ||
+    typeof value === "string"
+  ) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(item => normalizeComparableValue(item));
+  }
+
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value)
+      .filter(([, item]) => item !== undefined)
+      .sort(([left], [right]) => left.localeCompare(right));
+    return Object.fromEntries(entries.map(([key, item]) => [key, normalizeComparableValue(item)]));
+  }
+
+  return null;
+}
+
+function stableSerialize(value) {
+  return JSON.stringify(normalizeComparableValue(value));
+}
+
 async function copyGeoJsonTree(sourcePath, targetPath, skipExisting = false) {
   const stat = await fs.stat(sourcePath);
   if (stat.isDirectory()) {
@@ -131,10 +159,10 @@ async function isFileDirty(relativePath) {
   if (!fssync.existsSync(sourcePath)) return true;
 
   const [cacheContent, sourceContent] = await Promise.all([
-    fs.readFile(cachePath, "utf8"),
-    fs.readFile(sourcePath, "utf8")
+    readJsonFile(cachePath),
+    readJsonFile(sourcePath)
   ]);
-  return cacheContent !== sourceContent;
+  return stableSerialize(cacheContent) !== stableSerialize(sourceContent);
 }
 
 function createEmptyGeoJson(name) {
@@ -192,42 +220,72 @@ async function listTree(dirPath = cacheRoot, relativePath = "") {
   return children;
 }
 
+function collectFeatureTaxonomy(feature, categories, tags) {
+  const category = feature?.properties?.category;
+  if (typeof category === "string" && category.trim()) {
+    categories.add(CATEGORY_ALIASES.get(category.trim()) ?? category.trim());
+  }
+
+  const rawTags = Array.isArray(feature?.properties?.tags) ? feature.properties.tags : [];
+  for (const tag of rawTags) {
+    if (typeof tag === "string" && tag.trim()) {
+      tags.add(tag.trim());
+    }
+  }
+}
+
+async function walkGeoJsonFiles(rootPath, visitor, relativePath = "") {
+  if (!fssync.existsSync(rootPath)) {
+    return;
+  }
+
+  const entries = await fs.readdir(rootPath, { withFileTypes: true });
+  for (const entry of entries) {
+    const absolutePath = path.join(rootPath, entry.name);
+    const childRelativePath = normalizeSeparators(path.join(relativePath, entry.name));
+
+    if (entry.isDirectory()) {
+      await walkGeoJsonFiles(absolutePath, visitor, childRelativePath);
+      continue;
+    }
+
+    if (!entry.name.endsWith(".geojson")) {
+      continue;
+    }
+
+    await visitor({ absolutePath, relativePath: childRelativePath });
+  }
+}
+
 async function collectTaxonomy() {
   const categories = new Set();
   const tags = new Set();
 
-  async function walk(dirPath) {
-    const entries = await fs.readdir(dirPath, { withFileTypes: true });
-    for (const entry of entries) {
-      const absolute = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        await walk(absolute);
-        continue;
+  await walkGeoJsonFiles(sourceRoot, async ({ absolutePath }) => {
+    try {
+      const content = await readJsonFile(absolutePath);
+      for (const feature of content.features ?? []) {
+        collectFeatureTaxonomy(feature, categories, tags);
       }
-      if (!entry.name.endsWith(".geojson")) {
-        continue;
-      }
-      try {
-        const content = await readJsonFile(absolute);
-        for (const feature of content.features ?? []) {
-          const category = feature?.properties?.category;
-          if (typeof category === "string" && category.trim()) {
-            categories.add(CATEGORY_ALIASES.get(category.trim()) ?? category.trim());
-          }
-          const rawTags = Array.isArray(feature?.properties?.tags) ? feature.properties.tags : [];
-          for (const tag of rawTags) {
-            if (typeof tag === "string" && tag.trim()) {
-              tags.add(tag.trim());
-            }
-          }
-        }
-      } catch {
-        continue;
-      }
+    } catch {
+      return;
     }
-  }
+  });
 
-  await walk(cacheRoot);
+  await walkGeoJsonFiles(cacheRoot, async ({ absolutePath, relativePath }) => {
+    try {
+      if (!(await isFileDirty(relativePath))) {
+        return;
+      }
+
+      const content = await readJsonFile(absolutePath);
+      for (const feature of content.features ?? []) {
+        collectFeatureTaxonomy(feature, categories, tags);
+      }
+    } catch {
+      return;
+    }
+  });
 
   return {
     categories: [...categories].sort((left, right) => left.localeCompare(right, "zh-CN")),

@@ -15,7 +15,6 @@ import SourcesSection from "./SourcesSection";
 import { getFavs, setFavs, toggleFav } from "../utils/favorites";
 import { parseFavFromUrl } from "../utils/share";
 
-const SEARCH_LIMIT = 8;
 const DOT = " \u00b7 ";
 const UNCLUSTERED_ZOOM = 16;
 const CATEGORY_STORE = "\u95e8\u5e97";
@@ -682,7 +681,7 @@ export default function MapView({
     }
 
     matches.sort((a, b) => ratingValue(b) - ratingValue(a));
-    setSuggestions(matches.slice(0, SEARCH_LIMIT));
+    setSuggestions(matches);
   }, [query, searchField, onlyFav, favSet, rawData]);
 
   useEffect(() => {

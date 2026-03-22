@@ -1,35 +1,70 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   value: string[];
   suggestions: string[];
   onChange: (next: string[]) => void;
+  onCreateTag: (tag: string) => void;
 };
+
+const addIconSrc = new URL(
+  "../../../fzu-food-map/public/assets/icons/normal/add.svg",
+  import.meta.url
+).href;
+
+const saveIconSrc = new URL(
+  "../../../fzu-food-map/public/assets/icons/normal/save.svg",
+  import.meta.url
+).href;
 
 function cleanTags(tags: string[]) {
   return [...new Set(tags.map(item => item.trim()).filter(Boolean))];
 }
 
-export default function TagEditor({ value, suggestions, onChange }: Props) {
+export default function TagEditor({ value, suggestions, onChange, onCreateTag }: Props) {
   const [draft, setDraft] = useState("");
+  const [expanded, setExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
-  const filteredSuggestions = useMemo(() => {
-    const keyword = draft.trim().toLowerCase();
-    return suggestions
-      .filter(item => !value.includes(item))
-      .filter(item => (keyword ? item.toLowerCase().includes(keyword) : true))
-      .slice(0, 12);
-  }, [draft, suggestions, value]);
+  const filteredSuggestions = useMemo(
+    () => suggestions.filter(item => !value.includes(item)),
+    [suggestions, value]
+  );
 
-  const addTag = (raw: string) => {
-    const next = raw.trim();
+  useEffect(() => {
+    if (expanded) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [expanded]);
+
+  useEffect(() => {
+    if (!expanded) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setExpanded(false);
+        setDraft("");
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => window.removeEventListener("pointerdown", handlePointerDown);
+  }, [expanded]);
+
+  const saveDraft = () => {
+    const next = draft.trim();
     if (!next) return;
-    onChange(cleanTags([...value, next]));
+    onCreateTag(next);
     setDraft("");
+    setExpanded(false);
   };
 
   return (
-    <div className="chip-editor">
+    <div ref={rootRef} className="chip-editor">
       <div className="chip-list">
         {value.length ? (
           value.map(tag => (
@@ -48,31 +83,56 @@ export default function TagEditor({ value, suggestions, onChange }: Props) {
           <span className="empty-inline">暂无标签</span>
         )}
       </div>
-      <div className="chip-editor__controls">
-        <input
-          value={draft}
-          placeholder="输入标签后回车"
-          onChange={event => setDraft(event.target.value)}
-          onKeyDown={event => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              addTag(draft);
-            }
-          }}
-        />
-        <button type="button" className="secondary-button" onClick={() => addTag(draft)}>
-          添加
-        </button>
-      </div>
-      {filteredSuggestions.length ? (
-        <div className="suggestion-list">
-          {filteredSuggestions.map(tag => (
-            <button key={tag} type="button" className="suggestion-pill" onClick={() => addTag(tag)}>
-              {tag}
+
+      <div className="suggestion-list">
+        {filteredSuggestions.map(tag => (
+          <button key={tag} type="button" className="suggestion-pill" onClick={() => onChange(cleanTags([...value, tag]))}>
+            {tag}
+          </button>
+        ))}
+
+        {expanded ? (
+          <div className="tag-creator">
+            <input
+              ref={inputRef}
+              value={draft}
+              placeholder="新标签"
+              onChange={event => setDraft(event.target.value)}
+              onKeyDown={event => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  saveDraft();
+                }
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  setExpanded(false);
+                  setDraft("");
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="tree-row__action tag-creator__save"
+              title="保存当前标签"
+              aria-label="保存当前标签"
+              disabled={!draft.trim()}
+              onClick={saveDraft}
+            >
+              <img className="tree-row__action-icon" src={saveIconSrc} alt="" />
             </button>
-          ))}
-        </div>
-      ) : null}
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="tag-creator__toggle"
+            title="新增标签"
+            aria-label="新增标签"
+            onClick={() => setExpanded(true)}
+          >
+            <img className="tree-row__action-icon" src={addIconSrc} alt="" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
