@@ -68,7 +68,7 @@
 
 ### 部署
 
-主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可
+主体仅需 `cd fzu-food-map`后简单的 `npm install` 和 `npm run dev` 即可 ~~注意：请确保你的电脑上有node.js并已加入Path~~
 
 注意：部署后在使用前需在fzu-food-map即项目文件夹中创建 `.env.local` 文件并输入 `VITE_MAPTILER_KEY=你从MapTiler获取的API` 来替换成自己开发环境下的地图瓦片
 

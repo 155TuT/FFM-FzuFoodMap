@@ -1798,6 +1798,43 @@
           26.06654995
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-047",
+        "category": "门店",
+        "name": "福大阿毛烧烤",
+        "source": "manual",
+        "tags": [
+          "烧烤",
+          "适合聚餐",
+          "堂食",
+          "一人食",
+          "平价",
+          "融合菜"
+        ],
+        "notes": "掌中宝，火焰牛排，黑虎虾，印尼小管，自制奶茶",
+        "address": "溪源宫路106-4号",
+        "contact": "13400539010",
+        "openhour": "17:00-次日05:00",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 4.7,
+        "price": "66¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.17480157,
+          26.06297961
+        ]
+      }
     }
   ]
 }

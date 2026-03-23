@@ -558,6 +558,20 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
+server.prependListener("error", error => {
+  if (error && typeof error === "object" && "code" in error) {
+    if (error.code === "EADDRINUSE") {
+      console.error(`FFM Studio API port ${port} is already in use.`);
+      process.exit(1);
+    }
+
+    if (error.code === "EACCES") {
+      console.error(`FFM Studio API cannot bind to 127.0.0.1:${port}. The port may be reserved or blocked by the OS.`);
+      process.exit(1);
+    }
+  }
+});
+
 server.on("error", error => {
   if (error && typeof error === "object" && "code" in error && error.code === "EADDRINUSE") {
     console.error(`FFM Studio API 端口 ${port} 已被占用`);
