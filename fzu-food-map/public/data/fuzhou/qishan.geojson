@@ -1143,7 +1143,7 @@
           "堂食",
           "一人食"
         ],
-        "rating": 3.7,
+        "rating": 4.1,
         "price": "17¥",
         "notes": "牛肉粉，羊肉米线，凉拌米线",
         "address": "岐安福大学生街学府北路10-235号",
@@ -1205,42 +1205,6 @@
       "type": "Feature",
       "properties": {
         "id": "qishan-031",
-        "category": "门店",
-        "name": "拾柒糖水·古早手作糖水",
-        "tags": [
-          "甜品",
-          "平价",
-          "日常",
-          "一人食",
-          "可外卖"
-        ],
-        "rating": 3.9,
-        "price": "20¥",
-        "notes": "（泰茶，抹茶青提，巧克力，老式酸梅）绵绵冰，大满贯糖水，巴斯克",
-        "address": "岐安福大学生街学府北路10-205号",
-        "contact": "19577666366",
-        "openhour": "14:00-23:00",
-        "source": "manual",
-        "sources": [
-          {
-            "platform": "manual",
-            "title": "手动添加",
-            "status": "manual"
-          }
-        ]
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.18759736,
-          26.06204251
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": "qishan-032",
         "category": "小摊",
         "name": "卤百味",
         "tags": [
@@ -1273,7 +1237,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-033",
+        "id": "qishan-032",
         "category": "门店",
         "name": "成都纸包鱼烧烤大排档",
         "tags": [
@@ -1310,7 +1274,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-034",
+        "id": "qishan-033",
         "category": "摊位",
         "name": "桥头排骨",
         "tags": [
@@ -1346,7 +1310,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-035",
+        "id": "qishan-034",
         "category": "门店",
         "name": "北方饭店",
         "tags": [
@@ -1383,7 +1347,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-036",
+        "id": "qishan-035",
         "category": "门店",
         "name": "川册·川味小馆",
         "tags": [
@@ -1420,7 +1384,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-037",
+        "id": "qishan-036",
         "category": "门店",
         "name": "李夏记牛腩煲（原广式牛杂）",
         "tags": [
@@ -1458,7 +1422,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-038",
+        "id": "qishan-037",
         "category": "门店",
         "name": "焦焦牧场·鲜牛奶炸鸡",
         "tags": [
@@ -1497,7 +1461,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-039",
+        "id": "qishan-038",
         "category": "门店",
         "name": "116炭火",
         "tags": [
@@ -1536,7 +1500,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-040",
+        "id": "qishan-039",
         "category": "门店",
         "name": "fufu牛奶冰",
         "tags": [
@@ -1574,7 +1538,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-041",
+        "id": "qishan-040",
         "category": "门店",
         "name": "傻师傅台湾厨房",
         "tags": [
@@ -1613,7 +1577,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-042",
+        "id": "qishan-041",
         "category": "门店",
         "name": "新疆石榴花美食馆",
         "tags": [
@@ -1652,7 +1616,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-043",
+        "id": "qishan-042",
         "category": "门店",
         "name": "禾西Restaurant",
         "tags": [
@@ -1690,7 +1654,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-044",
+        "id": "qishan-043",
         "category": "门店",
         "name": "大福的烧鸟·居酒屋",
         "tags": [
@@ -1728,7 +1692,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-045",
+        "id": "qishan-044",
         "category": "门店",
         "name": "有饭料理店",
         "source": "manual",
@@ -1765,7 +1729,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-046",
+        "id": "qishan-045",
         "category": "门店",
         "name": "唐小厨东北菜",
         "source": "manual",
@@ -1802,7 +1766,7 @@
     {
       "type": "Feature",
       "properties": {
-        "id": "qishan-047",
+        "id": "qishan-046",
         "category": "门店",
         "name": "福大阿毛烧烤",
         "source": "manual",
@@ -1833,6 +1797,116 @@
         "coordinates": [
           119.17480157,
           26.06297961
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-047",
+        "category": "门店",
+        "name": "周家粥铺",
+        "source": "manual",
+        "tags": [
+          "便宜",
+          "炒菜",
+          "清淡",
+          "日常",
+          "一人食",
+          "堂食"
+        ],
+        "notes": "猪肝粥，炒猪头肉，海鲜粥，皮蛋瘦肉粥",
+        "address": "岐安花园一期东北2门南120米",
+        "contact": "15960082047",
+        "openhour": "08:00-21:00",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 3.7,
+        "price": "20¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18389504,
+          26.04990089
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-048",
+        "category": "门店",
+        "name": "黔味烤鱼",
+        "source": "manual",
+        "tags": [
+          "平价",
+          "黔菜",
+          "适合聚餐",
+          "堂食"
+        ],
+        "notes": "肥肠烤鱼，特色清江团鱼，烙锅",
+        "address": "岐安1号二期",
+        "contact": "13021929814",
+        "openhour": "10:00-次日00:30",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "price": "46¥",
+        "rating": 3.9
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18660283,
+          26.04786367
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-049",
+        "category": "门店",
+        "name": "邱阳破店",
+        "source": "manual",
+        "tags": [
+          "平价",
+          "闽菜",
+          "一人食",
+          "适合聚餐",
+          "清淡",
+          "日常",
+          "炒菜"
+        ],
+        "notes": "香油田鸡，荔枝肉，南煎肝，醉排骨，葱油拆骨肉，海蛎汤",
+        "address": "红峰村新上街邱阳9-1号",
+        "contact": "13509314899",
+        "openhour": "10:00-13:30,17:00-20:30",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 4.7,
+        "price": "50¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18411702,
+          26.08627407
         ]
       }
     }
