@@ -1909,6 +1909,157 @@
           26.08627407
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-050",
+        "category": "门店",
+        "name": "山东水饺",
+        "source": "manual",
+        "tags": [
+          "鲁菜",
+          "日常",
+          "清淡",
+          "便宜",
+          "小吃",
+          "一人食",
+          "堂食"
+        ],
+        "notes": "大葱水饺，荠菜水饺，拌猪耳朵，拌皮冻",
+        "address": "侯官路1-57号",
+        "contact": "13067231654",
+        "openhour": "10:00-22:00",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 3.9,
+        "price": "18¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.20484739,
+          26.07518735
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-051",
+        "category": "门店",
+        "name": "何记河南正宗水煎包胡辣汤",
+        "source": "manual",
+        "tags": [
+          "豫菜",
+          "便宜",
+          "日常",
+          "一人食",
+          "小吃",
+          "堂食"
+        ],
+        "notes": "肉馅水煎包，素馅水煎包，胡辣汤",
+        "address": "国宾大道上街余盛小学南侧",
+        "contact": "13685012320",
+        "openhour": "06:30-19:30",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 3.9,
+        "price": "10¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.20241373,
+          26.07279887
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-052",
+        "category": "门店",
+        "name": "KEFI来乐食堂",
+        "source": "manual",
+        "tags": [
+          "平价",
+          "日常",
+          "川菜",
+          "炒菜",
+          "融合菜",
+          "堂食",
+          "一人食"
+        ],
+        "notes": "每季度菜单不同，具体请查看小红书",
+        "address": "浦兴路18号",
+        "contact": "13107690917",
+        "openhour": "11:00-13:30,17:00-20:30,周一休息",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 4,
+        "price": "35¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.20140778,
+          26.06391828
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "qishan-053",
+        "category": "门店",
+        "name": "依云煎包店",
+        "source": "manual",
+        "tags": [
+          "便宜",
+          "日常",
+          "清淡",
+          "闽菜",
+          "小吃",
+          "一人食",
+          "堂食"
+        ],
+        "notes": "煎包，茶叶蛋，巴沙鱼汤，鳗鱼汤，鱼丸",
+        "address": "新上街与新尚路交叉口东50米（新华盛超市对面）",
+        "contact": "13609549211",
+        "openhour": "06:30-13:30",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 3.8,
+        "price": "16¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.18897556,
+          26.08269978
+        ]
+      }
     }
   ]
 }
