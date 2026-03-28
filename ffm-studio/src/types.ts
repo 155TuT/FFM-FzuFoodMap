@@ -61,14 +61,18 @@ export type WorkspaceFileNode = {
 
 export type WorkspaceNode = WorkspaceDirectoryNode | WorkspaceFileNode;
 
+export type Taxonomy = {
+  categories: string[];
+  tags: string[];
+};
+
+export type TaxonomyEntryKind = "category" | "tag";
+
 export type Workspace = {
   sourceRoot: string;
   cacheRoot: string;
   tree: WorkspaceDirectoryNode;
-  taxonomy: {
-    categories: string[];
-    tags: string[];
-  };
+  taxonomy: Taxonomy;
 };
 
 export type FilePayload = {

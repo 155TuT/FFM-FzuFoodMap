@@ -8,16 +8,18 @@ import {
   fetchWorkspace,
   saveAllGeoJsonFiles,
   searchSourceCandidates,
-  updateCacheFile
+  updateCacheFile,
+  updateTaxonomyEntry
 } from "./api";
 import { collectDirtyFeatureIds, isGeoJsonDirtyAgainstSource } from "./geojsonDiff";
+import CategoryEditor from "./components/CategoryEditor";
 import IncludeEditor, { type IncludeRow } from "./components/IncludeEditor";
 import MiniMap from "./components/MiniMap";
 import SourceListEditor from "./components/SourceListEditor";
 import TagEditor from "./components/TagEditor";
 import TreePanel, { collectDirectoryPaths, findFileNode, listDirectories } from "./components/TreePanel";
 import fuzhou from "../../fzu-food-map/src/cities/fuzhou.config";
-import type { FilePayload, GeoFeature, GeoJsonDocument, PoiInclude, PoiSource, Workspace } from "./types";
+import type { FilePayload, GeoFeature, GeoJsonDocument, PoiInclude, PoiSource, TaxonomyEntryKind, Workspace } from "./types";
 
 type Tone = "neutral" | "success" | "error";
 type DialogState = { type: "folder" | "file"; parentPath: string; name: string } | null;
@@ -27,6 +29,7 @@ const DEFAULT_CATEGORY = "门店";
 const DEFAULT_COORDS: [number, number] = [119.29824947, 26.04783333];
 const AUTOSAVE_DELAY = 3000;
 const THEME_STORAGE_KEY = "ffm-studio-theme";
+const CATEGORY_ALIASES = new Map([["小摊", "摊位"]]);
 const lightFaviconSrc = new URL("../../fzu-food-map/public/assets/icons/light/ffmstudio.svg", import.meta.url).href;
 const darkFaviconSrc = new URL("../../fzu-food-map/public/assets/icons/dark/ffmstudio.svg", import.meta.url).href;
 const REGION_DEFAULT_COORDS = fuzhou.regions.reduce<Record<string, [number, number]>>((acc, region) => {
@@ -49,14 +52,28 @@ function uniq(values: string[]) {
   return [...new Set(values.map(item => item.trim()).filter(Boolean))];
 }
 
-function basename(filePath: string) {
-  return filePath.replace(/\\/g, "/").split("/").pop() ?? filePath;
+function normalizeCategoryInput(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return DEFAULT_CATEGORY;
+  }
+  return CATEGORY_ALIASES.get(trimmed) ?? trimmed;
 }
 
-function dirname(filePath: string) {
-  const parts = filePath.replace(/\\/g, "/").split("/");
-  parts.pop();
-  return parts.join("/");
+function mergeTaxonomyEntry(
+  taxonomy: Workspace["taxonomy"],
+  kind: TaxonomyEntryKind,
+  value: string
+): Workspace["taxonomy"] {
+  const key = kind === "category" ? "categories" : "tags";
+  return {
+    ...taxonomy,
+    [key]: uniq([...(taxonomy[key] ?? []), value])
+  };
+}
+
+function basename(filePath: string) {
+  return filePath.replace(/\\/g, "/").split("/").pop() ?? filePath;
 }
 
 function firstFile(node: Workspace["tree"]): string | null {
@@ -269,7 +286,6 @@ export default function App() {
   const [message, setMessage] = useState("正在载入工作区");
   const [tone, setTone] = useState<Tone>("neutral");
   const [theme, setTheme] = useState<ThemeMode>(() => getInitialTheme());
-  const [tagLibrary, setTagLibrary] = useState<string[]>([]);
 
   const syncRef = useRef(0);
   const saveTimerRef = useRef<number | null>(null);
@@ -297,6 +313,31 @@ export default function App() {
       }
       return nextSet;
     });
+  };
+
+  const syncTaxonomyEntry = (kind: TaxonomyEntryKind, value: string) => {
+    const normalizedValue = value.trim();
+    if (!normalizedValue) {
+      return;
+    }
+
+    setWorkspace(current =>
+      current
+        ? {
+            ...current,
+            taxonomy: mergeTaxonomyEntry(current.taxonomy, kind, normalizedValue)
+          }
+        : current
+    );
+
+    void updateTaxonomyEntry(kind, normalizedValue)
+      .then(nextWorkspace => {
+        applyWorkspace(nextWorkspace);
+      })
+      .catch(error => {
+        setMessage(error instanceof Error ? error.message : "taxonomy 缓存更新失败");
+        setTone("error");
+      });
   };
 
   const syncActiveFileAfterWorkspace = (next: Workspace, preferredPath: string | null = activeFilePathRef.current) => {
@@ -377,14 +418,6 @@ export default function App() {
     }
     themeColor.content = theme === "dark" ? "#07111f" : "#f8fafc";
   }, [theme]);
-
-  useEffect(() => {
-    if (!workspace) {
-      setTagLibrary([]);
-      return;
-    }
-    setTagLibrary(previous => uniq([...(workspace.taxonomy.tags ?? []), ...previous]));
-  }, [workspace]);
 
   const applyFilePayload = (file: FilePayload) => {
     sourceSnapshotRef.current = file.sourceData;
@@ -500,7 +533,7 @@ export default function App() {
     [workspace?.taxonomy.categories, activeFeature]
   );
 
-  const tags = useMemo(() => uniq(tagLibrary), [tagLibrary]);
+  const tags = useMemo(() => uniq(workspace?.taxonomy.tags ?? []), [workspace?.taxonomy.tags]);
 
   const includeRows = activeFeature ? toIncludeRows(activeFeature.properties.include) : [];
   const filePathLabel = activeFilePath ? `data/${activeFilePath}` : "data";
@@ -795,24 +828,27 @@ export default function App() {
                       }
                     />
                   </label>
-                  <label className="field">
+                  <div className="field">
                     <span>门店类型</span>
-                    <input
-                      list="category-options"
+                    <CategoryEditor
                       value={activeFeature.properties.category ?? DEFAULT_CATEGORY}
-                      onChange={event =>
+                      suggestions={categories}
+                      onSelect={category =>
                         mutateFeature(feature => ({
                           ...feature,
-                          properties: { ...feature.properties, category: event.target.value }
+                          properties: { ...feature.properties, category }
                         }))
                       }
+                      onCreateCategory={category => {
+                        const nextCategory = normalizeCategoryInput(category);
+                        syncTaxonomyEntry("category", nextCategory);
+                        mutateFeature(feature => ({
+                          ...feature,
+                          properties: { ...feature.properties, category: nextCategory }
+                        }));
+                      }}
                     />
-                    <datalist id="category-options">
-                      {categories.map(item => (
-                        <option key={item} value={item} />
-                      ))}
-                    </datalist>
-                  </label>
+                  </div>
                   <label className="field">
                     <span>评分</span>
                     <input
@@ -906,7 +942,7 @@ export default function App() {
                     onCreateTag={tag => {
                       const nextTag = tag.trim();
                       if (!nextTag) return;
-                      setTagLibrary(previous => uniq([...previous, nextTag]));
+                      syncTaxonomyEntry("tag", nextTag);
                       mutateFeature(feature => ({
                         ...feature,
                         properties: { ...feature.properties, tags: uniq([...(feature.properties.tags ?? []), nextTag]) }

@@ -10,9 +10,16 @@ const sourceRoot = path.resolve(studioRoot, "../fzu-food-map/public/data");
 const cacheStateRoot = path.resolve(studioRoot, ".cache");
 const cacheRoot = path.resolve(studioRoot, ".cache/data");
 const cacheInitMarker = path.resolve(cacheStateRoot, ".initialized");
+const taxonomyCachePath = path.resolve(cacheStateRoot, "taxonomy.json");
 const port = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
+const DEFAULT_CATEGORY = "门店";
 
-const CATEGORY_ALIASES = new Map([["小摊", "摊位"]]);
+let taxonomyBootstrapped = false;
+
+const CATEGORY_ALIASES = new Map([
+  ["小摊", "摊位"],
+  ["摊位", "摊位"]
+]);
 
 function normalizeSeparators(value) {
   return value.replace(/\\/g, "/");
@@ -76,6 +83,46 @@ function sanitizeGeoJsonDocument(data) {
   };
 }
 
+function sortZh(values) {
+  return [...values].sort((left, right) => left.localeCompare(right, "zh-CN"));
+}
+
+function normalizeCategoryValue(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+  return CATEGORY_ALIASES.get(trimmed) ?? trimmed;
+}
+
+function normalizeTagValue(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim();
+}
+
+function normalizeStringList(values, normalizeValue) {
+  return sortZh([...new Set(values.map(normalizeValue).filter(Boolean))]);
+}
+
+function normalizeTaxonomy(taxonomy = {}) {
+  return {
+    categories: normalizeStringList(
+      [DEFAULT_CATEGORY, ...(Array.isArray(taxonomy.categories) ? taxonomy.categories : [])],
+      normalizeCategoryValue
+    ),
+    tags: normalizeStringList(Array.isArray(taxonomy.tags) ? taxonomy.tags : [], normalizeTagValue)
+  };
+}
+
+function createEmptyTaxonomy() {
+  return normalizeTaxonomy();
+}
+
 function normalizeComparableValue(value) {
   if (
     value === null ||
@@ -104,6 +151,11 @@ function stableSerialize(value) {
   return JSON.stringify(normalizeComparableValue(value));
 }
 
+async function readRawJsonFile(filePath) {
+  const content = await fs.readFile(filePath, "utf8");
+  return JSON.parse(content);
+}
+
 async function copyGeoJsonTree(sourcePath, targetPath, skipExisting = false) {
   const stat = await fs.stat(sourcePath);
   if (stat.isDirectory()) {
@@ -129,26 +181,33 @@ async function copyGeoJsonTree(sourcePath, targetPath, skipExisting = false) {
 async function ensureCacheInitialized() {
   await ensureDirectory(cacheStateRoot);
   await ensureDirectory(cacheRoot);
-  if (fssync.existsSync(cacheInitMarker)) {
-    return;
+  if (!fssync.existsSync(cacheInitMarker)) {
+    const entries = await fs.readdir(cacheRoot, { withFileTypes: true });
+    if (entries.length === 0 && fssync.existsSync(sourceRoot)) {
+      await copyGeoJsonTree(sourceRoot, cacheRoot, true);
+    }
+
+    await fs.writeFile(cacheInitMarker, `${new Date().toISOString()}\n`, "utf8");
   }
 
-  const entries = await fs.readdir(cacheRoot, { withFileTypes: true });
-  if (entries.length === 0 && fssync.existsSync(sourceRoot)) {
-    await copyGeoJsonTree(sourceRoot, cacheRoot, true);
+  if (!taxonomyBootstrapped) {
+    await syncTaxonomyCache();
+    taxonomyBootstrapped = true;
   }
-
-  await fs.writeFile(cacheInitMarker, `${new Date().toISOString()}\n`, "utf8");
 }
 
 async function readJsonFile(filePath) {
-  const content = await fs.readFile(filePath, "utf8");
-  return sanitizeGeoJsonDocument(JSON.parse(content));
+  return sanitizeGeoJsonDocument(await readRawJsonFile(filePath));
 }
 
 async function writeJsonFile(filePath, data) {
   await ensureDirectory(path.dirname(filePath));
   await fs.writeFile(filePath, `${JSON.stringify(sanitizeGeoJsonDocument(data), null, 2)}\n`, "utf8");
+}
+
+async function writeRawJsonFile(filePath, data) {
+  await ensureDirectory(path.dirname(filePath));
+  await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
 async function isFileDirty(relativePath) {
@@ -221,17 +280,32 @@ async function listTree(dirPath = cacheRoot, relativePath = "") {
 }
 
 function collectFeatureTaxonomy(feature, categories, tags) {
-  const category = feature?.properties?.category;
-  if (typeof category === "string" && category.trim()) {
-    categories.add(CATEGORY_ALIASES.get(category.trim()) ?? category.trim());
+  const category = normalizeCategoryValue(feature?.properties?.category);
+  if (category) {
+    categories.add(category);
   }
 
   const rawTags = Array.isArray(feature?.properties?.tags) ? feature.properties.tags : [];
   for (const tag of rawTags) {
-    if (typeof tag === "string" && tag.trim()) {
-      tags.add(tag.trim());
+    const normalizedTag = normalizeTagValue(tag);
+    if (normalizedTag) {
+      tags.add(normalizedTag);
     }
   }
+}
+
+function collectDocumentTaxonomy(document) {
+  const categories = new Set([DEFAULT_CATEGORY]);
+  const tags = new Set();
+
+  for (const feature of document?.features ?? []) {
+    collectFeatureTaxonomy(feature, categories, tags);
+  }
+
+  return normalizeTaxonomy({
+    categories: [...categories],
+    tags: [...tags]
+  });
 }
 
 async function walkGeoJsonFiles(rootPath, visitor, relativePath = "") {
@@ -257,40 +331,68 @@ async function walkGeoJsonFiles(rootPath, visitor, relativePath = "") {
   }
 }
 
-async function collectTaxonomy() {
-  const categories = new Set();
+async function readTaxonomyCache() {
+  if (!fssync.existsSync(taxonomyCachePath)) {
+    return createEmptyTaxonomy();
+  }
+
+  try {
+    return normalizeTaxonomy(await readRawJsonFile(taxonomyCachePath));
+  } catch {
+    return createEmptyTaxonomy();
+  }
+}
+
+async function writeTaxonomyCache(taxonomy) {
+  const normalized = normalizeTaxonomy(taxonomy);
+  await writeRawJsonFile(taxonomyCachePath, normalized);
+  return normalized;
+}
+
+async function mergeTaxonomyCache(partial) {
+  const current = await readTaxonomyCache();
+  return writeTaxonomyCache({
+    categories: [...current.categories, ...(partial?.categories ?? [])],
+    tags: [...current.tags, ...(partial?.tags ?? [])]
+  });
+}
+
+async function collectTaxonomyFromCache() {
+  const categories = new Set([DEFAULT_CATEGORY]);
   const tags = new Set();
 
-  await walkGeoJsonFiles(sourceRoot, async ({ absolutePath }) => {
+  await walkGeoJsonFiles(cacheRoot, async ({ absolutePath }) => {
     try {
       const content = await readJsonFile(absolutePath);
-      for (const feature of content.features ?? []) {
-        collectFeatureTaxonomy(feature, categories, tags);
+      const taxonomy = collectDocumentTaxonomy(content);
+      for (const category of taxonomy.categories) {
+        categories.add(category);
+      }
+      for (const tag of taxonomy.tags) {
+        tags.add(tag);
       }
     } catch {
       return;
     }
   });
 
-  await walkGeoJsonFiles(cacheRoot, async ({ absolutePath, relativePath }) => {
-    try {
-      if (!(await isFileDirty(relativePath))) {
-        return;
-      }
-
-      const content = await readJsonFile(absolutePath);
-      for (const feature of content.features ?? []) {
-        collectFeatureTaxonomy(feature, categories, tags);
-      }
-    } catch {
-      return;
-    }
+  return normalizeTaxonomy({
+    categories: [...categories],
+    tags: [...tags]
   });
+}
 
-  return {
-    categories: [...categories].sort((left, right) => left.localeCompare(right, "zh-CN")),
-    tags: [...tags].sort((left, right) => left.localeCompare(right, "zh-CN"))
-  };
+async function syncTaxonomyCache() {
+  return mergeTaxonomyCache(await collectTaxonomyFromCache());
+}
+
+async function upsertTaxonomyEntry(kind, value) {
+  const normalizedValue = kind === "category" ? normalizeCategoryValue(value) : normalizeTagValue(value);
+  if (!normalizedValue) {
+    throw new Error(kind === "category" ? "缺少门店类型" : "缺少标签");
+  }
+
+  return mergeTaxonomyCache(kind === "category" ? { categories: [normalizedValue] } : { tags: [normalizedValue] });
 }
 
 async function buildWorkspace() {
@@ -304,7 +406,7 @@ async function buildWorkspace() {
       path: "",
       children: await listTree()
     },
-    taxonomy: await collectTaxonomy()
+    taxonomy: await readTaxonomyCache()
   };
 }
 
@@ -329,6 +431,7 @@ async function updateCacheFile(relativePath, data) {
   await ensureCacheInitialized();
   const cachePath = resolveCachePath(relativePath);
   await writeJsonFile(cachePath, data);
+  await mergeTaxonomyCache(collectDocumentTaxonomy(data));
   return {
     file: await getFile(relativePath),
     workspace: await buildWorkspace()
@@ -497,6 +600,19 @@ const server = http.createServer(async (request, response) => {
         throw new Error("缺少 GeoJSON 数据");
       }
       sendJson(response, 200, await updateCacheFile(body.path, body.data));
+      return;
+    }
+
+    if (request.method === "PUT" && url.pathname === "/api/taxonomy") {
+      const body = await readBody(request);
+      if (body.kind !== "category" && body.kind !== "tag") {
+        throw new Error("缺少有效的 taxonomy 类型");
+      }
+      if (typeof body.value !== "string") {
+        throw new Error("缺少 taxonomy 值");
+      }
+      await upsertTaxonomyEntry(body.kind, body.value);
+      sendJson(response, 200, await buildWorkspace());
       return;
     }
 
