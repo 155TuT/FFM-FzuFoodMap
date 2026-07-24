@@ -1,0 +1,132 @@
+.poi-sources {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.source-icon,
+.poi-sources__toggle {
+  height: var(--floating-action-size);
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.source-icon {
+  width: var(--floating-action-size);
+  text-decoration: none;
+  color: inherit;
+}
+
+.poi-sources__toggle {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--floating-action-size);
+  z-index: 3;
+  transform: translate(-50%, 50%);
+  cursor: pointer;
+}
+
+.source-icon__circle,
+.poi-sources__toggle-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--floating-action-radius);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-card-strong);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.source-icon__circle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.source-icon:hover .source-icon__circle,
+.source-icon:focus-visible .source-icon__circle,
+.poi-sources__toggle:hover .poi-sources__toggle-circle,
+.poi-sources__toggle:focus-visible .poi-sources__toggle-circle {
+  border-color: var(--accent-primary);
+  background: rgba(14, 165, 233, 0.12);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.source-icon:focus-visible,
+.poi-sources__toggle:focus-visible {
+  outline: none;
+}
+
+.source-icon:active .source-icon__circle,
+.poi-sources__toggle:active .poi-sources__toggle-circle {
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.16), 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.source-icon:disabled,
+.source-icon[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.source-icon:disabled .source-icon__circle {
+  opacity: 0.56;
+}
+
+.poi-sources__toggle-icon {
+  width: var(--icon-button-icon-size);
+  height: var(--icon-button-icon-size);
+  display: block;
+  object-fit: contain;
+}
+
+.poi-sources__strip {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--floating-action-size);
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(50%);
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.poi-sources__strip--expanded {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.poi-sources__scroller {
+  display: flex;
+  align-items: center;
+  gap: var(--round-button-gap);
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-left: calc(var(--floating-action-radius) + var(--round-button-gap));
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.poi-sources__scroller::-webkit-scrollbar {
+  display: none;
+}

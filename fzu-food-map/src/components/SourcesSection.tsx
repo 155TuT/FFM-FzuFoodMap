@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { PoiProps } from "../types";
 import { getDisplaySources } from "../utils/sources";
 import SourceIcon from "./SourceIcon";
+import "./SourcesSection.css";
 
 type Props = {
   poi: PoiProps;
