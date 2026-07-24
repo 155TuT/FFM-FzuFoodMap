@@ -4,13 +4,19 @@
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "paths": {
+      "maplibre-gl": ["../fzu-food-map/node_modules/maplibre-gl"],
+      "react": ["../fzu-food-map/node_modules/@types/react"],
+      "react/jsx-runtime": ["../fzu-food-map/node_modules/@types/react/jsx-runtime.d.ts"],
+      "react-dom/client": ["../fzu-food-map/node_modules/@types/react-dom/client.d.ts"]
+    },
     "jsx": "react-jsx",
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "allowJs": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "noEmit": true,
-    "types": ["node"]
+    "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src", "../fzu-food-map/node_modules/vite/client.d.ts"]
 }
