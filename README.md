@@ -26,34 +26,7 @@
 
 地址可能模糊，但定位全部为手调经纬度，不会超过方圆20米，如遇问题请及时上报
 
-本页面采用github pages部署，如遇连接失败请等待一段时间或科学上网后再尝试访问
-
-#### 点位颜色信息
-
-- 门店为蓝色
-- 食堂为绿色
-- 摊位为紫色
-
-#### 另附搜索技巧
-
-**按店名搜索时**，如果没能搜到存在的餐馆，请检查定位处的餐馆并反馈；
-
-**按标签搜索时**，有如下饭店标签:
-
-- *所属菜系(福建菜，广东菜，东北菜...)*
-- *菜品类别(火锅，烧烤，甜品...)*
-- *用餐渠道（堂食，外卖）*
-- *用餐人数（聚餐，一人食）*
-- *价位(见下方说明)*
-
-人均价位标签说明：
-
-- *(价格<=20r)便宜*
-- *(80r>=价格>20r)平价*
-- *(150r>=价格>80r)轻奢*
-- *(价格>150r)小资*
-
-**按菜品搜索时**，我们仅收录了每个店铺几道最好吃的菜，因此建议在特别想吃某个菜时使用
+本页面采用github pages部署，如遇连接失败请等待一段时间，或科学上网后再尝试访问
 
 ## 0x01 项目相关
 
@@ -61,7 +34,7 @@
 
 本项目为纯前端项目，主要技术栈如下：
 
-- 框架采用[React](https://react.dev/reference/react)+[TypeScript](https://www.typescriptlang.org)+[Vite](https://github.com/vitejs/vite)轻量构建
+- 框架采用[React](https://react.dev/reference/react)+[Vite](https://github.com/vitejs/vite)轻量构建
 - 地图瓦片使用了免费的OSM：[MapTiler](https://www.maptiler.com) API
 - 网页由[Github Pages](https://githubdocs.cn/en/pages/getting-started-with-github-pages)托管
 - 图标由[shadcn/ui](https://github.com/shadcn-ui/ui)提供
