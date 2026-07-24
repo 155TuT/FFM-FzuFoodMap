@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "license": "CC BY-NC 4.0",
+  "_notes": "changle 点位",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "changle-001",
+        "category": "门店",
+        "name": "美味鱼庄",
+        "source": "manual",
+        "tags": [
+          "川菜",
+          "平价",
+          "闽菜",
+          "日常",
+          "适合聚餐",
+          "堂食"
+        ],
+        "notes": "干锅脆鱼，槟榔芋条",
+        "address": "杭滨花园9-12号店",
+        "contact": "13215000566",
+        "openhour": "10:30-14:00,16:00-00:00",
+        "sources": [
+          {
+            "platform": "manual",
+            "title": "手动添加",
+            "status": "manual"
+          }
+        ],
+        "rating": 4,
+        "price": "69¥"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.50360869,
+          25.96362442
+        ]
+      }
+    }
+  ]
+}

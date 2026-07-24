@@ -8,12 +8,12 @@ type Props = {
 };
 
 const addIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/add.svg",
+  "../../../../../fzu-food-map/public/assets/icons/normal/add.svg",
   import.meta.url
 ).href;
 
 const saveIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/save.svg",
+  "../../../../../fzu-food-map/public/assets/icons/normal/save.svg",
   import.meta.url
 ).href;
 

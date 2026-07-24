@@ -1,0 +1,51 @@
+.mini-map-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0;
+}
+
+.map-preview-field {
+  margin-top: 14px;
+}
+
+.region-config-heading {
+  margin-bottom: 14px;
+}
+
+.mini-map {
+  height: 340px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}
+
+.mini-map-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 3px solid var(--mini-map-marker-border);
+  box-shadow: 0 0 0 4px rgba(47, 35, 24, 0.12);
+}
+
+.json-preview {
+  margin-top: 18px;
+}
+
+.json-preview pre {
+  margin: 0;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-code);
+  color: var(--text-primary);
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.empty-block {
+  padding: 18px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 18px;
+  background: var(--surface-empty);
+}

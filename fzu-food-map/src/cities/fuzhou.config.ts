@@ -1,14 +1,11 @@
 import type { CityConfig, RegionConfig } from "./index";
 
-const CITY_CENTER: [number, number] = [119.29824947, 26.04783333];
-const CITY_ZOOM = 12;
-
 const regions: RegionConfig[] = [
   {
     id: "citywide",
     name: "全市范围",
-    center: CITY_CENTER,
-    zoom: CITY_ZOOM,
+    center: [119.29824947, 26.04783333],
+    zoom: 12,
     isCitywide: true
   },
   {
@@ -45,14 +42,21 @@ const regions: RegionConfig[] = [
     center: [119.309153, 26.055732],
     zoom: 14.5,
     dataPath: "data/fuzhou/taijiang.geojson"
+  },
+  {
+    id: "changle",
+    name: "长乐区即机场及周边",
+    center: [119.51861812, 25.96512359],
+    zoom: 14,
+    dataPath: "data/fuzhou/changle.geojson"
   }
 ];
 
 const fuzhou: CityConfig = {
   slug: "fuzhou",
   name: "福州",
-  center: CITY_CENTER,
-  zoom: CITY_ZOOM,
+  center: [119.29824947, 26.04783333],
+  zoom: 12,
   regions,
   defaultRegionId: "citywide",
   theme: { primary: "#0ea5e9", danger: "#ef4444", warning: "#f59e0b" }

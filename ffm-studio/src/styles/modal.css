@@ -1,0 +1,33 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  z-index: 30;
+  backdrop-filter: blur(14px);
+}
+
+.modal-card {
+  width: min(520px, 100%);
+  border-radius: 24px;
+  padding: 20px;
+  background: var(--surface-card-strong);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  backdrop-filter: blur(24px);
+}
+
+.modal-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left {
+  display: none;
+}

@@ -57,6 +57,7 @@ export type WorkspaceFileNode = {
   path: string;
   featureCount: number;
   dirty: boolean;
+  regionDirty: boolean;
 };
 
 export type WorkspaceNode = WorkspaceDirectoryNode | WorkspaceFileNode;
@@ -71,8 +72,27 @@ export type TaxonomyEntryKind = "category" | "tag";
 export type Workspace = {
   sourceRoot: string;
   cacheRoot: string;
+  regionCachePath: string;
+  regionConfigDirty: boolean;
   tree: WorkspaceDirectoryNode;
   taxonomy: Taxonomy;
+};
+
+export type RegionConfig = {
+  id: string;
+  name: string;
+  center: [number, number];
+  zoom: number;
+  isCitywide?: boolean;
+  dataPath?: string;
+};
+
+export type FileRegionConfig = {
+  configPath: string;
+  data: RegionConfig;
+  sourceData: RegionConfig | null;
+  dirty: boolean;
+  inferred: boolean;
 };
 
 export type FilePayload = {
@@ -80,6 +100,7 @@ export type FilePayload = {
   dirty: boolean;
   data: GeoJsonDocument;
   sourceData: GeoJsonDocument | null;
+  regionConfig: FileRegionConfig | null;
 };
 
 export type FileUpdateResponse = {

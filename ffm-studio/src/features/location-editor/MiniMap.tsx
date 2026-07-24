@@ -10,20 +10,31 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 type Props = {
-  category: string;
+  category?: string;
   theme: "light" | "dark";
   coordinates: [number, number];
+  zoom?: number;
+  hint?: string;
+  markerColor?: string;
   onChangeCoordinates: (next: [number, number]) => void;
 };
 
-function buildMarker(category: string) {
+function buildMarker(category: string | undefined, markerColor?: string) {
   const element = document.createElement("div");
   element.className = "mini-map-marker";
-  element.style.background = CATEGORY_COLORS[category] ?? CATEGORY_COLORS["门店"];
+  element.style.background = markerColor ?? CATEGORY_COLORS[category ?? "门店"] ?? CATEGORY_COLORS["门店"];
   return element;
 }
 
-export default function MiniMap({ category, theme, coordinates, onChangeCoordinates }: Props) {
+export default function MiniMap({
+  category,
+  theme,
+  coordinates,
+  zoom = 15,
+  hint = "拖动标记或点击地图即可更新当前点位坐标",
+  markerColor,
+  onChangeCoordinates
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
@@ -44,12 +55,12 @@ export default function MiniMap({ category, theme, coordinates, onChangeCoordina
       return;
     }
 
-    const markerElement = buildMarker(category);
+    const markerElement = buildMarker(category, markerColor);
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: styleUrl,
       center: coordinates,
-      zoom: 15
+      zoom
     });
     appliedStyleUrlRef.current = styleUrl;
 
@@ -101,14 +112,15 @@ export default function MiniMap({ category, theme, coordinates, onChangeCoordina
     }
 
     marker.setLngLat(coordinates);
-    marker.getElement().style.background = CATEGORY_COLORS[category] ?? CATEGORY_COLORS["门店"];
-    map.easeTo({ center: coordinates, duration: 250 });
-  }, [category, coordinates]);
+    marker.getElement().style.background =
+      markerColor ?? CATEGORY_COLORS[category ?? "门店"] ?? CATEGORY_COLORS["门店"];
+    map.easeTo({ center: coordinates, zoom, duration: 250 });
+  }, [category, coordinates, markerColor, zoom]);
 
   return (
     <div className="mini-map-shell">
       <div className="mini-map" ref={containerRef} />
-      <p className="mini-map__hint">拖动标记或点击地图即可更新当前点位坐标</p>
+      <p className="mini-map__hint">{hint}</p>
     </div>
   );
 }

@@ -1,4 +1,11 @@
-import type { FilePayload, FileUpdateResponse, GeoJsonDocument, TaxonomyEntryKind, Workspace } from "./types";
+import type {
+  FilePayload,
+  FileUpdateResponse,
+  GeoJsonDocument,
+  RegionConfig,
+  TaxonomyEntryKind,
+  Workspace
+} from "./types";
 
 async function request<T>(input: string, init?: RequestInit): Promise<T> {
   const response = await fetch(input, {
@@ -26,6 +33,13 @@ export function fetchFile(filePath: string) {
 
 export function updateCacheFile(filePath: string, data: GeoJsonDocument) {
   return request<FileUpdateResponse>("/api/file", {
+    method: "PUT",
+    body: JSON.stringify({ path: filePath, data })
+  });
+}
+
+export function updateRegionConfig(filePath: string, data: Pick<RegionConfig, "center" | "zoom">) {
+  return request<FileUpdateResponse>("/api/region", {
     method: "PUT",
     body: JSON.stringify({ path: filePath, data })
   });

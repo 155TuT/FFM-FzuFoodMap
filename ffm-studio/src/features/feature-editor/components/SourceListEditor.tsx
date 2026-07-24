@@ -1,4 +1,4 @@
-import type { PoiSource } from "../types";
+import type { PoiSource } from "../../../types";
 
 type Props = {
   value: PoiSource[];

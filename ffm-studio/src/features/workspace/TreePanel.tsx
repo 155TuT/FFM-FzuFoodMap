@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import type { GeoFeature, WorkspaceDirectoryNode, WorkspaceFileNode, WorkspaceNode } from "../types";
+import type { GeoFeature, WorkspaceDirectoryNode, WorkspaceNode } from "../../types";
 
 type TreeAction = {
   title: string;
@@ -33,37 +33,37 @@ type Props = {
 };
 
 const deleteIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/delete.svg",
+  "../../../../fzu-food-map/public/assets/icons/normal/delete.svg",
   import.meta.url
 ).href;
 
 const addIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/add.svg",
+  "../../../../fzu-food-map/public/assets/icons/normal/add.svg",
   import.meta.url
 ).href;
 
 const saveIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/save.svg",
+  "../../../../fzu-food-map/public/assets/icons/normal/save.svg",
   import.meta.url
 ).href;
 
 const liftupIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/liftup.svg",
+  "../../../../fzu-food-map/public/assets/icons/normal/liftup.svg",
   import.meta.url
 ).href;
 
 const pulldownIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/pulldown.svg",
+  "../../../../fzu-food-map/public/assets/icons/normal/pulldown.svg",
   import.meta.url
 ).href;
 
 const themeToggleLightIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/light/to.svg",
+  "../../../../fzu-food-map/public/assets/icons/light/to.svg",
   import.meta.url
 ).href;
 
 const themeToggleDarkIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/dark/to.svg",
+  "../../../../fzu-food-map/public/assets/icons/dark/to.svg",
   import.meta.url
 ).href;
 
@@ -267,39 +267,4 @@ export default function TreePanel(props: Props) {
       </div>
     </div>
   );
-}
-
-export function collectDirectoryPaths(node: WorkspaceDirectoryNode, output = new Set<string>()) {
-  output.add(node.path);
-  for (const child of node.children) {
-    if (child.type === "directory") {
-      collectDirectoryPaths(child, output);
-    }
-  }
-  return output;
-}
-
-export function findFileNode(node: WorkspaceDirectoryNode, targetPath: string): WorkspaceFileNode | null {
-  for (const child of node.children) {
-    if (child.type === "file" && child.path === targetPath) {
-      return child;
-    }
-    if (child.type === "directory") {
-      const nested = findFileNode(child, targetPath);
-      if (nested) {
-        return nested;
-      }
-    }
-  }
-  return null;
-}
-
-export function listDirectories(node: WorkspaceDirectoryNode, output: WorkspaceDirectoryNode[] = []) {
-  output.push(node);
-  for (const child of node.children) {
-    if (child.type === "directory") {
-      listDirectories(child, output);
-    }
-  }
-  return output;
 }

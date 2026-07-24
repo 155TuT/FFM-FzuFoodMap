@@ -8,12 +8,12 @@ type Props = {
 };
 
 const liftupIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/liftup.svg",
+  "../../../../../fzu-food-map/public/assets/icons/normal/liftup.svg",
   import.meta.url
 ).href;
 
 const pulldownIconSrc = new URL(
-  "../../../fzu-food-map/public/assets/icons/normal/pulldown.svg",
+  "../../../../../fzu-food-map/public/assets/icons/normal/pulldown.svg",
   import.meta.url
 ).href;
 

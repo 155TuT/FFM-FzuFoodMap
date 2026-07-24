@@ -1,7 +1,4 @@
-export type IncludeRow = {
-  name: string;
-  notes: string;
-};
+import type { IncludeRow } from "../../../domain/geoJson";
 
 type Props = {
   rows: IncludeRow[];
