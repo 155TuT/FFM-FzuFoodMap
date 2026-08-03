@@ -1,0 +1,32 @@
+analysis/*
+
+# fzu-food-map
+# Logs
+fzu-food-map/logs
+fzu-food-map/*.log
+fzu-food-map/npm-debug.log*
+fzu-food-map/yarn-debug.log*
+fzu-food-map/yarn-error.log*
+fzu-food-map/pnpm-debug.log*
+fzu-food-map/lerna-debug.log*
+
+fzu-food-map/node_modules
+fzu-food-map/dist
+fzu-food-map/dist-ssr
+fzu-food-map/*.local
+
+# Editor directories and files
+fzu-food-map/.vscode/*
+fzu-food-map/!.vscode/extensions.json
+fzu-food-map/.idea
+fzu-food-map/.DS_Store
+fzu-food-map/*.suo
+fzu-food-map/*.ntvs*
+fzu-food-map/*.njsproj
+fzu-food-map/*.sln
+fzu-food-map/*.sw?
+
+# ffm-studio
+ffm-studio/.cache/
+ffm-studio/dist/
+ffm-studio/node_modules/
