@@ -9,15 +9,25 @@
         "id": "qishan-001",
         "category": "门店",
         "name": "盛茂源东北饺子馆",
-        "tags": [
-          "东北菜",
-          "炒菜",
-          "平价",
-          "日常",
-          "堂食",
-          "可外卖",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "适合聚餐"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.9,
         "price": "34¥",
         "notes": "锅包肉，酸辣鸡杂，地三鲜，东北大拉皮",
@@ -47,16 +57,26 @@
         "id": "qishan-002",
         "category": "门店",
         "name": "夜贰两东北串吧",
-        "tags": [
-          "东北菜",
-          "烧烤",
-          "平价",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.3,
         "price": "68¥",
         "notes": "羊肉串，牛肋条，油边，蚕蛹",
@@ -86,12 +106,21 @@
         "id": "qishan-003",
         "category": "摊位",
         "name": "文博家锅盔",
-        "tags": [
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.7,
         "price": "6¥",
         "notes": "梅菜、鲜肉、瘦肉锅盔",
@@ -120,13 +149,22 @@
         "id": "qishan-004",
         "category": "摊位",
         "name": "猪师弟空气年糕",
-        "tags": [
-          "炸物",
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "炸物",
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4,
         "price": "10¥",
         "notes": "炸蘑菇（六合一），年糕，鸡柳",
@@ -155,13 +193,22 @@
         "id": "qishan-005",
         "category": "摊位",
         "name": "陈记片皮鸭",
-        "tags": [
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.3,
         "price": "10¥",
         "notes": "片皮鸭卷，烤冷面，香酥鸭",
@@ -191,12 +238,21 @@
         "id": "qishan-006",
         "category": "摊位",
         "name": "壹品豆花",
-        "tags": [
-          "甜品",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "甜品"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.9,
         "price": "12¥",
         "notes": "豆花，椰奶冰，清补凉",
@@ -226,13 +282,22 @@
         "id": "qishan-007",
         "category": "门店",
         "name": "便宜坊（原光阴的故事）",
-        "tags": [
-          "自助",
-          "烧烤",
-          "平价",
-          "日常",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "适合聚餐"
+          ],
+          "dish": [
+            "自助",
+            "烧烤"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.6,
         "price": "69¥",
         "notes": "油边，牛肉串",
@@ -262,15 +327,24 @@
         "id": "qishan-008",
         "category": "门店",
         "name": "临榆炸鸡腿（学生街店）",
-        "tags": [
-          "连锁店",
-          "炸物",
-          "小吃",
-          "便宜",
-          "日常",
-          "可外卖",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "可外卖",
+            "一人食"
+          ],
+          "dish": [
+            "炸物",
+            "小吃"
+          ],
+          "miscellaneous": [
+            "连锁店",
+            "日常"
+          ]
+        },
         "rating": 3.6,
         "price": "18¥",
         "notes": "鸡腿，三叉骨，鸡肉条",
@@ -300,14 +374,22 @@
         "id": "qishan-009",
         "category": "食堂",
         "name": "玫瑰园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 5,
         "include": {
           "name": [
@@ -355,14 +437,22 @@
         "id": "qishan-010",
         "category": "食堂",
         "name": "芙蓉园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 4.6,
         "include": {
           "name": [
@@ -404,14 +494,22 @@
         "id": "qishan-011",
         "category": "食堂",
         "name": "紫荆园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 4.8,
         "include": {
           "name": [
@@ -453,14 +551,22 @@
         "id": "qishan-012",
         "category": "食堂",
         "name": "牡丹园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 4.7,
         "include": {
           "name": [
@@ -502,14 +608,22 @@
         "id": "qishan-013",
         "category": "食堂",
         "name": "丁香园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 3,
         "include": {
           "name": [
@@ -547,14 +661,22 @@
         "id": "qishan-014",
         "category": "食堂",
         "name": "丹桂园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 3.4,
         "include": {
           "name": [
@@ -592,14 +714,22 @@
         "id": "qishan-015",
         "category": "食堂",
         "name": "百合园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 3.2,
         "include": {
           "name": [
@@ -635,14 +765,22 @@
         "id": "qishan-016",
         "category": "食堂",
         "name": "茉莉园",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 3.7,
         "include": {
           "name": [
@@ -684,13 +822,23 @@
         "id": "qishan-017",
         "category": "摊位",
         "name": "台湾锅贴",
-        "tags": [
-          "闽菜",
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.6,
         "price": "10¥",
         "notes": "锅贴",
@@ -719,14 +867,24 @@
         "id": "qishan-018",
         "category": "门店",
         "name": "重庆小面",
-        "tags": [
-          "川菜",
-          "面条",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食"
+          ],
+          "dish": [
+            "面条"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.3,
         "price": "10¥",
         "notes": "重庆小面，牛肉拌面，肉酱拌面",
@@ -756,14 +914,23 @@
         "id": "qishan-019",
         "category": "门店",
         "name": "刘记肉夹馍",
-        "tags": [
-          "陕西菜",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [
+            "陕西菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.6,
         "price": "8¥",
         "notes": "肉夹馍，拌扁肉，凉皮",
@@ -793,14 +960,23 @@
         "id": "qishan-020",
         "category": "摊位",
         "name": "可可烘焙",
-        "tags": [
-          "甜品",
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [
+            "甜品",
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.6,
         "price": "13¥",
         "notes": "泡芙，麻薯，蛋挞，面包",
@@ -830,14 +1006,23 @@
         "id": "qishan-021",
         "category": "门店",
         "name": "广式养生鸡",
-        "tags": [
-          "广东菜",
-          "平价",
-          "日常",
-          "堂食",
-          "清淡",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "广东菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常",
+            "清淡"
+          ]
+        },
         "rating": 4.2,
         "price": "62¥",
         "notes": "清远鸡，走地鸡",
@@ -867,13 +1052,22 @@
         "id": "qishan-022",
         "category": "门店",
         "name": "莆田卤面·天九湾炝肉·山里炝粉",
-        "tags": [
-          "闽菜",
-          "便宜",
-          "堂食",
-          "日常",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.1,
         "price": "15¥",
         "notes": "天九湾炝肉，山里炝粉，莆田卤面",
@@ -903,14 +1097,24 @@
         "id": "qishan-023",
         "category": "门店",
         "name": "栗栗烘焙-栗酥饼（福大店）",
-        "tags": [
-          "闽菜",
-          "甜品",
-          "日常",
-          "可外卖",
-          "便宜",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "可外卖",
+            "一人食"
+          ],
+          "dish": [
+            "甜品"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.3,
         "price": "14¥",
         "notes": "栗酥饼，芋泥饼，榴莲饼",
@@ -940,14 +1144,23 @@
         "id": "qishan-024",
         "category": "门店",
         "name": "江一福·按时吃饭·啫啫煲",
-        "tags": [
-          "粤菜",
-          "平价",
-          "堂食",
-          "日常",
-          "适合聚餐",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "粤菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐",
+            "一人食"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.8,
         "price": "22¥",
         "notes": "沙姜焗鸡，豉汁排骨，蒜苗五花，南乳鸡翅，松板肉，脆卤肥肠",
@@ -977,15 +1190,24 @@
         "id": "qishan-025",
         "category": "门店",
         "name": "周麻婆·新川式家常菜",
-        "tags": [
-          "川菜",
-          "闽菜",
-          "平价",
-          "堂食",
-          "日常",
-          "连锁店",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜",
+            "闽菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 4,
         "price": "41¥",
         "notes": "麻婆豆腐，脆皮鸭，水煮鱼，红糖糍粑",
@@ -1015,14 +1237,23 @@
         "id": "qishan-026",
         "category": "摊位",
         "name": "鲜榨果汁·现炒板栗",
-        "tags": [
-          "小吃",
-          "清淡",
-          "甜品",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "小吃",
+            "甜品"
+          ],
+          "miscellaneous": [
+            "清淡",
+            "日常"
+          ]
+        },
         "rating": 3.9,
         "price": "11¥",
         "notes": "甘蔗汁，雪梨汁，西瓜汁，炒板栗",
@@ -1052,15 +1283,24 @@
         "id": "qishan-027",
         "category": "摊位",
         "name": "十里后院·快递夜市",
-        "tags": [
-          "粤菜",
-          "日式",
-          "小吃",
-          "甜品",
-          "日常",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [
+            "粤菜",
+            "日式"
+          ],
+          "price_range": [],
+          "characteristics": [
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [
+            "小吃",
+            "甜品"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.9,
         "price": "11¥",
         "include": {
@@ -1099,14 +1339,23 @@
         "id": "qishan-028",
         "category": "门店",
         "name": "洪濑鸡爪",
-        "tags": [
-          "闽菜",
-          "便宜",
-          "堂食",
-          "连锁店",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "连锁店",
+            "日常"
+          ]
+        },
         "rating": 3.7,
         "price": "15¥",
         "notes": "洪濑鸡爪，卤味拼盘，牛肉羹",
@@ -1136,15 +1385,25 @@
         "id": "qishan-029",
         "category": "门店",
         "name": "云南铜锅牛羊肉米线",
-        "tags": [
-          "滇菜",
-          "小吃",
-          "便宜",
-          "清淡",
-          "日常",
-          "堂食",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "滇菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "清淡",
+            "日常"
+          ]
+        },
         "rating": 4.1,
         "price": "17¥",
         "notes": "牛肉粉，羊肉米线，凉拌米线",
@@ -1174,12 +1433,21 @@
         "id": "qishan-030",
         "category": "摊位",
         "name": "达叔肉夹馍·烤冷面",
-        "tags": [
-          "小吃",
-          "便宜",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.2,
         "price": "13¥",
         "notes": "东北烤冷面，火鸡面烤冷面，五花肉烤冷面",
@@ -1209,13 +1477,22 @@
         "id": "qishan-031",
         "category": "摊位",
         "name": "卤百味",
-        "tags": [
-          "卤味",
-          "便宜",
-          "小吃",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食"
+          ],
+          "dish": [
+            "卤味",
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.3,
         "price": "12¥",
         "address": "岐安福大学生街学府北路10号",
@@ -1242,14 +1519,24 @@
         "id": "qishan-032",
         "category": "门店",
         "name": "成都纸包鱼烧烤大排档",
-        "tags": [
-          "川菜",
-          "烤鱼",
-          "平价",
-          "日常",
-          "堂食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烤鱼"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.8,
         "price": "71¥",
         "notes": "烤黑鱼，干锅包菜，椒盐掌中宝",
@@ -1279,14 +1566,23 @@
         "id": "qishan-033",
         "category": "摊位",
         "name": "桥头排骨",
-        "tags": [
-          "炸物",
-          "便宜",
-          "小吃",
-          "日常",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [
+            "炸物",
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.7,
         "price": "19¥",
         "address": "岐安福大学生街学府北路10-231号",
@@ -1315,14 +1611,24 @@
         "id": "qishan-034",
         "category": "门店",
         "name": "北方饭店",
-        "tags": [
-          "东北菜",
-          "炒菜",
-          "平价",
-          "日常",
-          "堂食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.1,
         "price": "40¥",
         "notes": "鸡汤干豆腐，锅包肉，溜肉段，手工水饺",
@@ -1352,14 +1658,23 @@
         "id": "qishan-035",
         "category": "门店",
         "name": "川册·川味小馆",
-        "tags": [
-          "川菜",
-          "平价",
-          "堂食",
-          "日常",
-          "连锁店",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 4.3,
         "price": "60¥",
         "notes": "麻婆豆腐，火爆腰花，椒麻猪舌，红糖糍粑",
@@ -1389,15 +1704,24 @@
         "id": "qishan-036",
         "category": "门店",
         "name": "李夏记牛腩煲（原广式牛杂）",
-        "tags": [
-          "粤菜",
-          "便宜",
-          "清淡",
-          "堂食",
-          "日常",
-          "连锁店",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [
+            "粤菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "清淡",
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 3.7,
         "price": "18¥",
         "notes": "牛杂煲，萝卜牛杂汤",
@@ -1427,16 +1751,26 @@
         "id": "qishan-037",
         "category": "门店",
         "name": "焦焦牧场·鲜牛奶炸鸡",
-        "tags": [
-          "韩餐",
-          "炸物",
-          "平价",
-          "堂食",
-          "日常",
-          "连锁店",
-          "可外卖",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "韩餐"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "一人食"
+          ],
+          "dish": [
+            "炸物"
+          ],
+          "miscellaneous": [
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 4.4,
         "price": "35¥",
         "notes": "（银粟芝士，黑胡椒蛋黄，鲜橙琥珀，牧场酱，蜂蜜山葵）炸鸡，塔塔酱洋葱炸鱼，薯条",
@@ -1466,16 +1800,26 @@
         "id": "qishan-038",
         "category": "门店",
         "name": "116炭火",
-        "tags": [
-          "东北菜",
-          "烧烤",
-          "轻奢",
-          "堂食",
-          "日常",
-          "可外卖",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "轻奢"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.4,
         "price": "90¥",
         "notes": "烤羊腿，烤羊排，烤油边，黑椒牛肉，宫后，牛板筋，烤菠萝",
@@ -1505,15 +1849,24 @@
         "id": "qishan-039",
         "category": "门店",
         "name": "fufu牛奶冰",
-        "tags": [
-          "甜品",
-          "便宜",
-          "堂食",
-          "日常",
-          "连锁店",
-          "可外卖",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "一人食"
+          ],
+          "dish": [
+            "甜品"
+          ],
+          "miscellaneous": [
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 4.7,
         "price": "18¥",
         "notes": "西瓜牛奶冰，芒果豆乳年糕牛奶冰",
@@ -1543,16 +1896,26 @@
         "id": "qishan-040",
         "category": "门店",
         "name": "傻师傅台湾厨房",
-        "tags": [
-          "闽菜",
-          "便宜",
-          "堂食",
-          "日常",
-          "连锁店",
-          "可外卖",
-          "一人食",
-          "小吃"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "一人食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常",
+            "连锁店"
+          ]
+        },
         "rating": 4.3,
         "price": "20¥",
         "notes": "牛肉面，虾饺，盐酥鸡，甜不辣，卤鸭腿，炸猪排，鸭腿",
@@ -1582,16 +1945,26 @@
         "id": "qishan-041",
         "category": "门店",
         "name": "新疆石榴花美食馆",
-        "tags": [
-          "新疆菜",
-          "平价",
-          "堂食",
-          "日常",
-          "可外卖",
-          "一人食",
-          "烧烤",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "新疆菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "可外卖",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.2,
         "price": "20¥",
         "notes": "干煸炒面，羊肉抓饭，过油肉炒面，馕，烤羊心，红柳羊肉串",
@@ -1621,14 +1994,23 @@
         "id": "qishan-042",
         "category": "门店",
         "name": "禾西Restaurant",
-        "tags": [
-          "西餐",
-          "融合菜",
-          "平价",
-          "堂食",
-          "日常",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "西餐",
+            "融合菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 3.9,
         "price": "61¥",
         "notes": "油封姜母鸭，牛排配薯条，千层面，培根菌菇奶油意面",
@@ -1658,15 +2040,25 @@
         "id": "qishan-043",
         "category": "门店",
         "name": "大福的烧鸟·居酒屋",
-        "tags": [
-          "日式",
-          "平价",
-          "堂食",
-          "日常",
-          "一人食",
-          "烧鸟",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "日式"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烧鸟"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.6,
         "price": "62¥",
         "notes": "牛肋条，松板肉，鸡软骨，京葱鸡肉，鳗鱼，明太子西葫芦",
@@ -1697,14 +2089,23 @@
         "category": "门店",
         "name": "有饭料理店",
         "source": "manual",
-        "tags": [
-          "日式",
-          "日常",
-          "一人食",
-          "可外卖",
-          "堂食",
-          "烧鸟"
-        ],
+        "tags": {
+          "cuisines": [
+            "日式"
+          ],
+          "price_range": [],
+          "characteristics": [
+            "一人食",
+            "可外卖",
+            "堂食"
+          ],
+          "dish": [
+            "烧鸟"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "notes": "和牛汉堡肉盖饭，松板肉饭，鸡生蚝（烧鸟）",
         "address": "岐安福大学生街学府北路10-72号",
         "contact": "13328100208",
@@ -1734,14 +2135,24 @@
         "category": "门店",
         "name": "唐小厨东北菜",
         "source": "manual",
-        "tags": [
-          "东北菜",
-          "炒菜",
-          "平价",
-          "一人食",
-          "适合聚餐",
-          "日常"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "notes": "锅包肉，肉段，地三鲜，豆角土豆排骨",
         "address": "上街镇源江路156号-10",
         "contact": "13655033611",
@@ -1771,14 +2182,23 @@
         "category": "门店",
         "name": "福大阿毛烧烤",
         "source": "manual",
-        "tags": [
-          "烧烤",
-          "适合聚餐",
-          "堂食",
-          "一人食",
-          "平价",
-          "融合菜"
-        ],
+        "tags": {
+          "cuisines": [
+            "融合菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "适合聚餐",
+            "堂食",
+            "一人食"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": []
+        },
         "notes": "掌中宝，火焰牛排，黑虎虾，印尼小管，自制奶茶",
         "address": "溪源宫路106-4号",
         "contact": "13400539010",
@@ -1808,14 +2228,23 @@
         "category": "门店",
         "name": "周家粥铺",
         "source": "manual",
-        "tags": [
-          "便宜",
-          "炒菜",
-          "清淡",
-          "日常",
-          "一人食",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "堂食"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "清淡",
+            "日常"
+          ]
+        },
         "notes": "猪肝粥，炒猪头肉，海鲜粥，皮蛋瘦肉粥",
         "address": "岐安花园一期东北2门南120米",
         "contact": "15960082047",
@@ -1845,12 +2274,20 @@
         "category": "门店",
         "name": "黔味烤鱼",
         "source": "manual",
-        "tags": [
-          "平价",
-          "黔菜",
-          "适合聚餐",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [
+            "黔菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "适合聚餐",
+            "堂食"
+          ],
+          "dish": [],
+          "miscellaneous": []
+        },
         "notes": "肥肠烤鱼，特色清江团鱼，烙锅",
         "address": "岐安1号二期",
         "contact": "13021929814",
@@ -1880,15 +2317,25 @@
         "category": "门店",
         "name": "邱阳破店",
         "source": "manual",
-        "tags": [
-          "平价",
-          "闽菜",
-          "一人食",
-          "适合聚餐",
-          "清淡",
-          "日常",
-          "炒菜"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "清淡",
+            "日常"
+          ]
+        },
         "notes": "香油田鸡，荔枝肉，南煎肝，醉排骨，葱油拆骨肉，海蛎汤",
         "address": "红峰村新上街邱阳9-1号",
         "contact": "13509314899",
@@ -1918,15 +2365,25 @@
         "category": "门店",
         "name": "山东水饺",
         "source": "manual",
-        "tags": [
-          "鲁菜",
-          "日常",
-          "清淡",
-          "便宜",
-          "小吃",
-          "一人食",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [
+            "鲁菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "堂食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常",
+            "清淡"
+          ]
+        },
         "notes": "大葱水饺，荠菜水饺，拌猪耳朵，拌皮冻",
         "address": "侯官路1-57号",
         "contact": "13067231654",
@@ -1956,14 +2413,24 @@
         "category": "门店",
         "name": "何记河南正宗水煎包胡辣汤",
         "source": "manual",
-        "tags": [
-          "豫菜",
-          "便宜",
-          "日常",
-          "一人食",
-          "小吃",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [
+            "豫菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "堂食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "notes": "肉馅/素馅水煎包，胡辣汤",
         "address": "国宾大道上街余盛小学南侧",
         "contact": "13685012320",
@@ -1993,15 +2460,25 @@
         "category": "门店",
         "name": "KEFI来乐食堂",
         "source": "manual",
-        "tags": [
-          "平价",
-          "日常",
-          "川菜",
-          "炒菜",
-          "融合菜",
-          "堂食",
-          "一人食"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜",
+            "融合菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食"
+          ],
+          "dish": [
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "notes": "每季度菜单不同，具体请查看小红书",
         "address": "浦兴路18号",
         "contact": "13107690917",
@@ -2031,15 +2508,25 @@
         "category": "门店",
         "name": "依云煎包店",
         "source": "manual",
-        "tags": [
-          "便宜",
-          "日常",
-          "清淡",
-          "闽菜",
-          "小吃",
-          "一人食",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "一人食",
+            "堂食"
+          ],
+          "dish": [
+            "小吃"
+          ],
+          "miscellaneous": [
+            "日常",
+            "清淡"
+          ]
+        },
         "notes": "煎包，茶叶蛋，巴沙鱼汤，鳗鱼汤，鱼丸",
         "address": "新上街与新尚路交叉口东50米（新华盛超市对面）",
         "contact": "13609549211",

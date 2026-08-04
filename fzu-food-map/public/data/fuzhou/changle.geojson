@@ -10,14 +10,23 @@
         "category": "门店",
         "name": "美味鱼庄",
         "source": "manual",
-        "tags": [
-          "川菜",
-          "平价",
-          "闽菜",
-          "日常",
-          "适合聚餐",
-          "堂食"
-        ],
+        "tags": {
+          "cuisines": [
+            "川菜",
+            "闽菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "适合聚餐",
+            "堂食"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "notes": "干锅脆鱼，槟榔芋条",
         "address": "杭滨花园9-12号店",
         "contact": "13215000566",

@@ -33,6 +33,7 @@ import WorkspaceSummary from "./features/workspace/WorkspaceSummary";
 import { collectDirtyFeatureIds } from "./geojsonDiff";
 import useActiveDocument from "./hooks/useActiveDocument";
 import useStudioTheme from "./hooks/useStudioTheme";
+import { normalizeTagGroups } from "./tagGroups";
 import type { TaxonomyEntryKind, Workspace } from "./types";
 
 export default function App() {
@@ -134,9 +135,9 @@ export default function App() {
     [workspace?.taxonomy.categories, activeFeature]
   );
 
-  const tags = useMemo(
-    () => uniq(workspace?.taxonomy.tags ?? []),
-    [workspace?.taxonomy.tags]
+  const tagSuggestions = useMemo(
+    () => normalizeTagGroups(workspace?.taxonomy),
+    [workspace?.taxonomy]
   );
 
   const activeFileDirty =
@@ -396,7 +397,7 @@ export default function App() {
           <FeatureEditorPanel
             feature={activeFeature}
             categories={categories}
-            tags={tags}
+            tagSuggestions={tagSuggestions}
             onMutate={mutateFeature}
             onCreateTaxonomyEntry={syncTaxonomyEntry}
             onTriggerSourceSearch={triggerSourceSearch}

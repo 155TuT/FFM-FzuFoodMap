@@ -6,6 +6,39 @@
   gap: 12px;
 }
 
+.tag-groups-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tag-group-editor {
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: var(--surface-card-strong);
+  box-shadow: var(--surface-card-inset-shadow);
+}
+
+.tag-group-editor__header {
+  margin-bottom: 12px;
+}
+
+.tag-group-editor__header h4,
+.tag-group-editor__header p {
+  margin: 0;
+}
+
+.tag-group-editor__header h4 {
+  font-size: 14px;
+}
+
+.tag-group-editor__header p {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 .chip-list,
 .suggestion-list,
 .source-toolbar {

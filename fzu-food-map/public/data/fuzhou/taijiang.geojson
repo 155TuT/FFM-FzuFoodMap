@@ -9,14 +9,23 @@
         "id": "taijiang-001",
         "category": "门店",
         "name": "巨鳄披萨Crocodile Pizza",
-        "tags": [
-          "披萨",
-          "平价",
-          "日常",
-          "堂食",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "披萨"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.5,
         "price": "54¥",
         "notes": "松露培根温泉蛋披萨，经典玛格丽特披萨，焦糖香蕉披萨",

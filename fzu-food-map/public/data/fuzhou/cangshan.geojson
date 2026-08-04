@@ -9,14 +9,23 @@
         "id": "cangshan-001",
         "category": "门店",
         "name": "初恋野串",
-        "tags": [
-          "烧烤",
-          "平价",
-          "日常",
-          "堂食",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4.3,
         "price": "65¥",
         "notes": "爆汁油边，羔羊肋排，雪花牛肉，黑虎虾，宫后，生蚝",

@@ -16,6 +16,13 @@ const regionCachePath = path.resolve(cacheStateRoot, "regions.json");
 const port = Number(process.env.FFM_STUDIO_API_PORT ?? 4173);
 const DEFAULT_CATEGORY = "门店";
 const DEFAULT_REGION_ZOOM = 14;
+const TAG_GROUP_KEYS = [
+  "cuisines",
+  "price_range",
+  "characteristics",
+  "dish",
+  "miscellaneous"
+];
 
 let taxonomyBootstrapped = false;
 
@@ -112,13 +119,33 @@ function normalizeStringList(values, normalizeValue) {
   return sortZh([...new Set(values.map(normalizeValue).filter(Boolean))]);
 }
 
+function normalizeTagGroups(tags) {
+  const source = tags && typeof tags === "object" && !Array.isArray(tags) ? tags : {};
+  const legacyTags = Array.isArray(tags) ? tags : [];
+  return Object.fromEntries(
+    TAG_GROUP_KEYS.map(key => [
+      key,
+      normalizeStringList(
+        key === "miscellaneous"
+          ? [...(Array.isArray(source[key]) ? source[key] : []), ...legacyTags]
+          : (Array.isArray(source[key]) ? source[key] : []),
+        normalizeTagValue
+      )
+    ])
+  );
+}
+
 function normalizeTaxonomy(taxonomy = {}) {
   return {
     categories: normalizeStringList(
       [DEFAULT_CATEGORY, ...(Array.isArray(taxonomy.categories) ? taxonomy.categories : [])],
       normalizeCategoryValue
     ),
-    tags: normalizeStringList(Array.isArray(taxonomy.tags) ? taxonomy.tags : [], normalizeTagValue)
+    ...normalizeTagGroups(
+      TAG_GROUP_KEYS.some(key => Array.isArray(taxonomy[key]))
+        ? taxonomy
+        : taxonomy.tags
+    )
   };
 }
 
@@ -687,32 +714,31 @@ async function listTree(dirPath = cacheRoot, relativePath = "") {
   return children;
 }
 
-function collectFeatureTaxonomy(feature, categories, tags) {
+function collectFeatureTaxonomy(feature, categories, tagGroups) {
   const category = normalizeCategoryValue(feature?.properties?.category);
   if (category) {
     categories.add(category);
   }
 
-  const rawTags = Array.isArray(feature?.properties?.tags) ? feature.properties.tags : [];
-  for (const tag of rawTags) {
-    const normalizedTag = normalizeTagValue(tag);
-    if (normalizedTag) {
-      tags.add(normalizedTag);
+  const normalizedGroups = normalizeTagGroups(feature?.properties?.tags);
+  for (const key of TAG_GROUP_KEYS) {
+    for (const tag of normalizedGroups[key]) {
+      tagGroups[key].add(tag);
     }
   }
 }
 
 function collectDocumentTaxonomy(document) {
   const categories = new Set([DEFAULT_CATEGORY]);
-  const tags = new Set();
+  const tagGroups = Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, new Set()]));
 
   for (const feature of document?.features ?? []) {
-    collectFeatureTaxonomy(feature, categories, tags);
+    collectFeatureTaxonomy(feature, categories, tagGroups);
   }
 
   return normalizeTaxonomy({
     categories: [...categories],
-    tags: [...tags]
+    ...Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, [...tagGroups[key]]]))
   });
 }
 
@@ -761,13 +787,15 @@ async function mergeTaxonomyCache(partial) {
   const current = await readTaxonomyCache();
   return writeTaxonomyCache({
     categories: [...current.categories, ...(partial?.categories ?? [])],
-    tags: [...current.tags, ...(partial?.tags ?? [])]
+    ...Object.fromEntries(
+      TAG_GROUP_KEYS.map(key => [key, [...current[key], ...(partial?.[key] ?? [])]])
+    )
   });
 }
 
 async function collectTaxonomyFromCache() {
   const categories = new Set([DEFAULT_CATEGORY]);
-  const tags = new Set();
+  const tagGroups = Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, new Set()]));
 
   await walkGeoJsonFiles(cacheRoot, async ({ absolutePath }) => {
     try {
@@ -776,8 +804,10 @@ async function collectTaxonomyFromCache() {
       for (const category of taxonomy.categories) {
         categories.add(category);
       }
-      for (const tag of taxonomy.tags) {
-        tags.add(tag);
+      for (const key of TAG_GROUP_KEYS) {
+        for (const tag of taxonomy[key]) {
+          tagGroups[key].add(tag);
+        }
       }
     } catch {
       return;
@@ -786,7 +816,7 @@ async function collectTaxonomyFromCache() {
 
   return normalizeTaxonomy({
     categories: [...categories],
-    tags: [...tags]
+    ...Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, [...tagGroups[key]]]))
   });
 }
 
@@ -800,7 +830,9 @@ async function upsertTaxonomyEntry(kind, value) {
     throw new Error(kind === "category" ? "缺少门店类型" : "缺少标签");
   }
 
-  return mergeTaxonomyCache(kind === "category" ? { categories: [normalizedValue] } : { tags: [normalizedValue] });
+  return mergeTaxonomyCache(
+    kind === "category" ? { categories: [normalizedValue] } : { [kind]: [normalizedValue] }
+  );
 }
 
 async function buildWorkspace() {
@@ -1149,7 +1181,7 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "PUT" && url.pathname === "/api/taxonomy") {
       const body = await readBody(request);
-      if (body.kind !== "category" && body.kind !== "tag") {
+      if (body.kind !== "category" && !TAG_GROUP_KEYS.includes(body.kind)) {
         throw new Error("缺少有效的 taxonomy 类型");
       }
       if (typeof body.value !== "string") {

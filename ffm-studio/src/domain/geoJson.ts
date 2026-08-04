@@ -9,6 +9,7 @@ import type {
   Workspace
 } from "../types";
 import { basename } from "./workspaceTree";
+import { createEmptyTagGroups, normalizeTagGroups } from "../tagGroups";
 
 export const DEFAULT_CATEGORY = "门店";
 
@@ -48,7 +49,7 @@ export function mergeTaxonomyEntry(
   kind: TaxonomyEntryKind,
   value: string
 ): Workspace["taxonomy"] {
-  const key = kind === "category" ? "categories" : "tags";
+  const key = kind === "category" ? "categories" : kind;
   return {
     ...taxonomy,
     [key]: uniq([...(taxonomy[key] ?? []), value])
@@ -141,7 +142,7 @@ export function buildFeature(
       category: categories[0] ?? DEFAULT_CATEGORY,
       name: "新建点位",
       source: "manual",
-      tags: [],
+      tags: createEmptyTagGroups(),
       notes: "",
       address: "",
       contact: "",
@@ -198,7 +199,7 @@ export function normalizeFeature(feature: GeoFeature): GeoFeature {
       ...feature.properties,
       category: feature.properties.category.trim() || DEFAULT_CATEGORY,
       name: feature.properties.name.trim() || "未命名点位",
-      tags: uniq(feature.properties.tags ?? []),
+      tags: normalizeTagGroups(feature.properties.tags),
       include: fromIncludeRows(toIncludeRows(feature.properties.include)),
       sources: cleanSources(feature.properties.sources ?? [])
     }

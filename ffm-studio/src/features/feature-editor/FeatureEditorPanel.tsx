@@ -9,6 +9,7 @@ import {
   toIncludeRows,
   uniq
 } from "../../domain/geoJson";
+import { normalizeTagGroups, TAG_GROUPS, type TagGroups } from "../../tagGroups";
 import type {
   GeoFeature,
   TaxonomyEntryKind
@@ -17,7 +18,7 @@ import type {
 type Props = {
   feature: GeoFeature | null;
   categories: string[];
-  tags: string[];
+  tagSuggestions: TagGroups;
   onMutate: (mutator: (feature: GeoFeature) => GeoFeature) => void;
   onCreateTaxonomyEntry: (
     kind: TaxonomyEntryKind,
@@ -29,7 +30,7 @@ type Props = {
 export default function FeatureEditorPanel({
   feature,
   categories,
-  tags,
+  tagSuggestions,
   onMutate,
   onCreateTaxonomyEntry,
   onTriggerSourceSearch
@@ -144,27 +145,45 @@ export default function FeatureEditorPanel({
           <div className="editor-section">
             <div className="editor-section__header">
               <div>
-                <h3>标签</h3>
+                <h3>地点标签</h3>
                 <p>
-                  删除后的标签会回到备选列表；新增标签会先加入标签库，再自动选中
+                  每类标签独立维护；删除后会回到对应备选列表，新增后会自动选中
                 </p>
               </div>
             </div>
-            <TagEditor
-              value={feature.properties.tags ?? []}
-              suggestions={tags}
-              onCreateTag={tag => {
-                const nextTag = tag.trim();
-                if (!nextTag) {
-                  return;
-                }
-                onCreateTaxonomyEntry("tag", nextTag);
-                updateProperties({
-                  tags: uniq([...(feature.properties.tags ?? []), nextTag])
-                });
-              }}
-              onChange={next => updateProperties({ tags: next })}
-            />
+            <div className="tag-groups-editor">
+              {TAG_GROUPS.map(group => {
+                const currentTags = normalizeTagGroups(feature.properties.tags);
+                return (
+                  <section className="tag-group-editor" key={group.key}>
+                    <div className="tag-group-editor__header">
+                      <h4>{group.label}</h4>
+                      <p>{group.description}</p>
+                    </div>
+                    <TagEditor
+                      value={currentTags[group.key]}
+                      suggestions={tagSuggestions[group.key]}
+                      onCreateTag={tag => {
+                        const nextTag = tag.trim();
+                        if (!nextTag) return;
+                        onCreateTaxonomyEntry(group.key, nextTag);
+                        updateProperties({
+                          tags: {
+                            ...currentTags,
+                            [group.key]: uniq([...currentTags[group.key], nextTag])
+                          }
+                        });
+                      }}
+                      onChange={next =>
+                        updateProperties({
+                          tags: { ...currentTags, [group.key]: next }
+                        })
+                      }
+                    />
+                  </section>
+                );
+              })}
+            </div>
           </div>
 
           <div className="editor-section">

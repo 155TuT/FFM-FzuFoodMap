@@ -1,9 +1,10 @@
 import type { PoiProps } from "../../types";
+import { normalizePoiTags, TAG_GROUPS, type TagGroupKey } from "../../tagGroups";
 
 export const META_SEPARATOR = " · ";
 
 export type PoiMetaLine = {
-  key: "schedule" | "address" | "tagprice" | "note";
+  key: "schedule" | "address" | "price" | "note" | TagGroupKey;
   text: string;
   secondary: boolean;
 };
@@ -31,18 +32,23 @@ export function getIncludeEntries(poi: PoiProps): IncludeEntry[] {
 }
 
 export function getPoiMetaLines(poi: PoiProps, tagLimit?: number): PoiMetaLine[] {
-  const tags = Array.isArray(poi.tags)
-    ? poi.tags.slice(0, tagLimit ?? poi.tags.length).join(META_SEPARATOR)
-    : "";
+  const tags = normalizePoiTags(poi.tags);
   const schedule = [poi.openhour ?? "", poi.contact ? `tel:${poi.contact}` : ""]
     .filter(Boolean)
     .join(" ");
-  const tagPrice = [tags, poi.price ?? ""].filter(Boolean).join(META_SEPARATOR);
+
+  const tagLines: PoiMetaLine[] = TAG_GROUPS.flatMap(group => {
+    const values = tags[group.key].slice(0, tagLimit ?? tags[group.key].length);
+    return values.length
+      ? [{ key: group.key, text: `${group.label}\uff1a${values.join(META_SEPARATOR)}`, secondary: false }]
+      : [];
+  });
 
   const lines: PoiMetaLine[] = [
     { key: "schedule", text: schedule, secondary: false },
     { key: "address", text: poi.address ?? "", secondary: true },
-    { key: "tagprice", text: tagPrice, secondary: false },
+    ...tagLines,
+    { key: "price", text: poi.price ? `\u4ef7\u683c\uff1a${poi.price}` : "", secondary: false },
     { key: "note", text: poi.notes ?? "", secondary: true }
   ];
   return lines.filter(line => line.text);

@@ -1,3 +1,5 @@
+import type { PoiTags } from "./tagGroups";
+
 export type PoiCategory = "\u95e8\u5e97" | "\u98df\u5802" | "\u644a\u4f4d";
 
 export type PoiSourceStatus = "confirmed" | "candidate" | "manual" | "needs_review";
@@ -17,7 +19,7 @@ export type PoiProps = {
   name: string;
   regionId?: string;
   source?: string;
-  tags?: string[];
+  tags?: PoiTags;
   rating?: number;
   price?: string;
   url?: string;

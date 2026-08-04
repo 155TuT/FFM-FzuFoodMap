@@ -1,3 +1,5 @@
+import type { TagGroupKey, TagGroups } from "./tagGroups";
+
 export type PoiSource = {
   platform?: string;
   title?: string;
@@ -18,7 +20,7 @@ export type PoiProperties = {
   category: string;
   name: string;
   source?: string;
-  tags?: string[];
+  tags?: TagGroups;
   rating?: number;
   price?: string;
   notes?: string;
@@ -62,12 +64,11 @@ export type WorkspaceFileNode = {
 
 export type WorkspaceNode = WorkspaceDirectoryNode | WorkspaceFileNode;
 
-export type Taxonomy = {
+export type Taxonomy = TagGroups & {
   categories: string[];
-  tags: string[];
 };
 
-export type TaxonomyEntryKind = "category" | "tag";
+export type TaxonomyEntryKind = "category" | TagGroupKey;
 
 export type Workspace = {
   sourceRoot: string;

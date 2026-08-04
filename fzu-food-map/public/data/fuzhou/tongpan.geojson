@@ -9,16 +9,26 @@
         "id": "tongpan-001",
         "category": "门店",
         "name": "不差钱东北菜",
-        "tags": [
-          "东北菜",
-          "小吃",
-          "便宜",
-          "日常",
-          "堂食",
-          "炒菜",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "东北菜"
+          ],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [
+            "小吃",
+            "炒菜"
+          ],
+          "miscellaneous": [
+            "日常"
+          ]
+        },
         "rating": 4,
         "price": "49¥",
         "notes": "锅包肉，肘子，地三鲜，炸茄盒，三丝爆豆",
@@ -48,13 +58,21 @@
         "id": "tongpan-002",
         "category": "门店",
         "name": "熏+12HOURS·12小时果木烟熏烤肉·精酿啤酒",
-        "tags": [
-          "美式烤肉",
-          "轻奢",
-          "堂食",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "美式烤肉"
+          ],
+          "price_range": [
+            "轻奢"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": []
+        },
         "rating": 4.6,
         "price": "143¥",
         "notes": "焖烤牛胸肉，12小时烟熏牛肋排，伊比利亚猪肋排",
@@ -84,13 +102,21 @@
         "id": "tongpan-003",
         "category": "门店",
         "name": "漩涡鸟烧·居酒屋",
-        "tags": [
-          "日式",
-          "轻奢",
-          "堂食",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "日式"
+          ],
+          "price_range": [
+            "轻奢"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": []
+        },
         "rating": 3.9,
         "price": "112¥",
         "notes": "月见饭，鸡皮，明太子鸡翅，炸鸡块，提灯",
@@ -120,13 +146,21 @@
         "id": "tongpan-004",
         "category": "门店",
         "name": "渔哥活鱼大排档",
-        "tags": [
-          "闽菜",
-          "平价",
-          "堂食",
-          "一人食",
-          "适合聚餐"
-        ],
+        "tags": {
+          "cuisines": [
+            "闽菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐"
+          ],
+          "dish": [],
+          "miscellaneous": []
+        },
         "rating": 4.3,
         "price": "77¥",
         "notes": "石锅黑鱼/脆鱼，荔枝肉，红醩小肠，醉排骨，海蛎煲",
@@ -156,15 +190,24 @@
         "id": "tongpan-005",
         "category": "门店",
         "name": "新疆阿里木羊肉串羊蝎子火锅",
-        "tags": [
-          "平价",
-          "堂食",
-          "一人食",
-          "适合聚餐",
-          "可外卖",
-          "新疆菜",
-          "烧烤"
-        ],
+        "tags": {
+          "cuisines": [
+            "新疆菜"
+          ],
+          "price_range": [
+            "平价"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "适合聚餐",
+            "可外卖"
+          ],
+          "dish": [
+            "烧烤"
+          ],
+          "miscellaneous": []
+        },
         "rating": 3.9,
         "price": "59¥",
         "notes": "红柳大串，带骨羊排，烤馕，烤花菜，烤羊肝，烤香菇，烤韭菜",
@@ -194,14 +237,22 @@
         "id": "tongpan-006",
         "category": "食堂",
         "name": "京元食堂",
-        "tags": [
-          "食堂",
-          "便宜",
-          "日常",
-          "堂食",
-          "一人食",
-          "可外卖"
-        ],
+        "tags": {
+          "cuisines": [],
+          "price_range": [
+            "便宜"
+          ],
+          "characteristics": [
+            "堂食",
+            "一人食",
+            "可外卖"
+          ],
+          "dish": [],
+          "miscellaneous": [
+            "食堂",
+            "日常"
+          ]
+        },
         "rating": 3,
         "include": {
           "name": [
