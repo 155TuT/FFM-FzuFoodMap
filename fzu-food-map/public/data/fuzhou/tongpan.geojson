@@ -13,9 +13,6 @@
           "cuisines": [
             "东北菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -62,9 +59,6 @@
           "cuisines": [
             "美式烤肉"
           ],
-          "price_range": [
-            "轻奢"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -105,9 +99,6 @@
         "tags": {
           "cuisines": [
             "日式"
-          ],
-          "price_range": [
-            "轻奢"
           ],
           "characteristics": [
             "堂食",
@@ -150,9 +141,6 @@
           "cuisines": [
             "闽菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -193,9 +181,6 @@
         "tags": {
           "cuisines": [
             "新疆菜"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -239,9 +224,6 @@
         "name": "京元食堂",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -249,7 +231,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },

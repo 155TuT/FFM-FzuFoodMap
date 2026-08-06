@@ -7,12 +7,10 @@ const studioRoot = path.resolve(scriptsRoot, "..");
 const sourceRoot = path.resolve(studioRoot, "../fzu-food-map/public/data");
 const cacheRoot = path.resolve(studioRoot, ".cache/data");
 const taxonomyPath = path.resolve(studioRoot, ".cache/taxonomy.json");
-const classifiedTaxonomyPath = path.resolve(studioRoot, ".cache/new_taxonomy.json");
 const checkOnly = process.argv.includes("--check");
 
 const TAG_GROUP_KEYS = [
   "cuisines",
-  "price_range",
   "characteristics",
   "dish",
   "miscellaneous"
@@ -96,19 +94,8 @@ async function listGeoJsonFiles(root) {
   return files;
 }
 
-const classifiedTaxonomy = await readJson(classifiedTaxonomyPath);
 const currentTaxonomy = await readJson(taxonomyPath);
-const tagToGroup = buildClassification(classifiedTaxonomy);
-const classifiedTags = new Set(tagToGroup.keys());
-const knownTags = new Set(
-  Array.isArray(currentTaxonomy.tags)
-    ? clean(currentTaxonomy.tags)
-    : TAG_GROUP_KEYS.flatMap(key => clean(currentTaxonomy[key]))
-);
-const missingClassifications = [...knownTags].filter(tag => !classifiedTags.has(tag));
-if (missingClassifications.length) {
-  throw new Error(`new_taxonomy.json 尚未分类这些已有标签：${missingClassifications.join("、")}`);
-}
+const tagToGroup = buildClassification(currentTaxonomy);
 
 const unknownTags = new Set();
 let fileCount = 0;
@@ -133,8 +120,8 @@ for (const root of [sourceRoot, cacheRoot]) {
 }
 
 const nextTaxonomy = {
-  categories: sortZh(clean(classifiedTaxonomy.categories)),
-  ...Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, sortZh(clean(classifiedTaxonomy[key]))]))
+  categories: sortZh(clean(currentTaxonomy.categories)),
+  ...Object.fromEntries(TAG_GROUP_KEYS.map(key => [key, sortZh(clean(currentTaxonomy[key]))]))
 };
 const currentTaxonomyText = await fs.readFile(taxonomyPath, "utf8");
 const nextTaxonomyText = `${JSON.stringify(nextTaxonomy, null, 2)}\n`;

@@ -18,7 +18,6 @@ const DEFAULT_CATEGORY = "门店";
 const DEFAULT_REGION_ZOOM = 14;
 const TAG_GROUP_KEYS = [
   "cuisines",
-  "price_range",
   "characteristics",
   "dish",
   "miscellaneous"

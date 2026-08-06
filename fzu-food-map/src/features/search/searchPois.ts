@@ -9,7 +9,6 @@ const SEARCH_KEYS: Record<SearchField, FuseOptionKey<GeoFeature>[]> = {
   ],
   tags: [
     { name: "properties.tags.cuisines", weight: 1 },
-    { name: "properties.tags.price_range", weight: 1 },
     { name: "properties.tags.characteristics", weight: 1 },
     { name: "properties.tags.dish", weight: 1 },
     { name: "properties.tags.miscellaneous", weight: 1 }

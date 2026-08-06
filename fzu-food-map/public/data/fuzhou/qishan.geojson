@@ -13,9 +13,6 @@
           "cuisines": [
             "东北菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "可外卖",
@@ -61,9 +58,6 @@
           "cuisines": [
             "东北菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -108,9 +102,6 @@
         "name": "文博家锅盔",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -151,9 +142,6 @@
         "name": "猪师弟空气年糕",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -195,9 +183,6 @@
         "name": "陈记片皮鸭",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食",
             "可外卖"
@@ -240,9 +225,6 @@
         "name": "壹品豆花",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -284,9 +266,6 @@
         "name": "便宜坊（原光阴的故事）",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "适合聚餐"
           ],
@@ -329,9 +308,6 @@
         "name": "临榆炸鸡腿（学生街店）",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "可外卖",
             "一人食"
@@ -376,9 +352,6 @@
         "name": "玫瑰园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -386,7 +359,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -439,9 +411,6 @@
         "name": "芙蓉园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -449,7 +418,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -496,9 +464,6 @@
         "name": "紫荆园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -506,7 +471,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -553,9 +517,6 @@
         "name": "牡丹园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -563,7 +524,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -610,9 +570,6 @@
         "name": "丁香园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -620,7 +577,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -663,9 +619,6 @@
         "name": "丹桂园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -673,7 +626,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -716,9 +668,6 @@
         "name": "百合园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -726,7 +675,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -767,9 +715,6 @@
         "name": "茉莉园",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -777,7 +722,6 @@
           ],
           "dish": [],
           "miscellaneous": [
-            "食堂",
             "日常"
           ]
         },
@@ -826,9 +770,6 @@
           "cuisines": [
             "闽菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -870,9 +811,6 @@
         "tags": {
           "cuisines": [
             "川菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "堂食",
@@ -918,9 +856,6 @@
           "cuisines": [
             "陕西菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食",
@@ -962,9 +897,6 @@
         "name": "可可烘焙",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食",
             "可外卖"
@@ -1010,9 +942,6 @@
           "cuisines": [
             "广东菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "适合聚餐"
@@ -1056,9 +985,6 @@
           "cuisines": [
             "闽菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "可外卖"
@@ -1100,9 +1026,6 @@
         "tags": {
           "cuisines": [
             "闽菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "可外卖",
@@ -1148,9 +1071,6 @@
           "cuisines": [
             "粤菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "适合聚餐",
@@ -1195,9 +1115,6 @@
             "川菜",
             "闽菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "适合聚餐"
@@ -1239,9 +1156,6 @@
         "name": "鲜榨果汁·现炒板栗",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -1288,7 +1202,6 @@
             "粤菜",
             "日式"
           ],
-          "price_range": [],
           "characteristics": [
             "一人食",
             "可外卖"
@@ -1343,9 +1256,6 @@
           "cuisines": [
             "闽菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "一人食"
@@ -1388,9 +1298,6 @@
         "tags": {
           "cuisines": [
             "滇菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "堂食",
@@ -1435,9 +1342,6 @@
         "name": "达叔肉夹馍·烤冷面",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -1479,9 +1383,6 @@
         "name": "卤百味",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食"
           ],
@@ -1522,9 +1423,6 @@
         "tags": {
           "cuisines": [
             "川菜"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -1568,9 +1466,6 @@
         "name": "桥头排骨",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食",
             "可外卖"
@@ -1614,9 +1509,6 @@
         "tags": {
           "cuisines": [
             "东北菜"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -1662,9 +1554,6 @@
           "cuisines": [
             "川菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "适合聚餐"
@@ -1707,9 +1596,6 @@
         "tags": {
           "cuisines": [
             "粤菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "堂食",
@@ -1754,9 +1640,6 @@
         "tags": {
           "cuisines": [
             "韩餐"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -1804,9 +1687,6 @@
           "cuisines": [
             "东北菜"
           ],
-          "price_range": [
-            "轻奢"
-          ],
           "characteristics": [
             "堂食",
             "可外卖",
@@ -1851,9 +1731,6 @@
         "name": "fufu牛奶冰",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "可外卖",
@@ -1900,9 +1777,6 @@
           "cuisines": [
             "闽菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "堂食",
             "可外卖",
@@ -1948,9 +1822,6 @@
         "tags": {
           "cuisines": [
             "新疆菜"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -1999,9 +1870,6 @@
             "西餐",
             "融合菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "一人食"
@@ -2043,9 +1911,6 @@
         "tags": {
           "cuisines": [
             "日式"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "堂食",
@@ -2093,7 +1958,6 @@
           "cuisines": [
             "日式"
           ],
-          "price_range": [],
           "characteristics": [
             "一人食",
             "可外卖",
@@ -2139,9 +2003,6 @@
           "cuisines": [
             "东北菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "一人食",
             "适合聚餐"
@@ -2186,9 +2047,6 @@
           "cuisines": [
             "融合菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "适合聚餐",
             "堂食",
@@ -2230,9 +2088,6 @@
         "source": "manual",
         "tags": {
           "cuisines": [],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食",
             "堂食"
@@ -2278,9 +2133,6 @@
           "cuisines": [
             "黔菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "适合聚餐",
             "堂食"
@@ -2320,9 +2172,6 @@
         "tags": {
           "cuisines": [
             "闽菜"
-          ],
-          "price_range": [
-            "平价"
           ],
           "characteristics": [
             "一人食",
@@ -2369,9 +2218,6 @@
           "cuisines": [
             "鲁菜"
           ],
-          "price_range": [
-            "便宜"
-          ],
           "characteristics": [
             "一人食",
             "堂食"
@@ -2416,9 +2262,6 @@
         "tags": {
           "cuisines": [
             "豫菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "一人食",
@@ -2465,9 +2308,6 @@
             "川菜",
             "融合菜"
           ],
-          "price_range": [
-            "平价"
-          ],
           "characteristics": [
             "堂食",
             "一人食"
@@ -2511,9 +2351,6 @@
         "tags": {
           "cuisines": [
             "闽菜"
-          ],
-          "price_range": [
-            "便宜"
           ],
           "characteristics": [
             "一人食",
