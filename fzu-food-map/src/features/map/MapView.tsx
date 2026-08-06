@@ -183,8 +183,14 @@ export default function MapView({
     if (!map || appliedStyleUrlRef.current === styleUrl) return;
     appliedStyleUrlRef.current = styleUrl;
     setMapReady(false);
-    map.setStyle(styleUrl);
-    map.once("idle", () => setMapReady(true));
+
+    const handleStyleLoad = () => setMapReady(true);
+    map.once("style.load", handleStyleLoad);
+    map.setStyle(styleUrl, { diff: false });
+
+    return () => {
+      map.off("style.load", handleStyleLoad);
+    };
   }, [styleUrl]);
 
   useEffect(() => {
