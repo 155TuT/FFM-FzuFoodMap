@@ -18,9 +18,13 @@ type Props = {
   activeFileFeatures: GeoFeature[];
   activeFeatureDirtyIds: ReadonlySet<string>;
   expandedDirectories: Set<string>;
+  expandedFiles: ReadonlySet<string>;
+  fileFeatures: ReadonlyMap<string, GeoFeature[]>;
+  loadingFiles: ReadonlySet<string>;
   busy?: boolean;
   onToggleTheme: () => void;
   onToggleDirectory: (path: string) => void;
+  onToggleFile: (path: string) => void;
   onSelectFile: (path: string) => void;
   onSelectFeature: (filePath: string, featureId: string) => void;
   onCreateFolder: (parentPath: string) => void;
@@ -95,6 +99,8 @@ function TreeRow({
   statusTone,
   muted,
   suffix,
+  disclosure,
+  sticky,
   actions,
   onClick
 }: {
@@ -106,6 +112,12 @@ function TreeRow({
   statusTone?: "success" | "loading" | "warning";
   muted?: boolean;
   suffix?: string;
+  disclosure?: {
+    expanded: boolean;
+    label: string;
+    onToggle: () => void;
+  };
+  sticky?: boolean;
   actions?: TreeAction[];
   onClick?: () => void;
 }) {
@@ -124,13 +136,35 @@ function TreeRow({
   );
 
   return (
-    <div className={`tree-row-shell${active ? " tree-row-shell--active" : ""}${muted ? " tree-row-shell--muted" : ""}`}>
+    <div
+      className={`tree-row-shell${active ? " tree-row-shell--active" : ""}${muted ? " tree-row-shell--muted" : ""}${sticky ? " tree-row-shell--sticky" : ""}`}
+      style={rowStyle}
+    >
+      {disclosure ? (
+        <button
+          type="button"
+          className="tree-row__disclosure"
+          title={disclosure.label}
+          aria-label={disclosure.label}
+          aria-expanded={disclosure.expanded}
+          onClick={event => {
+            event.stopPropagation();
+            disclosure.onToggle();
+          }}
+        >
+          <img
+            className="tree-row__icon-image"
+            src={disclosure.expanded ? liftupIconSrc : pulldownIconSrc}
+            alt=""
+          />
+        </button>
+      ) : null}
       {onClick ? (
-        <button type="button" className="tree-row" style={rowStyle} onClick={onClick}>
+        <button type="button" className="tree-row" onClick={onClick}>
           {rowContent}
         </button>
       ) : (
-        <div className="tree-row tree-row--static" style={rowStyle}>
+        <div className="tree-row tree-row--static">
           {rowContent}
         </div>
       )}
@@ -166,7 +200,11 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
         <TreeRow
           depth={depth}
           label={node.name}
-          icon={<img className="tree-row__icon-image" src={expanded ? liftupIconSrc : pulldownIconSrc} alt="" />}
+          disclosure={{
+            expanded,
+            label: expanded ? `收起文件夹 ${node.name}` : `展开文件夹 ${node.name}`,
+            onToggle: () => props.onToggleDirectory(node.path)
+          }}
           actions={[
             { title: "删除当前地区文件夹", iconSrc: deleteIconSrc, onClick: () => props.onDeleteFolder(node.path) },
             { title: "新建 GeoJSON", iconSrc: addIconSrc, onClick: () => props.onCreateFile(node.path) }
@@ -179,38 +217,53 @@ function renderNode(node: WorkspaceNode, depth: number, props: Props): ReactNode
   }
 
   const active = props.activeFilePath === node.path;
+  const expanded = props.expandedFiles.has(node.path);
+  const features = active
+    ? props.activeFileFeatures
+    : props.fileFeatures.get(node.path) ?? [];
   const fileDirty = active ? props.activeFileDirty : node.dirty;
   return (
-    <div key={`file-${node.path}`} className="tree-node tree-node--nested">
+    <div
+      key={`file-${node.path}`}
+      className={`tree-node tree-node--nested tree-node--file${expanded ? " tree-node--file-expanded" : ""}`}
+    >
       <TreeRow
         depth={depth}
         label={node.name}
-        icon={<img className="tree-row__icon-image" src={active ? liftupIconSrc : pulldownIconSrc} alt="" />}
+        disclosure={{
+          expanded,
+          label: expanded ? `收起 GeoJSON ${node.name}` : `展开 GeoJSON ${node.name}`,
+          onToggle: () => props.onToggleFile(node.path)
+        }}
         suffix={`${node.featureCount}`}
         active={active}
         dirty={fileDirty}
+        statusTone={props.loadingFiles.has(node.path) ? "loading" : undefined}
+        sticky={expanded}
         actions={[
           { title: "删除当前 GeoJSON", iconSrc: deleteIconSrc, onClick: () => props.onDeleteFile(node.path) },
           { title: "新建点位", iconSrc: addIconSrc, onClick: () => props.onCreateFeature(node.path) }
         ]}
         onClick={() => props.onSelectFile(node.path)}
       />
-      {active
-        ? props.activeFileFeatures.map(feature => (
+      {expanded
+        ? features.map(feature => (
             <TreeRow
               key={`${node.path}-${feature.properties.id}`}
               depth={depth + 1}
               label={`${feature.properties.id} ${feature.properties.name || ""}`.trim()}
               icon="o"
-              active={props.activeFeatureId === feature.properties.id}
-              dirty={props.activeFeatureDirtyIds.has(feature.properties.id)}
-              actions={[
-                {
-                  title: "删除当前点位",
-                  iconSrc: deleteIconSrc,
-                  onClick: () => props.onDeleteFeature(node.path, feature.properties.id)
-                }
-              ]}
+              active={active && props.activeFeatureId === feature.properties.id}
+              dirty={active && props.activeFeatureDirtyIds.has(feature.properties.id)}
+              actions={active
+                ? [
+                    {
+                      title: "删除当前点位",
+                      iconSrc: deleteIconSrc,
+                      onClick: () => props.onDeleteFeature(node.path, feature.properties.id)
+                    }
+                  ]
+                : undefined}
               onClick={() => props.onSelectFeature(node.path, feature.properties.id)}
             />
           ))

@@ -34,7 +34,7 @@ import { collectDirtyFeatureIds } from "./geojsonDiff";
 import useActiveDocument from "./hooks/useActiveDocument";
 import useStudioTheme from "./hooks/useStudioTheme";
 import { normalizeTagGroups } from "./tagGroups";
-import type { TaxonomyEntryKind, Workspace } from "./types";
+import type { GeoFeature, TaxonomyEntryKind, Workspace } from "./types";
 
 export default function App() {
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
@@ -42,6 +42,11 @@ export default function App() {
   const [expandedDirectories, setExpandedDirectories] = useState<Set<string>>(
     new Set([""])
   );
+  const [expandedFiles, setExpandedFiles] = useState<Set<string>>(new Set());
+  const [fileFeatures, setFileFeatures] = useState<Map<string, GeoFeature[]>>(
+    new Map()
+  );
+  const [loadingFiles, setLoadingFiles] = useState<Set<string>>(new Set());
   const [dialog, setDialog] = useState<CreateEntryDialog | null>(null);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -66,6 +71,24 @@ export default function App() {
         nextSet.add(item);
       }
       return nextSet;
+    });
+    setExpandedFiles(previous => {
+      const nextSet = new Set<string>();
+      for (const item of previous) {
+        if (findFileNode(next.tree, item)) {
+          nextSet.add(item);
+        }
+      }
+      return nextSet;
+    });
+    setFileFeatures(previous => {
+      const nextMap = new Map<string, GeoFeature[]>();
+      for (const [path, features] of previous) {
+        if (findFileNode(next.tree, path)) {
+          nextMap.set(path, features);
+        }
+      }
+      return nextMap;
     });
   };
 
@@ -96,11 +119,24 @@ export default function App() {
   }, [activeFilePath]);
 
   useEffect(() => {
+    if (!activeFile) {
+      return;
+    }
+    setFileFeatures(previous => {
+      const next = new Map(previous);
+      next.set(activeFile.path, activeFile.data.features);
+      return next;
+    });
+  }, [activeFile]);
+
+  useEffect(() => {
     void (async () => {
       try {
         const next = await fetchWorkspace();
         applyWorkspace(next);
-        setActiveFilePath(firstFile(next.tree));
+        const initialFilePath = firstFile(next.tree);
+        setActiveFilePath(initialFilePath);
+        setExpandedFiles(initialFilePath ? new Set([initialFilePath]) : new Set());
         setMessage("工作区已载入");
       } catch (error) {
         setMessage(error instanceof Error ? error.message : "载入工作区失败");
@@ -166,6 +202,42 @@ export default function App() {
       ? "warning"
       : "success";
   const filePathLabel = activeFilePath ? `data/${activeFilePath}` : "data";
+
+  const toggleFile = (filePath: string) => {
+    if (expandedFiles.has(filePath)) {
+      setExpandedFiles(previous => {
+        const next = new Set(previous);
+        next.delete(filePath);
+        return next;
+      });
+      return;
+    }
+
+    setExpandedFiles(previous => new Set(previous).add(filePath));
+    if (activeFile?.path === filePath || fileFeatures.has(filePath)) {
+      return;
+    }
+
+    setLoadingFiles(previous => new Set(previous).add(filePath));
+    void fetchFile(filePath)
+      .then(file => {
+        setFileFeatures(previous => {
+          const next = new Map(previous);
+          next.set(file.path, file.data.features);
+          return next;
+        });
+      })
+      .catch(error => {
+        setMessage(error instanceof Error ? error.message : "读取文件失败");
+      })
+      .finally(() => {
+        setLoadingFiles(previous => {
+          const next = new Set(previous);
+          next.delete(filePath);
+          return next;
+        });
+      });
+  };
 
   const syncTaxonomyEntry = (
     kind: TaxonomyEntryKind,
@@ -297,6 +369,7 @@ export default function App() {
         );
         applyWorkspace(result.workspace);
         setActiveFilePath(result.path);
+        setExpandedFiles(previous => new Set(previous).add(result.path));
         applyFilePayload(result.file);
         setActiveFeatureId(null);
         setMessage("GeoJSON 文件已创建到缓存目录");
@@ -335,9 +408,18 @@ export default function App() {
             activeFilePath={activeFilePath}
             activeFeatureId={activeFeatureId}
             activeFileDirty={activeFileDirty}
-            activeFileFeatures={activeFile?.data.features ?? []}
+            activeFileFeatures={
+              activeFile?.path === activeFilePath
+                ? activeFile.data.features
+                : activeFilePath
+                  ? fileFeatures.get(activeFilePath) ?? []
+                  : []
+            }
             activeFeatureDirtyIds={activeFeatureDirtyIds}
             expandedDirectories={expandedDirectories}
+            expandedFiles={expandedFiles}
+            fileFeatures={fileFeatures}
+            loadingFiles={loadingFiles}
             busy={busy}
             onToggleTheme={toggleTheme}
             onToggleDirectory={path =>
@@ -351,6 +433,7 @@ export default function App() {
                 return next;
               })
             }
+            onToggleFile={toggleFile}
             onSelectFile={path => {
               setActiveFilePath(path);
               setActiveFeatureId(null);
@@ -365,7 +448,10 @@ export default function App() {
             onCreateFile={parentPath =>
               setDialog({ type: "file", parentPath, name: "" })
             }
-            onCreateFeature={createFeature}
+            onCreateFeature={filePath => {
+              setExpandedFiles(previous => new Set(previous).add(filePath));
+              createFeature(filePath);
+            }}
             onDeleteFeature={deleteFeature}
             onDeleteFolder={handleDeleteFolder}
             onDeleteFile={handleDeleteGeoJsonFile}
