@@ -172,11 +172,11 @@ Studio 其他命令：
     "tags": {
       "cuisines": ["闽菜"],
       "characteristics": ["适合聚餐"],
-      "dish": ["招牌菜"],
+      "dish": ["小吃"],
       "miscellaneous": []
     },
     "rating": 4.5,
-    "price": "50¥",
+    "price": "50",
     "notes": "推荐内容",
     "address": "地址",
     "contact": "联系方式",
@@ -189,6 +189,8 @@ Studio 其他命令：
   }
 }
 ```
+
+其中 `characteristics` 在界面中显示为“用餐方式”，`dish` 显示为“品类”。`price` 只保存人均价格数值，不包含 `¥` 或 `￥`；地图端会将菜系、品类与价格合并渲染，例如“闽菜 融合菜 小吃 人均45￥”。
 
 坐标顺序为 `[经度, 纬度]`。新增地区时，还需要在 `fzu-food-map/src/cities` 中配置地区名称、中心点、默认缩放级别和 `dataPath`。
 

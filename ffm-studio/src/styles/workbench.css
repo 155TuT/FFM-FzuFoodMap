@@ -222,6 +222,26 @@
   font-weight: 500;
 }
 
+.field > .field__input-suffix {
+  position: relative;
+  display: block;
+}
+
+.field__input-suffix > input {
+  padding-right: 38px;
+}
+
+.field__input-suffix > span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
 .field input,
 .field textarea,
 .field select,

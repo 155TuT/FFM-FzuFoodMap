@@ -8,6 +8,8 @@
     "build": "node scripts/build.mjs",
     "migrate:tags": "node scripts/migrate-tags.mjs",
     "check:tags": "node scripts/migrate-tags.mjs --check",
+    "migrate:prices": "node scripts/migrate-prices.mjs",
+    "check:prices": "node scripts/migrate-prices.mjs --check",
     "serve:api": "node server/index.mjs",
     "test": "node --test server/*.test.mjs"
   }

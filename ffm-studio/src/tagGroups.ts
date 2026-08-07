@@ -1,7 +1,7 @@
 export const TAG_GROUPS = [
   { key: "cuisines", label: "菜系", description: "菜系与地域风味" },
-  { key: "characteristics", label: "特色", description: "用餐方式与适用场景" },
-  { key: "dish", label: "菜品", description: "主营品类与餐品形式" },
+  { key: "characteristics", label: "用餐方式", description: "用餐方式与适用场景" },
+  { key: "dish", label: "品类", description: "主营品类与餐品形式" },
   { key: "miscellaneous", label: "其他", description: "不属于以上类别的补充标签" }
 ] as const;
 

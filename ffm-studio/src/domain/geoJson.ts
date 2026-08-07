@@ -44,6 +44,16 @@ export function normalizeCategoryInput(value: string) {
   return CATEGORY_ALIASES.get(trimmed) ?? trimmed;
 }
 
+export function normalizePriceInput(value: unknown) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value
+    .replace(/^\s*(?:\u4eba\u5747)?\s*/, "")
+    .replace(/[\u00a5\uffe5]/g, "")
+    .trim();
+}
+
 export function mergeTaxonomyEntry(
   taxonomy: Workspace["taxonomy"],
   kind: TaxonomyEntryKind,
@@ -193,12 +203,14 @@ function cleanSources(sources: PoiSource[]) {
 }
 
 export function normalizeFeature(feature: GeoFeature): GeoFeature {
+  const price = normalizePriceInput(feature.properties.price);
   return {
     ...feature,
     properties: {
       ...feature.properties,
       category: feature.properties.category.trim() || DEFAULT_CATEGORY,
       name: feature.properties.name.trim() || "未命名点位",
+      price: price || undefined,
       tags: normalizeTagGroups(feature.properties.tags),
       include: fromIncludeRows(toIncludeRows(feature.properties.include)),
       sources: cleanSources(feature.properties.sources ?? [])

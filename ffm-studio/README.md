@@ -20,7 +20,8 @@ npm run dev
 
 - `fzu-food-map/public/data` 作为原始数据源。
 - 所有编辑先写入 `ffm-studio/.cache/data`。
-- `ffm-studio/.cache/taxonomy.json` 会按菜系、特色、菜品、其他四组缓存门店类型与标签，并保留手动新增项。
+- `ffm-studio/.cache/taxonomy.json` 会按菜系、用餐方式、品类、其他四组缓存门店类型与标签，并保留手动新增项。
+- 价格字段只保存人均价格数值，不包含货币符号；编辑器会在输入框末尾固定显示不可编辑的 `￥`。
 - `ffm-studio/.cache/regions.json` 只缓存带 `dataPath` 的 GeoJSON 地区中心点与默认显示层级，不包含 `citywide`。
 - 新增 GeoJSON 会自动按点位范围推导中心点，并以层级 `14` 建立待覆写的地区配置。
 - 只有点击保存后，才会把 GeoJSON 写回 `fzu-food-map/public/data`，并仅覆写对应地区对象的 `center` 与 `zoom`；城市级 `CITY_CENTER`、`CITY_ZOOM` 和 `citywide` 原文保持不变。
@@ -38,4 +39,16 @@ npm run migrate:tags
 
 ```bash
 npm run check:tags
+```
+
+价格字段迁移可使用：
+
+```bash
+npm run migrate:prices
+```
+
+只校验、不写入：
+
+```bash
+npm run check:prices
 ```

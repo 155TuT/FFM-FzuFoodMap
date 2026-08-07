@@ -4,7 +4,7 @@ import { normalizePoiTags, TAG_GROUPS, type TagGroupKey } from "../../tagGroups"
 export const META_SEPARATOR = " · ";
 
 export type PoiMetaLine = {
-  key: "schedule" | "address" | "price" | "note" | TagGroupKey;
+  key: "schedule" | "address" | "note" | TagGroupKey;
   text: string;
   secondary: boolean;
 };
@@ -36,8 +36,23 @@ export function getPoiMetaLines(poi: PoiProps, tagLimit?: number): PoiMetaLine[]
   const schedule = [poi.openhour ?? "", poi.contact ? `tel:${poi.contact}` : ""]
     .filter(Boolean)
     .join(" ");
+  const normalizedPrice = poi.price
+    ?.replace(/^\s*(?:\u4eba\u5747)?\s*/, "")
+    .replace(/[\u00a5\uffe5]/g, "")
+    .trim();
+  const cuisineValues = tags.cuisines.slice(0, tagLimit ?? tags.cuisines.length);
+  const dishValues = tags.dish.slice(0, tagLimit ?? tags.dish.length);
+  const cuisineDishAndPrice = [
+    ...cuisineValues,
+    ...dishValues,
+    normalizedPrice ? `\u4eba\u5747${normalizedPrice}\uffe5` : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const tagLines: PoiMetaLine[] = TAG_GROUPS.flatMap(group => {
+  const tagLines: PoiMetaLine[] = TAG_GROUPS.filter(
+    group => group.key !== "cuisines" && group.key !== "dish"
+  ).flatMap(group => {
     const values = tags[group.key].slice(0, tagLimit ?? tags[group.key].length);
     return values.length
       ? [{ key: group.key, text: `${group.label}\uff1a${values.join(META_SEPARATOR)}`, secondary: false }]
@@ -45,10 +60,10 @@ export function getPoiMetaLines(poi: PoiProps, tagLimit?: number): PoiMetaLine[]
   });
 
   const lines: PoiMetaLine[] = [
-    { key: "schedule", text: schedule, secondary: false },
+    { key: "cuisines", text: cuisineDishAndPrice, secondary: false },
     { key: "address", text: poi.address ?? "", secondary: true },
+    { key: "schedule", text: schedule, secondary: false },
     ...tagLines,
-    { key: "price", text: poi.price ? `\u4ef7\u683c\uff1a${poi.price}` : "", secondary: false },
     { key: "note", text: poi.notes ?? "", secondary: true }
   ];
   return lines.filter(line => line.text);

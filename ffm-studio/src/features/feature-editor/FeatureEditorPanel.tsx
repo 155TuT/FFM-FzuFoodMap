@@ -6,6 +6,7 @@ import {
   DEFAULT_CATEGORY,
   fromIncludeRows,
   normalizeCategoryInput,
+  normalizePriceInput,
   toIncludeRows,
   uniq
 } from "../../domain/geoJson";
@@ -96,12 +97,19 @@ export default function FeatureEditorPanel({
             </label>
             <label className="field">
               <span>价格</span>
-              <input
-                value={feature.properties.price ?? ""}
-                onChange={event =>
-                  updateProperties({ price: event.target.value })
-                }
-              />
+              <span className="field__input-suffix">
+                <input
+                  inputMode="decimal"
+                  value={normalizePriceInput(feature.properties.price)}
+                  onChange={event =>
+                    updateProperties({
+                      price: normalizePriceInput(event.target.value) || undefined
+                    })
+                  }
+                  aria-label="人均价格"
+                />
+                <span aria-hidden="true">￥</span>
+              </span>
             </label>
             <label className="field">
               <span>联系</span>

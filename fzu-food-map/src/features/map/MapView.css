@@ -85,7 +85,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding-bottom: calc(var(--floating-action-radius) + 4px);
+  padding-bottom: calc(var(--floating-action-radius) - 12px);
 }
 
 .poi-title {
@@ -108,7 +108,7 @@
 
 .poi-notes {
   font-size: 12px;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
 .poi-include-list {
@@ -146,7 +146,7 @@
   box-sizing: border-box;
   width: calc(100% + var(--popup-scrollbar-align-offset));
   margin-right: calc(var(--popup-scrollbar-align-offset) * -1);
-  padding-right: var(--card-compact-padding);
+  padding-right: calc(var(--card-compact-padding) - 4px);
 }
 
 .poi-card.scrollable-card::-webkit-scrollbar-track {
